@@ -11,26 +11,67 @@
     <script src="/js/vendor/bootstrap.min.js"></script>
     <script src="/js/flat-ui.min.js"></script>
 </head>
-<body>
-<ul class="demo-sidebar nav nav-pills nav-stacked col-md-2 col-lg-2 text-center" style="width: 220px">
-      <li style="padding-top: 5%;background-color: #16a085;height: 80px;"><h4>预约管理系统</h4></li>
-      <li style="margin-top:2%;color: #16a085"><p>当前地区：成都</p></li>
-      <li style="margin-top: 20%" id="new"><a href="operate_new">未受理预约</a></li>
-      <li id="get"><a href="operate_get">已受理预约</a></li>
-      <li id="finish"><a href="operate_finishi">已完成预约</a></li>
-      <li id="me_mes"><a href="me_mes">个人信息</a></li>
-      <li id="about"><a href="about">关于</a></li>
+<body style="font-family: Lato, microsoft YaHei, Helvetica, Arial, sans-serif;">
+<ul class="demo-sidebar nav nav-pills nav-stacked col-md-2 col-lg-2" style="border-right:2px solid rgba(255,255,255,0.14);">
+      <li style="padding-top: 1%;background-color: #2980b9;height: 53px;color: #ffffff;">
+          <h6>
+              <span class="glyphicon glyphicon-user" style="margin-right: 3%"></span>
+              预约管理系统
+          </h6>
+      </li>
+      <li style="margin-top:2%;color: #16a085">
+          <p>
+              <span class="glyphicon glyphicon-road" style="margin-right: 3%"></span>
+              当前地区：成都
+          </p>
+      </li>
+      <li style="margin-top: 20%" id="new">
+          <a href="operate_new">
+              <span class="glyphicon glyphicon-earphone" style="margin-right: 3%"></span>
+              未受理预约
+          </a>
+      </li>
+      <li id="get">
+          <a href="operate_get">
+              <span class="glyphicon glyphicon-folder-close" style="margin-right: 3%"></span>
+              已受理预约
+          </a>
+      </li>
+      <li id="finish">
+          <a href="operate_finishi">
+              <span class="glyphicon glyphicon-ok" style="margin-right: 3%"></span>
+              已完成预约
+          </a>
+      </li>
+      <li id="cancel">
+          <a href="operate_cancel">
+              <span class="glyphicon glyphicon-trash" style="margin-right: 3%"></span>
+              取消的预约
+          </a>
+      </li>
+      <li id="me_mes">
+          <a href="me_mes">
+              <span class="glyphicon glyphicon-cog" style="margin-right: 3%"></span>
+              个人信息
+          </a>
+      </li>
+      <li id="about">
+          <a href="about">
+              <span class="glyphicon glyphicon-cloud" style="margin-right: 3%"></span>
+              关于
+          </a>
+      </li>
 </ul>
-<nav class="navbar navbar-default" role="navigation" style="margin-bottom: 0">
+<nav class="navbar navbar-default" role="navigation" style="margin-bottom: 0;background-color: #3498db;border-radius: 0">
   <div class="navbar-header" style="margin-left: 50%">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-01">
       <span class="sr-only">Toggle navigation</span>
     </button>
-    <p class="navbar-brand" style="padding-bottom: 0;margin-bottom: 0;">未受理预约</p>
+    <p class="navbar-brand" style="padding-bottom: 0;margin-bottom: 0;color: #ffffff">未受理预约</p>
   </div>
 </nav><!-- /navbar -->
 <div class="col-md-10 col-lg-10" style="float: right;">
-    <div class="alert alert-warning" role="alert" style="text-align: center;height: 50px;margin-right: 3%;margin-top: 5px">
+    <div class="alert alert-warning" role="alert" style="text-align: center;height: 50px;margin-top: 5px">
      <strong>公告!</strong> 这是一个公告！这是一个公告！这是一个公告！
     </div>
     {% block define %}
