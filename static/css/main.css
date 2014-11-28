@@ -1,0 +1,34 @@
+.btn-mine{
+    color: #2ecc71;
+    background-color: #ffffff;
+    border:1px solid #1abc9c;
+    border-radius: 0;
+}
+.btn-mine:hover,
+.btn-mine:focus,
+.btn-mine:active,
+.btn-mine.active, {
+  color: #ffffff;
+  background-color:#1abc9c;
+
+  border-color: #2ecc71;
+}
+
+.demo-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 10000;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        overflow: auto;
+        font-size: 16px;
+        line-height: 1.714;
+        list-style-type: none;
+        background-color:  #34495e;
+}
+li,
+li>a{
+    color: #ffffff;
+}

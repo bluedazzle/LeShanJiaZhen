@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block define %}
+<div class="container" style="padding-right: 15%;padding-top: 5%">
+    <div class="col-md-4 col-lg-4">
+        <img src="/img/icons/png/Mail.png">
+    </div>
+    <div class="col-md-8 col-lg-8 jumbotron" style="padding-left: 0;padding-right: 0">
+      <div class="col-md-10 col-lg-10" style="padding-left: 18%">
+        <div class="input-group">
+            <span class="input-group-addon" style="min-width: 80px">手机号</span>
+            <input type="text" class="form-control" placeholder="请输入用户名" />
+        </div>
+        <div class="input-group" style="margin-top: 3%;">
+            <span class="input-group-addon" style="min-width: 80px">验证码</span>
+            <input type="text" class="form-control" placeholder="请输入手机验证码" />
+        </div>
+        <div class="input-group" style="margin-top: 3%;">
+            <span class="input-group-addon" style="min-width: 80px">密码</span>
+            <input type="text" class="form-control" placeholder="请输入密码" />
+        </div>
+        <div class="input-group" style="margin-top: 3%;">
+            <span class="input-group-addon" style="min-width: 80px">姓名</span>
+            <input type="text" class="form-control" placeholder="请输入真实姓名" />
+        </div>
+        <div class="input-group" style="margin-top: 3%;">
+            <span class="input-group-addon" style="min-width: 80px">工号</span>
+            <input type="text" class="form-control" placeholder="请输入工作号" />
+        </div>
+        <button class="btn btn-success btn-large btn-block " style="margin-top: 5%">注册</button>
+        <a role="button" class="btn btn-primary btn-large btn-block" href="login_in" style="margin-top: 1%">返回</a>
+      </div>
+      <div class="col-md-2 col-lg-2" style="margin-top: 9.5%;padding-left: 0">
+         <button id="verify" class="btn btn-primary btn-sm">获取验证码</button>
+
+      </div>
+    </div>
+
+</div>
+<script>
+  $(document).ready(function(){
+      $('#register_page').addClass('active');
+      var count;
+      var countdown;
+      function verify_count(){
+          localStorage['verify_count'] = count;
+          $('#verify').addClass("disabled");
+          $('#verify').text('请等待'+count+"秒");
+          if(count <= 0){
+              clearInterval(countdown);
+              localStorage.removeItem('verify_count');
+              $('#verify').removeClass("disabled");
+              $('#verify').text("获取验证码");
+          }
+          count--;
+      }
+      if(localStorage['verify_count'] && localStorage['verify_count'] != '0'){
+          count = parseInt(localStorage['verify_count']);
+          $('#verify').addClass("disabled");
+          $('#verify').text('请等待'+count+"秒");
+          countdown = setInterval(verify_count, 1000);
+      }
+      $('#verify').click(function(){
+          count = 30;
+          $('#verify').addClass("disabled");
+          $('#verify').text('请等待'+count+"秒");
+          localStorage['verify_count'] = count;
+          count--;
+          countdown = setInterval(verify_count, 1000);
+      })
+  })
+</script>
+{% endblock %}

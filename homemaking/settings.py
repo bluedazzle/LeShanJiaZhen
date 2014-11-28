@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '3g(l%luhlix93f=w_y^l*ve3rd2n&!6&#i^kozj)9bh+z5hc!&'
+SECRET_KEY = '89_#q=qbk+udde-*1t-e*y^mx9kokruzv5(g##stsdlmh*d^_@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -36,7 +36,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'HomeApi',
+    'admin_area',
+    'admin_all',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,10 +58,21 @@ WSGI_APPLICATION = 'homemaking.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
+DB_ENGINE = 'django.db.backends.postgresql_psycopg2'
+DB_NAME = 'homemaking'
+DB_USER = 'postgres'                      # Not used with sqlite3.
+DB_PASSWORD = 'GDBDYL886'                  # Not used with sqlite3.
+DB_HOST = 'localhost'                      # Set to empty string for localhost. Not used with sqlite3.
+DB_PORT = '5433'
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE':   DB_ENGINE,
+        'NAME':     DB_NAME,
+        'USER':     DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST':     DB_HOST,
+        'PORT':     DB_PORT,
     }
 }
 
@@ -86,3 +98,8 @@ STATIC_URL = '/static/'
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
 )
+
+CSS_DIR = './static/css/'
+IMG_DIR = './static/img/'
+JS_DIR = './static/js'
+FONTS_DIR = './static/fonts'
