@@ -1,0 +1,40 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+<div class="col-md-12 col-lg-12">
+  <button class="btn btn-large btn-default" style="float: right;margin-right: 3%">
+   一键取消所有预约
+  </button>
+  <button class="btn btn-large btn-primary" style="float: right;margin-right: 3%">
+   一键受理所有预约
+  </button>
+</div>
+<div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
+{% for i in items %}
+   <div class="panel panel-primary">
+       <div class="panel-heading">
+           预约号：10000001
+           <span style="margin-left: 5%">地址：电子科技大学清水河校区本科18栋616寝室</span>
+       </div>
+       <div class="panel-body">
+           <div class="col-md-6 col-lg-6">姓名：张先生</div>
+           <div class="col-md-6 col-lg-6">联系方式：12345678901</div>
+           <div class="col-md-6 col-lg-6">报修项目：水 水管坏了</div>
+           <div class="col-md-6 col-lg-6">报修照片：</div>
+           <div class="col-md-12 col-lg-12">
+               <button class="btn btn-large btn-default" style="float: right;margin-right: 3%">
+                 取消预约
+               </button>
+               <button class="btn btn-large btn-info" style="float: right;margin-right: 3%">
+                 接受预约
+               </button>
+           </div>
+       </div>
+   </div>
+{% endfor %}
+</div>
+    <script>
+       $(document).ready(function(){
+           $('#new').addClass("active")
+       })
+    </script>
+{% endblock %}
