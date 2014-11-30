@@ -64,7 +64,7 @@ DB_NAME = 'homemaking'
 DB_USER = 'postgres'                      # Not used with sqlite3.
 DB_PASSWORD = '123456'                  # Not used with sqlite3.
 DB_HOST = 'localhost'                      # Set to empty string for localhost. Not used with sqlite3.
-DB_PORT = '5432'
+DB_PORT = ''
 
 DATABASES = {
     'default': {

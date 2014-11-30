@@ -100,6 +100,7 @@ class HomeItem(models.Model):
     title = models.CharField(max_length=30)
     content = models.CharField(max_length=500)
     create_time = models.DateTimeField(auto_now_add=True)
+    parent_item = models.ForeignKey(HomeItem_O, null=True, blank=True)
 
     def __unicode__(self):
         return self.title
