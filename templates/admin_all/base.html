@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>超级用户管理系统</title>
+    <link href="/css/vendor/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/flat-ui.min.css" rel="stylesheet">
+    <link href="/css/main.css" rel="stylesheet">
+    <script src="/js/vendor/jquery.min.js"></script>
+    <script src="/js/vendor/bootstrap.min.js"></script>
+    <script src="/js/flat-ui.min.js"></script>
+</head>
+<body style="font-family: microsoft YaHei;">
+<ul class="demo-sidebar0 nav nav-pills nav-stacked col-md-2 col-lg-2" style="border-right:2px solid #ffffff;max-width: 220px">
+      <li style="padding-top: 0;height: 53px;background-color:#34495e;color: #ffffff;">
+          <p style="font-size: 20px;">
+              <span class="glyphicon glyphicon-user" style="margin-right: 3%"></span>
+              超级用户
+          </p>
+      </li>
+      <li style="margin-top: 20%" id="find_appointment">
+          <a href="find_appointment">
+              <span class="glyphicon glyphicon-search" style="margin-right: 3%"></span>
+              查看预约
+          </a>
+      </li>
+      <li id="manage_admin">
+          <a href="manage_admin">
+              <span class="glyphicon glyphicon-eye-open" style="margin-right: 3%"></span>
+              管理地区管理员
+          </a>
+      </li>
+      <li id="manage_apply">
+          <a href="manage_apply">
+              <span class="glyphicon glyphicon-ok" style="margin-right: 3%"></span>
+              审核申请
+          </a>
+      </li>
+      <li id="about">
+          <a href="about">
+              <span class="glyphicon glyphicon-cloud" style="margin-right: 3%"></span>
+              关于
+          </a>
+      </li>
+      <li>
+          <a href="login_in">
+              <span class="glyphicon glyphicon-off" style="margin-right: 3%"></span>
+              退出登录
+          </a>
+      </li>
+</ul>
+<nav class="navbar navbar-default" role="navigation" style="margin-bottom: 0;background-color: #2980b9;border-radius: 0">
+  <div class="navbar-header" style="margin-left: 50%">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-01">
+      <span class="sr-only">Toggle navigation</span>
+    </button>
+    <p id="page_title" class="navbar-brand" style="padding-bottom: 0;margin-bottom: 0;color: #ffffff"></p>
+  </div>
+</nav><!-- /navbar -->
+<div class="col-md-10 col-lg-10" style="float: right;">
+    {% block define %}
+    {% endblock %}
+</div>
+</body>
+</html>

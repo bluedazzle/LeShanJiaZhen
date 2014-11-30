@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, include, url
 from views import *
 
 
@@ -11,4 +11,9 @@ urlpatterns = patterns('',
     url('^register$', register),
     url('^forget_password$', forget_password),
     url('^operate_new$', operate_new),
+    url('^operate_get$', operate_get),
+    url('^operate_finish$', operate_finish),
+    url('^operate_cancel$', operate_cancel),
+    url('^user_mes$', user_mes),
+    url('^about$', about),
 )

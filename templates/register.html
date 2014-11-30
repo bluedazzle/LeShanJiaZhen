@@ -42,7 +42,6 @@
       var count;
       var countdown;
       function verify_count(){
-          localStorage['verify_count'] = count;
           $('#verify').addClass("disabled");
           $('#verify').text('请等待'+count+"秒");
           if(count <= 0){
@@ -53,17 +52,21 @@
           }
           count--;
       }
-      if(localStorage['verify_count'] && localStorage['verify_count'] != '0'){
-          count = parseInt(localStorage['verify_count']);
-          $('#verify').addClass("disabled");
-          $('#verify').text('请等待'+count+"秒");
-          countdown = setInterval(verify_count, 1000);
+      if(localStorage['verify_count']){
+          var now_time = parseInt(new Date().getTime());
+          var past_time = parseInt(localStorage['verify_count']);
+          count = parseInt(30-(now_time-past_time)/1000);
+          if(count > 0){
+               $('#verify').addClass("disabled");
+               $('#verify').text('请等待'+count+"秒");
+               countdown = setInterval(verify_count, 1000);
+          }
       }
       $('#verify').click(function(){
           count = 30;
+          localStorage['verify_count'] = new Date().getTime();
           $('#verify').addClass("disabled");
           $('#verify').text('请等待'+count+"秒");
-          localStorage['verify_count'] = count;
           count--;
           countdown = setInterval(verify_count, 1000);
       })

@@ -1,0 +1,60 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+<div class="col-md-12 col-lg-12">
+  <button class="btn btn-large btn-default" style="float: right;margin-right: 3%">
+   一键取消所有预约
+  </button>
+  <button class="btn btn-large btn-primary" style="float: right;margin-right: 3%">
+   一键完成所有预约
+  </button>
+</div>
+<div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
+{% for i in items %}
+   <div class="panel panel-success">
+       <div class="panel-heading">
+           预约号：10000001
+           <span style="margin-left: 5%">时间：2014-11-28 13:00</span>
+           <span style="margin-left: 5%">地址：电子科技大学清水河校区本科18栋616寝室</span>
+       </div>
+       <div class="panel-body">
+           <div class="col-md-6 col-lg-6">姓名：张先生</div>
+           <div class="col-md-6 col-lg-6">联系方式：12345678901</div>
+           <div class="col-md-12 col-lg-12">报修项目：水 水管坏了
+               <div class="row">
+                   <div class="col-md-3 col-md-3">
+                       <a href="/img/icons/png/Toilet-Paper.png" class="thumbnail">
+                       <img src="/img/icons/png/Toilet-Paper.png">
+                       </a>
+                   </div>
+               </div>
+           </div>
+           <div class="col-md-12 col-lg-12">
+               <button class="btn btn-large btn-default" style="float: right;margin-right: 3%">
+                 取消预约
+               </button>
+               <button class="btn btn-large btn-info" style="float: right;margin-right: 3%">
+                 完成预约
+               </button>
+           </div>
+       </div>
+   </div>
+{% endfor %}
+  <div class="text-right">
+      <div class="pagination pagination-success">
+          <a href="#" class="btn btn-info previous">上一页</a>
+          <ul>
+              <li class="active"><a href="#">1</a></li>
+              <li><a href="#">2</a></li>
+              <li><a href="#">3</a></li>
+          </ul>
+          <a href="#" class="btn btn-info next">下一页</a>
+      </div>
+  </div>
+</div>
+    <script>
+       $(document).ready(function(){
+           $('#page_title').text('已接受预约');
+           $('#get').addClass("active")
+       })
+    </script>
+{% endblock %}

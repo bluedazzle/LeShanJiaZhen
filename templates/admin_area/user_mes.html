@@ -1,0 +1,91 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+    <script>
+      $(document).ready(function(){
+          $('#page_title').text('个人信息');
+          $('#user_mes').addClass('active')
+      })
+    </script>
+    <div class="col-md-10 col-lg-10" style="padding-left: 5%;padding-right: 10%;padding-top: 2%">
+     <div class="panel panel-default">
+         <div class="panel-heading text-center" style="background-color: #1abc9c;color: #ffffff">基本信息</div>
+         <div class="panel-body">
+          <div class="col-md-5 col-lg-5 text-right">
+              姓名：<br/>
+              手机号：<br/>
+              管理地区：<br/>
+              工号：<br/>
+          </div>
+          <div class="col-md-5 col-lg-5 text-left">
+              王小帅<br/>
+              12345678901<br/>
+              成都<br/>
+              123456654321<br/>
+          </div>
+         </div>
+     </div>
+    </div>
+    <div class="col-md-10 col-lg-10" style="padding-left: 5%;padding-right: 10%;padding-top: 2%">
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-info col-md-5 col-lg-5" style="padding:0;margin: 0;float: left">
+                <div class="panel-heading text-center" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            修改地区
+                        </a>
+                    </h4>
+                </div>
+               <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                  <div class="panel-body" style="padding-left: 0;padding-right: 15%;">
+                      <div class="col-md-3 col-lg-3 text-right" style="padding-right: 0">
+                          <p>密码：</p>
+                          <p>地区：</p>
+                      </div>
+                      <div class="col-md-9 col-lg-9" style="padding-left: 0">
+                          <input type="text" class="form-control input-sm">
+                          <select class="form-control input-sm" style="margin-top: 3%">
+                              <option value="0" selected>成都</option>
+                              <option value="1">乐山</option>
+                              <option value="2">遂宁</option>
+                          </select>
+                      </div>
+                      <div class="col-md-12 col-lg-12" style="padding-left: 25%;padding-right: 5%">
+                          <button class="btn btn-success btn-large btn-block ">提交</button>
+
+                      </div>
+                  </div>
+               </div>
+            </div>
+            <div class="panel panel-info col-md-5 col-lg-5" style="padding:0;margin: 0;float: right">
+                <div class="panel-heading text-center" role="tab" id="headingTwo">
+                    <h4 class="panel-title">
+                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                             修改密码
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                    <div class="panel-body" style="padding-left: 0;padding-right: 15%">
+                        <div class="col-md-4 col-lg-4 text-right" style="padding-right: 0">
+                          <p>旧密码：</p>
+                          <p>新密码：</p>
+                          <p>密码确认：</p>
+                      </div>
+                      <div class="col-md-8 col-lg-8" style="padding-left: 0">
+                          <input type="text" class="form-control input-sm">
+                          <input type="text" style="margin-top: 3%" class="form-control input-sm">
+                          <input type="text" style="margin-top: 3%" class="form-control input-sm">
+                      </div>
+                      <div class="col-md-12 col-lg-12" style="padding-left: 33%;padding-right: 4%">
+                          <button class="btn btn-success btn-large btn-block ">提交</button>
+
+                      </div>
+
+                    </div>
+                </div>
+            </div>
+
+         </div>
+
+    </div>
+{% endblock %}

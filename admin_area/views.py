@@ -22,3 +22,31 @@ def operate_new(request):
     if request.method == 'GET':
         items = [1, 2, 3, 4, 5, 6]
         return render_to_response('admin_area/operate_new.html', {'items': items})
+
+
+def operate_get(request):
+    if request.method == 'GET':
+        items = [1, 2, 3, 4, 5, 6]
+        return render_to_response('admin_area/operate_get.html', {'items': items})
+
+
+def operate_finish(request):
+    if request.method == 'GET':
+        items = [1, 2, 3, 4, 5, 6]
+        return render_to_response('admin_area/operate_finish.html', {'items': items})
+
+
+def operate_cancel(request):
+    if request.method == 'GET':
+        items = [1, 2, 3, 4, 5, 6]
+        return render_to_response('admin_area/operate_cancel.html', {'items': items})
+
+
+def user_mes(request):
+    if request.method == 'GET':
+        return render_to_response('admin_area/user_mes.html')
+
+
+def about(request):
+    if request.method == 'GET':
+        return render_to_response('admin_area/about.html')
