@@ -145,6 +145,12 @@ class Migration(migrations.Migration):
             preserve_default=True,
         ),
         migrations.AddField(
+            model_name='homeitem',
+            name='parent_item',
+            field=models.ForeignKey(blank=True, to='HomeApi.HomeItem_O', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
             model_name='block',
             name='area_admin',
             field=models.ForeignKey(blank=True, to='HomeApi.HomeAdmin', null=True),

@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'admin_area',
     'admin_all',
+    'HomeApi',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -101,5 +102,5 @@ TEMPLATE_DIRS = (
 
 CSS_DIR = './static/css/'
 IMG_DIR = './static/img/'
-JS_DIR = './static/js'
-FONTS_DIR = './static/fonts'
+JS_DIR = './static/js/'
+FONTS_DIR = './static/fonts/'

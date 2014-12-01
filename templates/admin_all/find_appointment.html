@@ -60,19 +60,30 @@
            <div class="col-md-12 col-lg-12">姓名：张先生</div>
            <div class="col-md-12 col-lg-12">联系方式：12345678901</div>
            <div class="col-md-6 col-lg-6">报修项目：水 水管坏了
-{#               <div class="row">#}
-{#                   <div class="col-md-3 col-lg-3">#}
-{#                       <a href="/img/icons/png/Toilet-Paper.png" class="thumbnail">#}
-{#                       <img src="/img/icons/png/Toilet-Paper.png">#}
-{#                       </a>#}
-{#                   </div>#}
-{#               </div>#}
            </div>
            <div class="col-md-6 col-lg-6">
-               <button class="btn btn-large btn-success" style="float: right;margin-right: 20%">
+               <button class="btn btn-large btn-success" id="find_detail{{ i }}" style="float: right;margin-right: 20%">
                  查看详情
                </button>
+               <div class="modal fade bs-example-modal-lg" style="padding-top: 10%" id="modal{{ i }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                   <div class="modal-dialog modal-lg">
+                       <div class="modal-content">
+                             <div class="row">
+                                 <div class="col-md-4 col-lg-4">
+                                     <a href="/img/icons/png/Toilet-Paper.png" class="thumbnail">
+                                         <img src="/img/icons/png/Toilet-Paper.png">
+                                     </a>
+                                 </div>
+                             </div>
+                       </div>
+                   </div>
+               </div>
            </div>
+           <script>
+               $('#find_detail{{ i }}').click(function(){
+                   $('#modal{{ i }}').modal('toggle')
+               })
+           </script>
        </div>
    </div>
 {% endfor %}
