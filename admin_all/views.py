@@ -12,7 +12,8 @@ def login_in(request):
 
 def find_appointment(request):
     if request.method == 'GET':
-        return render_to_response('admin_all/find_appointment.html')
+        items = range(0, 10)
+        return render_to_response('admin_all/find_appointment.html', {'items': items})
 
 
 def manage_admin(request):
