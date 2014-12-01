@@ -3,6 +3,7 @@ from django.contrib import admin
 import admin_all.urls
 import admin_area.urls
 import settings
+from HomeApi.views import *
 
 urlpatterns = patterns('',
     # Examples:
@@ -12,7 +13,10 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^master_admin/', include(admin_all.urls)),
     url(r'^area_admin/', include(admin_area.urls)),
-    url(r'^master_admin/', include(admin_all.urls)),
+    url(r'^add/', add_block),
+    url(r'^del/', del_block),
+    url(r'^ch/', change_block),
+    # url(r'^master_admin/', include('admin_all.urls')),
     url(r'^css/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.CSS_DIR}),
     url(r'^img/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.IMG_DIR}),
     url(r'^js/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.JS_DIR}),
