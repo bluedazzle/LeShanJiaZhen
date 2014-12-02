@@ -1,4 +1,3 @@
-# -*- coding:utf8 -*-
 from HomeApi.models import *
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -254,3 +253,5 @@ def change_block(request):
     except Exception:
         status = 2
     return HttpResponse(json.dumps({"status": status, "body": 'null'}))
+
+
