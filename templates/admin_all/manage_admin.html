@@ -10,38 +10,67 @@
        <table class="table">
            <thead>
              <tr>
-                 <h6>
+                 <h6 style="padding-bottom: 1%">
                  地区管理员列表
+                     <button class="btn btn-default" style="float: right;margin-left: 2%;margin-right: 1%">删除</button>
+                     <button class="btn btn-primary" style="float: right;">发布公告</button>
+
                  </h6>
              </tr>
            </thead>
            <tbody>
               <tr style="background-color: #1abc9c; color: #ffffff">
-                  <th></th>
                   <th>管理地区</th>
                   <th>姓名</th>
                   <th>电话</th>
                   <th>工号</th>
+                  <th style="max-width: 20px">
+                        <input type="checkbox" value="0" id="checkbox_all">
+                      <script>
+                          $('#checkbox_all').click(function(){
+                              if($(this).val() == '0'){
+                                  $(this).val('1');
+                                  var checkbox_id;
+                                  for(var i = 0; i <= 9; i++){
+                                      checkbox_id = 'checkbox' + i;
+                                      $('#'+checkbox_id).val('1');
+                                      document.getElementById(checkbox_id).checked = true;
+                                  }
+                              }
+                              else{
+                                  $(this).val('0');
+                                  for(var i = 0; i <= 9; i++){
+                                      checkbox_id = 'checkbox' + i;
+                                      $('#'+checkbox_id).val('0');
+                                      document.getElementById(checkbox_id).checked = false;
+                                  }
+                              }
+                          })
+                      </script>
+                  </th>
               </tr>
+              {% for i in items %}
               <tr>
-                  <td>
-                      <label class="checkbox" for="checkbox1">
-                        <input type="checkbox" value="" id="checkbox1" data-toggle="checkbox" class="custom-checkbox">
-                          <span class="icons">
-                              <span class="icon-unchecked"></span>
-                              <span class="icon-checked"></span>
-                          </span>
-                      </label>
-                  </td>
                   <td>成都</td>
                   <td>张全蛋</td>
                   <td>12345678901</td>
                   <td>32423423</td>
+                  <td style="max-width: 20px">
+                     <input type="checkbox" value="0" name='checkbox' id="checkbox{{ i }}">
+                  </td>
+                  <script>
+                     $('#checkbox{{ i }}').click(function(){
+                         if($(this).val() == '0'){
+                             $(this).val('1');
+                         }
+                         else{
+                             $(this).val('0')
+                         }
+                     })
+                  </script>
               </tr>
+              {% endfor %}
            </tbody>
-           <script>
-               $(':checkbox').radiocheck();
-           </script>
        </table>
     </div>
 {% endblock %}

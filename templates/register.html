@@ -6,32 +6,42 @@
     </div>
     <div class="col-md-8 col-lg-8 jumbotron" style="padding-left: 0;padding-right: 0">
       <div class="col-md-10 col-lg-10" style="padding-left: 18%">
+        <form action="register" method="post" id="form_mes">
+            {% csrf_token %}
         <div class="input-group">
-            <span class="input-group-addon" style="min-width: 80px">手机号</span>
-            <input type="text" class="form-control" placeholder="请输入用户名" />
+            <span class="input-group-addon" style="min-width: 80px;height: 42px">手机号</span>
+            <input type="text" class="form-control" name="phone" id="phone" placeholder="请输入手机号" />
         </div>
         <div class="input-group" style="margin-top: 3%;">
-            <span class="input-group-addon" style="min-width: 80px">验证码</span>
-            <input type="text" class="form-control" placeholder="请输入手机验证码" />
+            <span class="input-group-addon" style="min-width: 80px;height: 42px">验证码</span>
+            <input type="text" class="form-control" name="verify" id="verify" placeholder="请输入手机验证码" />
         </div>
         <div class="input-group" style="margin-top: 3%;">
-            <span class="input-group-addon" style="min-width: 80px">密码</span>
-            <input type="text" class="form-control" placeholder="请输入密码" />
+            <span class="input-group-addon" style="min-width: 80px;height: 42px">密码</span>
+            <input type="password" class="form-control" name="password" id="password" placeholder="请输入密码" />
         </div>
         <div class="input-group" style="margin-top: 3%;">
-            <span class="input-group-addon" style="min-width: 80px">姓名</span>
-            <input type="text" class="form-control" placeholder="请输入真实姓名" />
+            <span class="input-group-addon" style="min-width: 80px;height: 42px">姓名</span>
+            <input type="text" class="form-control" name="name" id="name" placeholder="请输入真实姓名" />
         </div>
         <div class="input-group" style="margin-top: 3%;">
-            <span class="input-group-addon" style="min-width: 80px">工号</span>
-            <input type="text" class="form-control" placeholder="请输入工作号" />
+            <span class="input-group-addon" style="min-width: 80px;height: 42px;">工号</span>
+            <input type="text" class="form-control" name="work_num" id="work_num" placeholder="请输入工作号" />
         </div>
-        <button class="btn btn-success btn-large btn-block " style="margin-top: 5%">注册</button>
+        <div class="input-group" style="margin-top: 3%">
+          <span class="input-group-addon" style="min-width: 80px">地区</span>
+          <select id="area" class="form-control select" name="area" style="border:2px solid #1abc9c ;height: 42px;">
+                  <option value="0">成都</option>
+                  <option value="1">乐山</option>
+                  <option value="2">遂宁</option>
+          </select>
+      </div>
+      </form>
+        <button class="btn btn-success btn-large btn-block" id="register" style="margin-top: 5%">注册</button>
         <a role="button" class="btn btn-primary btn-large btn-block" href="login_in" style="margin-top: 1%">返回</a>
       </div>
       <div class="col-md-2 col-lg-2" style="margin-top: 9.5%;padding-left: 0">
          <button id="verify" class="btn btn-primary btn-sm">获取验证码</button>
-
       </div>
     </div>
 
@@ -71,5 +81,16 @@
           countdown = setInterval(verify_count, 1000);
       })
   })
+</script>
+<script>
+   $('#register').click(function(){
+       if($('#phone').val().length == 11 && $('#verify').val() && $('#password').val()
+               && $('#name').val() && $('#work_num').val() && $('#area').val()){
+           $('#form_mes').submit();
+       }
+       else{
+           alert('输入信息有误！')
+       }
+   })
 </script>
 {% endblock %}

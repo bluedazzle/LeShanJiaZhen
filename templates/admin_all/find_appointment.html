@@ -6,7 +6,7 @@
             $('#find_appointment').addClass('active');
         })
     </script>
-     <script type="text/javascript" src="/js/mine.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/js/mine.js" charset="UTF-8"></script>
     <div class="col-md-12 col-lg-12" style="margin-top: 3%">
       <div class="col-md-2 col-lg-2" style="float: right">
           <button class="btn btn-success">查询</button>
@@ -21,27 +21,25 @@
       </div>
       <div class="col-md-2 col-lg-2 input-group has-success" style="padding-left: 0;float: right;margin-right: 1%">
           <span class="input-group-addon">地区</span>
-          <select class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0">
+          <select id="select1" class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0">
                   <option value="0">成都</option>
                   <option value="1">乐山</option>
                   <option value="2">遂宁</option>
           </select>
-          <script>
-              $("select").select2({dropdownCssClass: 'dropdown-inverse'});
-          </script>
       </div>
       <div class="col-md-2 col-lg-2 input-group has-success" style="padding-left: 0;float: right;margin-right: 1%;">
           <span class="input-group-addon">预约类型</span>
-          <select class="form-control select select-primary select-block mbl">
+          <select id="select2" class="form-control select select-primary select-block mbl">
                   <option value="0">所有预约</option>
                   <option value="1">未受理预约</option>
                   <option value="2">已接受预约</option>
                   <option value="3">已完成预约</option>
           </select>
-          <script>
-              $("select").select2({dropdownCssClass: 'dropdown-inverse'});
-          </script>
       </div>
+      <script>
+              $("#select1").select2({dropdownCssClass: 'dropdown-inverse'});
+              $("#select2").select2({dropdownCssClass: 'dropdown-inverse'});
+      </script>
     </div>
     <div class="col-md-10 col-lg-10" style="float: right;margin-top: 2%;margin-right: 10%;margin-bottom: 2%">
       <div class="col-md-12 col-lg-12">

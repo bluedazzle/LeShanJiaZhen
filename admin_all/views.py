@@ -18,9 +18,16 @@ def find_appointment(request):
 
 def manage_admin(request):
     if request.method == 'GET':
-        return render_to_response('admin_all/manage_admin.html')
+        items = range(0, 10)
+        return render_to_response('admin_all/manage_admin.html', {'items': items})
 
 
 def manage_apply(request):
     if request.method == 'GET':
-        return render_to_response('admin_all/manage_apply.html')
+        items = range(0, 10)
+        return render_to_response('admin_all/manage_apply.html', {'items': items})
+
+
+def about(request):
+    if request.method == 'GET':
+        return render_to_response('admin_all/about.html')
