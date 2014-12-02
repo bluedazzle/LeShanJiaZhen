@@ -1,4 +1,3 @@
-# -*- coding:utf8 -*-
 from HomeApi.models import *
 import json
 from HomeApi.errorType import *

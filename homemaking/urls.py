@@ -10,6 +10,8 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^area_tel/', pull_block_tel),
+    url(r'^mkappoint/', post_appointment),
     # url(r'^master_admin/', include('admin_all.urls')),
     url(r'^area_admin/', include('admin_area.urls')),
     url(r'^css/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.CSS_DIR}),
