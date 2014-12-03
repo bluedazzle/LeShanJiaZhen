@@ -64,4 +64,21 @@ def post_appointment(request):
         return HttpResponse(json.dumps({'status': status, 'body': None}))
     return HttpResponse(json.dumps({'status': status, 'body': {'pic_url': pic_url}}))
 
+@csrf_exempt
+def pull_advertisement(request):
+    try:
+        if len(Advertisement.objects.all()) == 0:
+            raise NoneExistError
+        p = Advertisement.objects.all()[0]
+        content = p.content
+        photo = p.photo
+        status = 1
+    except NoneExistError:
+        status = 7
+        return HttpResponse(json.dumps({'status': status, 'body': None}))
+    except Exception:
+        status = 2
+        return HttpResponse(json.dumps({'status': status, 'body': None}))
+    return HttpResponse(json.dumps({'status': status, 'body': {'content': content, 'photo': photo}}))
+
 
