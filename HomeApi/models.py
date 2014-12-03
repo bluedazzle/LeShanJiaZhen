@@ -121,6 +121,8 @@ class Block(models.Model):
     area_admin = models.ForeignKey(HomeAdmin, null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
+    lat = models.FloatField(null=True)
+    lng = models.FloatField(null=True)
 
     def __unicode__(self):
         return self.area_name
