@@ -64,6 +64,7 @@ def post_appointment(request):
         return HttpResponse(json.dumps({'status': status, 'body': None}))
     return HttpResponse(json.dumps({'status': status, 'body': {'pic_url': pic_url}}))
 
+
 @csrf_exempt
 def pull_advertisement(request):
     try:
