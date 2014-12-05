@@ -1,5 +1,15 @@
 {% extends 'base.html' %}
 {% block define %}
+{% if fault0 %}
+    <div class="alert alert-danger" role="alert" style="text-align: center;height: 50px;margin-top: 0">
+     <strong>用户已存在</strong>
+    </div>
+{% endif %}
+{% if fault1 %}
+    <div class="alert alert-danger" role="alert" style="text-align: center;height: 50px;margin-top: 0">
+     <strong>验证码错误</strong>
+    </div>
+{% endif %}
 <div class="container" style="padding-right: 15%;padding-top: 5%">
     <div class="col-md-4 col-lg-4">
         <img src="/img/icons/png/Mail.png">
@@ -28,20 +38,23 @@
             <span class="input-group-addon" style="min-width: 80px;height: 42px;">工号</span>
             <input type="text" class="form-control" name="work_num" id="work_num" placeholder="请输入工作号" />
         </div>
-        <div class="input-group" style="margin-top: 3%">
-          <span class="input-group-addon" style="min-width: 80px">地区</span>
-          <select id="area" class="form-control select" name="area" style="border:2px solid #1abc9c ;height: 42px;">
-                  <option value="0">成都</option>
-                  <option value="1">乐山</option>
-                  <option value="2">遂宁</option>
+        <div class="input-group" style="margin-top: 3%;">
+          <span class="input-group-addon" style="min-width: 80px;">地区</span>
+          <select id="area" name="area" class="form-control select select-primary select-block mbl" style="width: 100%">
+              <option value="0" selected>成都</option>
+              <option value="1">乐山</option>
+              <option value="2">遂宁</option>
           </select>
-      </div>
+            <script>
+                $("#area").select2({dropdownCssClass: 'dropdown-inverse'});
+            </script>
+        </div>
       </form>
         <button class="btn btn-success btn-large btn-block" id="register" style="margin-top: 5%">注册</button>
-        <a role="button" class="btn btn-primary btn-large btn-block" href="login_in" style="margin-top: 1%">返回</a>
+        <a role="button" class="btn btn-default btn-large btn-block" href="login_in" style="margin-top: 1%">返回</a>
       </div>
       <div class="col-md-2 col-lg-2" style="margin-top: 9.5%;padding-left: 0">
-         <button id="verify" class="btn btn-primary btn-sm">获取验证码</button>
+         <button id="get_verify" class="btn btn-primary btn-sm">获取验证码</button>
       </div>
     </div>
 
@@ -52,13 +65,13 @@
       var count;
       var countdown;
       function verify_count(){
-          $('#verify').addClass("disabled");
-          $('#verify').text('请等待'+count+"秒");
+          $('#get_verify').addClass("disabled");
+          $('#get_verify').text('请等待'+count+"秒");
           if(count <= 0){
               clearInterval(countdown);
               localStorage.removeItem('verify_count');
-              $('#verify').removeClass("disabled");
-              $('#verify').text("获取验证码");
+              $('#get_verify').removeClass("disabled");
+              $('#get_verify').text("获取验证码");
           }
           count--;
       }
@@ -67,18 +80,40 @@
           var past_time = parseInt(localStorage['verify_count']);
           count = parseInt(30-(now_time-past_time)/1000);
           if(count > 0){
-               $('#verify').addClass("disabled");
-               $('#verify').text('请等待'+count+"秒");
+               $('#get_verify').addClass("disabled");
+               $('#get_verify').text('请等待'+count+"秒");
                countdown = setInterval(verify_count, 1000);
           }
       }
-      $('#verify').click(function(){
-          count = 30;
-          localStorage['verify_count'] = new Date().getTime();
-          $('#verify').addClass("disabled");
-          $('#verify').text('请等待'+count+"秒");
-          count--;
-          countdown = setInterval(verify_count, 1000);
+      $('#get_verify').click(function(){
+          if($('#phone').val().length==11){
+              $('#get_verify').addClass("disabled");
+              count = 30;
+              localStorage['verify_count'] = new Date().getTime();
+              var message = {'phone': $('#phone').val(),
+                             'csrfmiddlewaretoken': getCookie('csrftoken')};
+              $.ajax({
+                  url:'register_verify', //后台处理程序
+                  type:'post',         //数据发送方式
+                  dataType:'json',     //接受数据格式
+                  data:message,        //要传递的数据
+                  success:function(data){
+                      if(data == "false"){
+                          $("#get_verify").val("获取验证码").removeClass("disabled");
+                          alert("手机已被注册")
+                      }
+                      else{
+                          $('#get_verify').text('请等待'+count+"秒");
+                          count--;
+                          countdown = setInterval(verify_count, 1000);
+                          }
+                      }
+              });
+
+          }
+          else{
+               alert("请输入有效的电话号码！")
+          }
       })
   })
 </script>
@@ -91,6 +126,6 @@
        else{
            alert('输入信息有误！')
        }
-   })
+   });
 </script>
 {% endblock %}

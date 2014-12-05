@@ -10,6 +10,7 @@
     <script src="/js/vendor/jquery.min.js"></script>
     <script src="/js/vendor/bootstrap.min.js"></script>
     <script src="/js/flat-ui.min.js"></script>
+    <script src="/js/detail.js"></script>
 </head>
 <body style="font-family:microsoft YaHei;">
 <ul class="demo-sidebar nav nav-pills nav-stacked col-md-2 col-lg-2" style="border-right:2px solid rgba(255,255,255,0.14);max-width: 220px">
@@ -28,7 +29,7 @@
       <li style="margin-top: 20%" id="new">
           <a href="operate_new">
               <span class="glyphicon glyphicon-earphone" style="margin-right: 3%"></span>
-              未受理预约
+              未受理预约<span class="badge" id="appoint_new_count" style="margin-left: 10px;"></span>
           </a>
       </li>
       <li id="get">
@@ -76,12 +77,44 @@
     <p id="page_title" class="navbar-brand" style="padding-bottom: 0;margin-bottom: 0;color: #ffffff"></p>
   </div>
 </nav><!-- /navbar -->
-<div class="col-md-10 col-lg-10" style="float: right;">
-    <div class="alert alert-warning" role="alert" style="text-align: center;height: 50px;margin-top: 5px">
-     <strong>公告!</strong> 这是一个公告！这是一个公告！这是一个公告！
-    </div>
+<div class="col-md-10 col-lg-10" style="padding-top:1%;float: right;">
     {% block define %}
     {% endblock %}
 </div>
+<script>
+    $(document).ready(function(){
+          $.ajax({
+                        type: 'GET',
+                        url: 'get_new_appointment_count',
+                        data: '',
+                        success: function(data){
+                            if(data != '0'){
+                                $('#appoint_new_count').text(data)
+                            }
+                            else{
+                                $('#appoint_new_count').text('')
+                            }
+                        },
+                        dataType: 'json'
+                    });
+          function fresh_count(){
+                    $.ajax({
+                        type: 'GET',
+                        url: 'get_new_appointment_count',
+                        data: '',
+                        success: function(data){
+                            if(data != '0'){
+                                $('#appoint_new_count').text(data)
+                            }
+                            else{
+                                $('#appoint_new_count').text('')
+                            }
+                        },
+                        dataType: 'json'
+                    });
+                }
+          var countdown = setInterval(fresh_count, 5000);
+       })
+</script>
 </body>
 </html>

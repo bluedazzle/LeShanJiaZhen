@@ -55,6 +55,9 @@ ROOT_URLCONF = 'homemaking.urls'
 
 WSGI_APPLICATION = 'homemaking.wsgi.application'
 
+SESSION_ENGINE="django.contrib.sessions.backends.file"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
