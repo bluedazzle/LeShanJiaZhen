@@ -110,14 +110,14 @@ class HomeItem(models.Model):
     def __unicode__(self):
         return self.title
 
-class Advertisment(models.Model):
+class Advertisement(models.Model):
     content = models.CharField(max_length=500, blank=True, null=True)
     photo = models.CharField(max_length=50, blank=True, null=True)
     create_time = models.DateTimeField(auto_now_add=True)
     is_new = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.create_time
+        return unicode(self.create_time)
 
 class Block(models.Model):
     area_name = models.CharField(max_length=10)
@@ -126,6 +126,8 @@ class Block(models.Model):
     area_admin = models.ForeignKey(HomeAdmin, null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
+    lat = models.FloatField(null=True)
+    lng = models.FloatField(null=True)
 
     def __unicode__(self):
         return self.area_name
