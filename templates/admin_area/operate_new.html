@@ -1,40 +1,115 @@
 {% extends 'admin_area/base.html' %}
 {% block define %}
-<div class="col-md-12 col-lg-12">
-  <button class="btn btn-large btn-default" style="float: right;margin-right: 3%">
+  {% if count > 0 %}
+<div class="col-md-12 col-lg-12" style="padding-right: 10%;padding-left: 10%">
+  共有{{ count }}个未受理预约
+
+  <button class="btn btn-large btn-default" style="float: right;margin-right: 3%" onclick="cancel_appointment_all_n()">
    一键取消所有预约
   </button>
-  <button class="btn btn-large btn-primary" style="float: right;margin-right: 3%">
+  <button class="btn btn-large btn-primary" style="float: right;margin-right: 3%" onclick="get_all_appointment()">
    一键受理所有预约
   </button>
 </div>
-<div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
-{% for i in items %}
+   {% else %}
+<div class="col-md-12 col-lg-12" style="padding-right: 10%;padding-left: 10%">
+   <h6 style="margin-left: 38%">暂时没有预约</h6>
+</div>
+   {% endif %}
+
+<div class="col-md-10 col-lg-10" style="float: right;margin-top: 2%;margin-right: 10%">
+{% for item in items %}
    <div class="panel panel-primary">
        <div class="panel-heading">
-           预约号：10000001
-           <span style="margin-left: 5%">地址：电子科技大学清水河校区本科18栋616寝室</span>
+           预约号：{{ item.id }}
+           <span style="margin-left: 5%">联系方式：{{ item.consumer }}</span>
+           <span style="margin-left: 5%">地址：{{ item.address }}</span>
        </div>
        <div class="panel-body">
-           <div class="col-md-6 col-lg-6">姓名：张先生</div>
-           <div class="col-md-6 col-lg-6">联系方式：12345678901</div>
-           <div class="col-md-6 col-lg-6">报修项目：水 水管坏了</div>
-           <div class="col-md-6 col-lg-6">报修照片：</div>
-           <div class="col-md-12 col-lg-12">
-               <button class="btn btn-large btn-default" style="float: right;margin-right: 3%">
+           <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
+           <div class="col-md-12 col-lg-12">时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
+           <div class="col-md-6 col-lg-6">报修项目：{{ item.content }}
+               {% if item.photo %}
+                   <strong style="color: #27ad60">(有照片)</strong>
+               {% endif %}
+           </div>
+           <div class="col-md-6 col-lg-6">
+               <button class="btn btn-large btn-default" style="float: right;margin-right: 3%" onclick="cancel_appointment_n('{{ item.id }}')">
                  取消预约
                </button>
-               <button class="btn btn-large btn-info" style="float: right;margin-right: 3%">
+               <button class="btn btn-large btn-info" style="float: right;margin-right: 3%" onclick="get_appointment('{{ item.id }}')">
                  接受预约
                </button>
+               {% if item.photo %}
+                   <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
+                 查看照片
+               </button>
+               <div class="modal fade bs-example-modal-lg" style="padding-top: 10%;padding-left: 10%" id="modal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                   <div class="modal-dialog modal-lg">
+                       <div class="modal-content text-center" style="padding: 2%">
+{#                             <div class="row">#}
+{#                                 <div class="col-md-4 col-lg-4">#}
+{#                                     <a href="/img/icons/png/Toilet-Paper.png" class="thumbnail">#}
+{#                                         <img src="/img/icons/png/Toilet-Paper.png">#}
+{#                                     </a>#}
+{#                                 </div>#}
+{#                             </div>#}
+                           <img src="/img/icons/png/Toilet-Paper.png">
+                       </div>
+                   </div>
+               </div>
+               <script>
+               $('#find_detail{{ item.id }}').click(function(){
+                   $('#modal{{ item.id }}').modal('toggle')
+               })
+           </script>
+               {% endif %}
            </div>
        </div>
    </div>
 {% endfor %}
+{% if items.has_previous or items.next %}
+  <div class="text-right" style="margin-right: 4%">
+      <div class="pagination pagination-success">
+          <ul>
+              {% if items.has_previous %}
+            <li><a class="btn btn-info previous" href="?page={{ items.previous_page_number }}">上一页</a></li>
+             {% endif %}
+             {% for page in items.paginator.page_range %}
+               {% if page = items.number %}
+            <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+               {% else %}
+            <li><a href="?page={{ page }}">{{ page }}</a></li>
+               {% endif %}
+            {% endfor %}
+            {% if items.has_next %}
+             <li><a class="btn btn-info next" href="?page={{ items.next_page_number }}">下一页</a></li>
+
+            {% endif %}
+          </ul>
+      </div>
+{% endif %}
+  </div>
 </div>
     <script>
        $(document).ready(function(){
-           $('#new').addClass("active")
+           $('#page_title').text('未受理预约');
+           $('#new').addClass("active");
+           function fresh(){
+                    $.ajax({
+                        type: 'GET',
+                        url: 'get_new_appointment',
+                        data: '',
+                        success: function(data){
+                            if(data == 'T'){
+                                clearInterval(countdown);
+                                window.location.href = 'operate_new'
+                            }
+                        },
+                        dataType: 'json'
+                    });
+                }
+                var countdown = setInterval(fresh, 8000);
        })
     </script>
 {% endblock %}

@@ -3,7 +3,7 @@ import simplejson
 import datetime
 import string
 from HomeApi.yunpian import *
-from HomeApi.models import
+from HomeApi.models import *
 
 def createverfiycode(phone, count=6):
     result = {}
@@ -32,14 +32,14 @@ def sendverifycode(content, phone):
     print result
     if str(msg) == '0':
         if result is not None:
-            result.verify_code = content
+            result.verify = content
             result.update_time = datetime.datetime.now()
             result.save()
         else:
             new_ver = PhoneVerify()
             new_ver.phone = phone
             new_ver.update_time = datetime.datetime.now()
-            new_ver.verify_code = content
+            new_ver.verify = content
             new_ver.save()
         return True
     else:

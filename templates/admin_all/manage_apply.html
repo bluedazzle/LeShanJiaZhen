@@ -1,0 +1,80 @@
+{% extends 'admin_all/base.html' %}
+{% block define %}
+    <script>
+       $(document).ready(function(){
+           $('#manage_apply').addClass('active');
+           $('#page_title').text('审核申请')
+       })
+    </script>
+    <div class="col-md-12 col-lg-12" style="padding-left: 10%;padding-right: 10%;padding-top: 5%">
+       <table class="table">
+           <thead>
+             <tr>
+                 <h6 style="padding-bottom: 1%">
+                 申请列表
+                     <button class="btn btn-default" style="float: right;margin-left: 2%;margin-right: 1%">拒绝申请</button>
+                     <button class="btn btn-primary" style="float: right;">通过审核</button>
+
+                 </h6>
+             </tr>
+           </thead>
+           <tbody>
+              <tr style="background-color: #3498db; color: #ffffff">
+                  <th>申请类型</th>
+                  <th>申请信息</th>
+                  <th>提交时间</th>
+                  <th>姓名</th>
+                  <th>电话</th>
+                  <th>工号</th>
+                  <th style="max-width: 20px">
+                        <input type="checkbox" value="0" id="checkbox_all">
+                      <script>
+                          $('#checkbox_all').click(function(){
+                              if($(this).val() == '0'){
+                                  $(this).val('1');
+                                  var checkbox_id;
+                                  for(var i = 0; i <= 9; i++){
+                                      checkbox_id = 'checkbox' + i;
+                                      $('#'+checkbox_id).val('1');
+                                      document.getElementById(checkbox_id).checked = true;
+                                  }
+                              }
+                              else{
+                                  $(this).val('0');
+                                  for(var i = 0; i <= 9; i++){
+                                      checkbox_id = 'checkbox' + i;
+                                      $('#'+checkbox_id).val('0');
+                                      document.getElementById(checkbox_id).checked = false;
+                                  }
+                              }
+                          })
+                      </script>
+                  </th>
+              </tr>
+              {% for i in items %}
+              <tr>
+                  <td>修改管理地区</td>
+                  <td>乐山>>>>成都</td>
+                  <td>2012-12-01 17：32:44</td>
+                  <td>张全蛋</td>
+                  <td>12345678901</td>
+                  <td>32423423</td>
+                  <td style="max-width: 20px">
+                     <input type="checkbox" value="0" name='checkbox' id="checkbox{{ i }}">
+                  </td>
+                  <script>
+                     $('#checkbox{{ i }}').click(function(){
+                         if($(this).val() == '0'){
+                             $(this).val('1');
+                         }
+                         else{
+                             $(this).val('0')
+                         }
+                     })
+                  </script>
+              </tr>
+              {% endfor %}
+           </tbody>
+       </table>
+    </div>
+{% endblock %}

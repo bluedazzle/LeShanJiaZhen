@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 import hashlib
 # Create your models here.
+
+
 class HomeAdminManager(BaseUserManager):
     def create_user(self, email, phone, passwd=None):
         if not email:
@@ -30,6 +32,7 @@ class HomeAdminManager(BaseUserManager):
 
 class HomeAdmin(AbstractBaseUser):
     username = models.CharField(max_length=50)
+    nick = models.CharField(max_length=50, default='')
     log_time = models.DateTimeField(max_length=20)
     reg_time = models.DateTimeField(auto_now_add=True)
     type = models.IntegerField(max_length=2, default=1)
@@ -75,6 +78,8 @@ class Appointment(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(max_length=2)
     photo = models.CharField(max_length=100, blank=True, null=True)
+    address = models.CharField(max_length=100, default='')
+    name = models.CharField(max_length=10, default='')
     process_by = models.ForeignKey(HomeAdmin, blank=True, null=True)
     consumer = models.ForeignKey(Consumer)
 
@@ -135,12 +140,10 @@ class Notice(models.Model):
         return self.content
 
 class PhoneVerify(models.Model):
-    phone = models.IntegerField(max_length=20)
+    phone = models.CharField(max_length=11)
     verify = models.IntegerField(max_length=10)
     update_time = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return self.phone
-
-
 

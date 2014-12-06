@@ -1,0 +1,121 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+    <script type="text/javascript" src="/js/mine.js" charset="UTF-8"></script>
+    <script>
+      $(document).ready(function(){
+          $('#page_title').text('取消的预约');
+          $('#cancel').addClass('active')
+      });
+    </script>
+    <div class="col-md-12 col-lg-12 text-left">
+    {% if flag %}
+       {% if count > 0 %}
+           <h6>在{{ date_start }}到{{ date_end }}中的预约，共有{{ count }}个被取消</h6>
+       {% else %}
+           <h6>在{{ date_start }}到{{ date_end }}中的预约没有被取消</h6>
+       {% endif %}
+    {% endif %}
+    {% if flag0 %}
+       {% if count > 0 %}
+           <h6>当天的预约有{{ count }}个被取消</h6>
+       {% else %}
+           <h6>当天的预约没有被取消</h6>
+       {% endif %}
+    {% endif %}
+    </div>
+    <div class="col-md-12 col-lg-12" style="margin-bottom: 1%">
+      <button class="btn btn-primary" style="float: right;margin-right: 10%">
+          数据导出
+      </button>
+      <div style="float: right;margin-left: 2%;margin-right: 2%">
+          <button class="btn btn-success" id="search">查询</button>
+      </div>
+        <form method="get" action="operate_cancel" id="date_form">
+      <div class=" input-group has-success" style="float: right;width: 30%;max-width: 300px" >
+         <span class="input-group-addon">截止日期：</span>
+         <input type="text" id="date_end" name="date_end" class="form-control" style="margin-right: 10%" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
+      </div>
+      <div class=" input-group has-success" style="float: right;margin-right: 1%;width: 30%;max-width: 300px">
+         <span class="input-group-addon">起始日期：</span>
+         <input type="text" id="date_start" name="date_start" class="form-control" style="margin-right: 10%" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
+      </div>
+         </form>
+      <script>
+          $('#search').click(function(){
+              if($('#date_start').val() && $('#date_end').val() && $('#date_start').val() <= $('#date_end').val()){
+                  $('#date_form').submit()
+              }
+              else{
+                  alert("请选择正确的查询时间段！")
+              }
+          })
+      </script>
+    </div>
+    <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
+{% for item in items %}
+   <div class="panel panel-default">
+       <div class="panel-heading" style="background-color: #bdc3c7;">
+           预约号：{{ item.id }}
+           <span style="margin-left: 5%">联系方式：{{ item.consumer }}</span>
+           <span style="margin-left: 5%">地址：{{ item.address }}</span>
+       </div>
+       <div class="panel-body">
+           <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
+           <div class="col-md-12 col-lg-12">时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
+           <div class="col-md-6 col-lg-6">报修项目：{{ item.content }}
+               {% if item.photo %}
+                   <strong style="color: #27ad60">(有照片)</strong>
+               {% endif %}
+           </div>
+           <div class="col-md-6 col-lg-6">
+               {% if item.photo %}
+                   <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
+                 查看照片
+               </button>
+               <div class="modal fade bs-example-modal-lg" style="padding-top: 10%;padding-left: 10%" id="modal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                   <div class="modal-dialog modal-lg">
+                       <div class="modal-content text-center" style="padding: 2%">
+{#                             <div class="row">#}
+{#                                 <div class="col-md-4 col-lg-4">#}
+{#                                     <a href="/img/icons/png/Toilet-Paper.png" class="thumbnail">#}
+{#                                         <img src="/img/icons/png/Toilet-Paper.png">#}
+{#                                     </a>#}
+{#                                 </div>#}
+{#                             </div>#}
+                           <img src="/img/icons/png/Toilet-Paper.png">
+                       </div>
+                   </div>
+               </div>
+               <script>
+               $('#find_detail{{ item.id }}').click(function(){
+                   $('#modal{{ item.id }}').modal('toggle')
+               })
+           </script>
+               {% endif %}
+           </div>
+       </div>
+   </div>
+{% endfor %}
+{% if items.has_previous or items.has_next %}
+  <div class="text-right" style="margin-right: 4%">
+      <div class="pagination pagination-success">
+          <ul>
+              {% if items.has_previous %}
+            <li><a class="btn btn-info previous" href="?page={{ items.previous_page_number }}">上一页</a></li>
+             {% endif %}
+             {% for page in items.paginator.page_range %}
+               {% if page = items.number %}
+            <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+               {% else %}
+            <li><a href="?page={{ page }}">{{ page }}</a></li>
+               {% endif %}
+            {% endfor %}
+            {% if items.has_next %}
+             <li><a class="btn btn-info next" href="?page={{ items.next_page_number }}">下一页</a></li>
+
+            {% endif %}
+          </ul>
+      </div>
+{% endif %}
+</div>
+{% endblock %}

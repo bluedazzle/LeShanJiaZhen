@@ -1,0 +1,123 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+    <script>
+      $(document).ready(function(){
+          $('#page_title').text('个人信息');
+          $('#user_mes').addClass('active')
+      })
+    </script>
+    <div class="col-md-12 col-lg-12" style="padding-left: 5%;padding-right: 10%;padding-top: 2%">
+     <div class="panel panel-default">
+         <div class="panel-heading text-center" style="background-color: #1abc9c;color: #ffffff">基本信息</div>
+         <div class="panel-body">
+          <div class="col-md-5 col-lg-5 text-right">
+              姓名：<br/>
+              手机号：<br/>
+              管理地区：<br/>
+              工号：<br/>
+          </div>
+          <div class="col-md-5 col-lg-5 text-left">
+              王小帅<br/>
+              12345678901<br/>
+              成都<br/>
+              123456654321<br/>
+          </div>
+         </div>
+     </div>
+    </div>
+    <div class="col-md-12 col-lg-12" style="padding-left: 5%;padding-right: 10%;padding-top: 2%">
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-info col-md-5 col-lg-5" style="padding:0;margin: 0;float: left">
+                <div class="panel-heading text-center" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            修改地区
+                        </a>
+                    </h4>
+                </div>
+               <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                  <div class="panel-body" style="padding-left: 0;padding-right: 15%;">
+                      <div class="col-md-3 col-lg-3 text-right" style="padding-right: 0">
+                          <p>密码：</p>
+                          <p>地区：</p>
+                      </div>
+                      <div class="col-md-9 col-lg-9" style="padding-left: 0">
+                          <form method="post" action="change_area" id="c_a_mes">
+                              {% csrf_token %}
+                          <input type="text" name="password_1" class="form-control input-sm">
+                          <select id="select1" name="area" class="form-control select select-primary select-block mbl" style="margin-top: 3%;width: 100%">
+                              <option value="0" selected>成都</option>
+                              <option value="1">乐山</option>
+                              <option value="2">遂宁</option>
+                          </select>
+                          </form>
+                      </div>
+                      <script>
+                          $("#select1").select2({dropdownCssClass: 'dropdown-inverse'});
+                      </script>
+                      <div class="col-md-12 col-lg-12" style="padding-left: 25%;padding-right: 5%">
+                          <button class="btn btn-success btn-large btn-block" id="c_a">提交</button>
+                      </div>
+                      <script>
+                          $("#c_a").click(function(){
+                              if($('#password_1').val() && ('#select1').val()){
+                                  $('#c_a_mes').submit()
+                              }
+                              else{
+                                  alert("请完善信息！")
+                              }
+                          })
+                      </script>
+                  </div>
+               </div>
+            </div>
+            <div class="panel panel-info col-md-5 col-lg-5" style="padding:0;margin: 0;float: right">
+                <div class="panel-heading text-center" role="tab" id="headingTwo">
+                    <h4 class="panel-title">
+                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                             修改密码
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                    <div class="panel-body" style="padding-left: 0;padding-right: 15%">
+                        <div class="col-md-5 col-lg-5 text-right" style="padding-right: 0">
+                          <p>旧密码：</p>
+                          <p>新密码：</p>
+                          <p>密码确认：</p>
+                      </div>
+                      <div class="col-md-7 col-lg-7" style="padding-left: 0">
+                          <form method="post" action="c_p_mes">
+                              {% csrf_token %}
+                          <input id="password" name="password" type="text" style="margin-top: 1%" class="form-control input-sm">
+                          <input id="new_password" name="new_password" type="text" style="margin-top: 4%" class="form-control input-sm">
+                          <input id="password_again" name="password_again" type="text" style="margin-top: 4%" class="form-control input-sm">
+                          </form>
+                      </div>
+                      <div class="col-md-12 col-lg-12" style="padding-left: 42%;padding-right: 4%">
+                          <button id="c_p" class="btn btn-success btn-large btn-block ">提交</button>
+                      </div>
+                        <script>
+                            $('#c_p').click(function(){
+                                if($('#password').val() && $('#new_password').val() && ('#password_again').val()){
+                                    if($('#password').val()==$('#new_password')){
+                                        alert("新旧密码不能一致")
+                                    }
+                                    if($('#new_password').val()==$('#password_again').val()){
+                                        $('#c_p_mes').submit()
+                                    }
+                                    else{
+                                        alert("两次密码输入不一致")
+                                    }
+                                }
+                            })
+                        </script>
+
+                    </div>
+                </div>
+            </div>
+
+         </div>
+
+    </div>
+{% endblock %}

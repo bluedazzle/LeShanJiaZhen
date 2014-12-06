@@ -7,14 +7,14 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('HomeApi', '0001_initial'),
+        ('HomeApi', '0002_auto_20141202_0841'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='homeitem',
-            name='parent_item',
-            field=models.ForeignKey(blank=True, to='HomeApi.HomeItem_O', null=True),
+            model_name='homeadmin',
+            name='nick',
+            field=models.CharField(default=b'', max_length=50),
             preserve_default=True,
         ),
     ]

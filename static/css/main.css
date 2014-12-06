@@ -29,6 +29,21 @@
         background-color:  #ecf0f1;
         border-right:1px solid #bdc3c7;
 }
+.demo-sidebar0 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 10000;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        overflow: auto;
+        font-size: 16px;
+        line-height: 1.714;
+        list-style-type: none;
+        background-color:  #000000;
+        border-right:1px solid #bdc3c7;
+}
 li,
 li>a{
     color: #1abc9c;
@@ -44,4 +59,13 @@ li>a{
     background-color: #3498db;
     color: #ffffff;
     border-radius: 0;
+}
+
+.panel-finish>.panel-heading{
+    color: #ffffff;
+    background-color: #1abc9c;
+    border: 1px solid #1abc9c;
+}
+.panel-finish>.panel-body{
+    border: 1px solid #1abc9c;
 }
