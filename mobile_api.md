@@ -19,48 +19,51 @@
 ```
 POST /area_tel/
 ```
->###**Parameters**
->*   area_name(_Required_|string)——地区名
->###**Request**
->```
->{"area_name":"成都"}
->```
->###**Return**
->```
->{'status': 1, 'body': {'tel': 123456}}
->```
+###**Parameters**
+*   area_name(_Required_|string)——地区名
+###**Request**
+```
+{"area_name":"成都"}
+```
+###**Return**
+```
+{'status': 1, 'body': {'tel': 123456}}
+```
 
 ##**提交订单（含上传图片）**
 ```
 POST /mkappoint/
 ```
->###**Parameters**
->*   content(_Required_|string)——预约内容
->*   process_by(_Required_|string)——受理地区管理员
->*   consumer(_Required_|int)——客户（电话）
->*   file(_Optional_|file)——照片
->###**Request**
->```
->{"content":"水管坏了","process_by":"张全蛋","consumer":123456}
->```
->###**Return**
->```
->{'status': 1, 'body': {'pic_url': pic_url}}
->``
+###**Parameters**
+*   content(_Required_|string)——预约内容
+*   process_by(_Required_|string)——受理地区管理员
+*   consumer(_Required_|int)——客户（电话）
+*   file(_Optional_|file)——照片
+###**Request**
+```
+{"content":"水管坏了","process_by":"张全蛋","consumer":123456}
+```
+###**Return**
+```
+{'status': 1, 'body': {'pic_url': pic_url}}
+```
 
 ##**拉取广告**
 ```
 GET /getad/
 ```
->###**Return**
->```
->{'status': 1, 'body': {'content': '霸王防脱','photo':url}}
->```
+###**Return**
+```
+{'status': 1, 'body': {'content': '霸王防脱','photo':url}}
+```
 
 
 ##**刷新费用单详情**
 
 
+
+
+##**根据地理位置获取当前城市与最近服务点**
 
 
 根据地理位置获取当前城市
