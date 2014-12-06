@@ -7,14 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('HomeApi', '0002_auto_20141202_0841'),
+        ('HomeApi', '0001_initial'),
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='homeadmin',
-            name='nick',
-            field=models.CharField(default=b'', max_length=50),
-            preserve_default=True,
+            name='area',
+            field=models.ForeignKey(blank=True, to='HomeApi.Block', null=True),
         ),
     ]

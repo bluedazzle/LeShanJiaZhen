@@ -19,15 +19,28 @@
 <div class="container" style="padding-top: 5%;padding-left: 15%;padding-right: 15% ">
     <div class="col-md-12 col-lg-12 jumbotron" style="padding: 10%;">
       <div class="col-md-10 col-lg-10" style="padding-left: 18%">
+          <form method="post" action="login_in" id="login_mes">
+              {% csrf_token %}
         <div class="input-group">
             <span class="input-group-addon" style="min-width: 80px">用户名</span>
-            <input type="text" class="form-control" placeholder="请输入用户名" />
+            <input id="username" name="username" type="text" class="form-control" placeholder="请输入用户名" />
         </div>
         <div class="input-group" style="margin-top: 3%;">
             <span class="input-group-addon" style="min-width: 80px">密码</span>
-            <input type="text" class="form-control" placeholder="请输入密码" />
+            <input id="password" name="password" type="password" class="form-control" placeholder="请输入密码" />
         </div>
-        <button class="btn btn-success btn-large btn-block " style="margin-top: 5%">登入</button>
+           </form>
+        <button id="login" class="btn btn-success btn-large btn-block " style="margin-top: 5%">登入</button>
+          <script>
+              $('#login').click(function(){
+                  if($('#username').val() && $('#password').val()){
+                      $('#login_mes').submit()
+                  }
+                  else{
+                      $('#输入信息不能为空')
+                  }
+              })
+          </script>
       </div>
     </div>
 

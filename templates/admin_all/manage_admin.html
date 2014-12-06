@@ -12,10 +12,45 @@
              <tr>
                  <h6 style="padding-bottom: 1%">
                  地区管理员列表
-                     <button class="btn btn-default" style="float: right;margin-left: 2%;margin-right: 1%">删除</button>
-                     <button class="btn btn-primary" style="float: right;">发布公告</button>
-
+                     <button id="delete" class="btn btn-default" style="float: right;margin-left: 2%;margin-right: 1%">删除</button>
                  </h6>
+                 <script>
+                       $('#delete').click(function(){
+                           var s = 1;
+                           if( s == 2 {% for item in items %}|| $('#checkbox{{ item.id }}').val() == '1'{% endfor %}){
+                               var r = confirm("确定删除所选择的管理员吗？");
+                               if(r == true){
+                                   var admins = new Array();
+                                   {% for item in items %}
+                                       if($('#checkbox{{ item.id }}').val() == '1'){
+                                           admins.push({{ item.username }})
+                                       }
+                                   {% endfor %}
+                                   var message = {'admins': admins,
+                                                  'csrfmiddlewaretoken': getCookie('csrftoken')};
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'delete_admin',
+                                            data: message,
+                                            success: function (data) {
+                                                if (data == 'T') {
+                                                    alert("删除成功");
+                                                    window.location.href = "manage_admin"
+                                                }
+                                                else {
+                                                    alert("删除失败！")
+                                                }
+                                            },
+                                            dataType: 'json'
+                                        });
+
+                               }
+                           }
+                           else{
+                               alert("请选择管理员")
+                           }
+                       })
+                 </script>
              </tr>
            </thead>
            <tbody>
@@ -30,36 +65,33 @@
                           $('#checkbox_all').click(function(){
                               if($(this).val() == '0'){
                                   $(this).val('1');
-                                  var checkbox_id;
-                                  for(var i = 0; i <= 9; i++){
-                                      checkbox_id = 'checkbox' + i;
-                                      $('#'+checkbox_id).val('1');
-                                      document.getElementById(checkbox_id).checked = true;
-                                  }
+                                  {% for item in items %}
+                                      $('#checkbox{{ item.id }}').val('1');
+                                      document.getElementById('checkbox{{ item.id }}').checked = true;
+                                  {% endfor %}
                               }
                               else{
                                   $(this).val('0');
-                                  for(var i = 0; i <= 9; i++){
-                                      checkbox_id = 'checkbox' + i;
-                                      $('#'+checkbox_id).val('0');
-                                      document.getElementById(checkbox_id).checked = false;
-                                  }
+                                  {% for item in items %}
+                                      $('#checkbox{{ item.id }}').val('0');
+                                      document.getElementById('checkbox{{ item.id }}').checked = false;
+                                  {% endfor %}
                               }
                           })
                       </script>
                   </th>
               </tr>
-              {% for i in items %}
+              {% for item in items %}
               <tr>
-                  <td>成都</td>
-                  <td>张全蛋</td>
-                  <td>12345678901</td>
-                  <td>32423423</td>
+                  <td>{{ item.area }}</td>
+                  <td>{{ item.nick }}</td>
+                  <td>{{ item.username }}</td>
+                  <td>{{ item.work_num }}</td>
                   <td style="max-width: 20px">
-                     <input type="checkbox" value="0" name='checkbox' id="checkbox{{ i }}">
+                     <input type="checkbox" value="0" name='checkbox' id="checkbox{{ item.id }}">
                   </td>
                   <script>
-                     $('#checkbox{{ i }}').click(function(){
+                     $('#checkbox{{ item.id }}').click(function(){
                          if($(this).val() == '0'){
                              $(this).val('1');
                          }

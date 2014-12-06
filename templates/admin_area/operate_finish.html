@@ -10,7 +10,11 @@
     <div class="col-md-12 col-lg-12 text-left">
     {% if flag %}
        {% if count > 0 %}
+           {% if date_start == '2000-01-01' and date_end == '2999-11-11' %}
+           <h6>总共有{{ count }}个预约被完成</h6>
+            {% else %}
            <h6>在{{ date_start }}到{{ date_end }}中的预约，共有{{ count }}个被完成</h6>
+            {% endif %}
        {% else %}
            <h6>该时间的预约没有被完成</h6>
        {% endif %}
@@ -24,9 +28,9 @@
     {% endif %}
     </div>
     <div class="col-md-12 col-lg-12" style="margin-bottom: 1%">
-      <button class="btn btn-primary" style="float: right;margin-right: 10%">
-          数据导出
-      </button>
+      <a role="button" class="btn btn-success" style="float: right;margin-right: 10%" href="?date_start=2000-01-01&date_end=2999-11-11">
+          查询所有
+      </a>
       <div style="float: right;margin-left: 2%;margin-right: 2%">
           <button class="btn btn-success" id="search">查询</button>
       </div>
@@ -51,6 +55,12 @@
           })
       </script>
     </div>
+    <div class="col-md-12 col-lg-12" style="margin-bottom: 1%">
+      <div class="col-md-4 col-lg-4" style="float: right">
+          <button class="btn btn-primary" style="float: right;margin-right: 28.5%">数据导出</button>
+      </div>
+
+    </div>
     <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
 {% for item in items %}
    <div class="panel panel-success">
@@ -62,6 +72,9 @@
        <div class="panel-body">
            <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
            <div class="col-md-12 col-lg-12">时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
+               {% if item.process_by %}
+            <div class="col-md-12 col-lg-12">操作员：{{ item.process_by.nick }}</div>
+               {% endif %}
            <div class="col-md-6 col-lg-6">报修项目：{{ item.content }}
                {% if item.photo %}
                    <strong style="color: #27ad60">(有照片)</strong>

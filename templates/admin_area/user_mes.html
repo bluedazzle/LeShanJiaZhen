@@ -10,17 +10,17 @@
      <div class="panel panel-default">
          <div class="panel-heading text-center" style="background-color: #1abc9c;color: #ffffff">基本信息</div>
          <div class="panel-body">
-          <div class="col-md-5 col-lg-5 text-right">
+          <div class="col-md-6 col-lg-6 text-right">
               姓名：<br/>
               手机号：<br/>
               管理地区：<br/>
               工号：<br/>
           </div>
-          <div class="col-md-5 col-lg-5 text-left">
-              王小帅<br/>
-              12345678901<br/>
-              成都<br/>
-              123456654321<br/>
+          <div class="col-md-6 col-lg-6 text-left">
+              {{ user.nick }}<br/>
+              {{ user.username }}<br/>
+              {{ user.area }}<br/>
+              {{ user.work_num }}<br/>
           </div>
          </div>
      </div>
@@ -36,39 +36,67 @@
                     </h4>
                 </div>
                <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                       {% if not have_apply %}
                   <div class="panel-body" style="padding-left: 0;padding-right: 15%;">
                       <div class="col-md-3 col-lg-3 text-right" style="padding-right: 0">
                           <p>密码：</p>
                           <p>地区：</p>
                       </div>
                       <div class="col-md-9 col-lg-9" style="padding-left: 0">
-                          <form method="post" action="change_area" id="c_a_mes">
-                              {% csrf_token %}
-                          <input type="text" name="password_1" class="form-control input-sm">
+
+                          <input type="password" id="password_1" name="password_1" class="form-control input-sm">
                           <select id="select1" name="area" class="form-control select select-primary select-block mbl" style="margin-top: 3%;width: 100%">
-                              <option value="0" selected>成都</option>
-                              <option value="1">乐山</option>
-                              <option value="2">遂宁</option>
+                              <option value="0" selected>乐山</option>
+                              <option value="1">测试</option>
                           </select>
-                          </form>
+
                       </div>
                       <script>
                           $("#select1").select2({dropdownCssClass: 'dropdown-inverse'});
                       </script>
-                      <div class="col-md-12 col-lg-12" style="padding-left: 25%;padding-right: 5%">
+                      <div class="col-md-12 col-lg-12" style="padding-left: 25%;padding-right: 3%">
                           <button class="btn btn-success btn-large btn-block" id="c_a">提交</button>
                       </div>
                       <script>
                           $("#c_a").click(function(){
-                              if($('#password_1').val() && ('#select1').val()){
-                                  $('#c_a_mes').submit()
+                              if($('#password_1').val() && $('#select1').val()){
+                                  var message = {'password': $('#password_1').val(),
+                                                 'area': $('#select1').val(),
+                                                 'csrfmiddlewaretoken': getCookie('csrftoken')};
+                                  $.ajax({
+                                      type: 'POST',
+                                      url: 'change_area',
+                                      data: message,
+                                      success: function(data) {
+                                          if(data == 'T'){
+                                              alert("申请已提交！等待超级管理员审核");
+                                              window.location.href = "user_mes"
+                                          }
+                                          else if(data == 'F2'){
+                                              alert("地区不能与当前一致")
+                                          }
+                                          else if(data == 'F'){
+                                              alert("密码输入错误！")
+                                          }
+                                          else if(data == 'F1'){
+                                              alert("不能重复提交申请")
+                                          }
+                                      },
+                                      dataType: 'json'
+                                   });
                               }
+
                               else{
                                   alert("请完善信息！")
                               }
                           })
                       </script>
                   </div>
+                      {% else %}
+                  <div class="panel-body">
+                          <p class="text-center">您的申请还未通过批准</p>
+                  </div>
+                      {% endif %}
                </div>
             </div>
             <div class="panel panel-info col-md-5 col-lg-5" style="padding:0;margin: 0;float: right">
@@ -81,34 +109,54 @@
                 </div>
                 <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
                     <div class="panel-body" style="padding-left: 0;padding-right: 15%">
-                        <div class="col-md-5 col-lg-5 text-right" style="padding-right: 0">
+                        <div class="col-md-5 col-lg-5 text-right" style="padding-right: 0;">
                           <p>旧密码：</p>
                           <p>新密码：</p>
                           <p>密码确认：</p>
                       </div>
                       <div class="col-md-7 col-lg-7" style="padding-left: 0">
-                          <form method="post" action="c_p_mes">
-                              {% csrf_token %}
-                          <input id="password" name="password" type="text" style="margin-top: 1%" class="form-control input-sm">
-                          <input id="new_password" name="new_password" type="text" style="margin-top: 4%" class="form-control input-sm">
-                          <input id="password_again" name="password_again" type="text" style="margin-top: 4%" class="form-control input-sm">
-                          </form>
+                          <input id="password" name="password" type="password" style="margin-top: 1%" class="form-control input-sm">
+                          <input id="new_password" name="new_password" type="password" style="margin-top: 4%" class="form-control input-sm">
+                          <input id="password_again" name="password_again" type="password" style="margin-top: 4%" class="form-control input-sm">
                       </div>
-                      <div class="col-md-12 col-lg-12" style="padding-left: 42%;padding-right: 4%">
+                      <div class="col-md-12 col-lg-12" style="padding-left: 41%;padding-right: 3%;padding-top: 1%;">
                           <button id="c_p" class="btn btn-success btn-large btn-block ">提交</button>
                       </div>
                         <script>
-                            $('#c_p').click(function(){
-                                if($('#password').val() && $('#new_password').val() && ('#password_again').val()){
-                                    if($('#password').val()==$('#new_password')){
-                                        alert("新旧密码不能一致")
+                            $('#c_p').click(function() {
+                                if($('#password').val() && $('#new_password').val() && $('#password_again').val()){
+                                    if($('#password').val() == $('#new_password').val()) {
+                                        alert("新旧密码不能一致");
+                                        return false
                                     }
-                                    if($('#new_password').val()==$('#password_again').val()){
-                                        $('#c_p_mes').submit()
+                                    if($('#new_password').val() == $('#password_again').val()) {
+                                        var message = {'old_password': $('#password').val(),
+                                            'new_password': $('#new_password').val(),
+                                            'password_again': $('#password_again').val(),
+                                            'csrfmiddlewaretoken': getCookie('csrftoken')};
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'change_password',
+                                            data: message,
+                                            success: function (data) {
+                                                if (data == 'T') {
+                                                    alert("密码修改成功");
+                                                    window.location.href = "user_mes"
+                                                }
+                                                else {
+                                                    alert("密码输入错误！")
+                                                }
+                                            },
+                                            dataType: 'json'
+                                        });
                                     }
-                                    else{
+                                    else {
                                         alert("两次密码输入不一致")
                                     }
+                                }
+
+                                else {
+                                    alert("请完善信息！")
                                 }
                             })
                         </script>

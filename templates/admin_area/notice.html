@@ -1,0 +1,17 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+    <script>
+      $(document).ready(function(){
+          $('#page_title').text('通知公告');
+          $('#notice').addClass('active')
+      })
+    </script>
+    <div class="col-md-12 col-lg-12" style="padding-top: 5%;padding-left: 10%;padding-right: 10%">
+    {% for item in items %}
+      <div class="jumbotron">
+       <h6>{{ item.create_time | date:'Y-m-d' }}</h6>
+       <p style="margin-left: 5%">{{ item.content }}</p>
+      </div>
+    {% endfor %}
+    </div>
+{% endblock %}

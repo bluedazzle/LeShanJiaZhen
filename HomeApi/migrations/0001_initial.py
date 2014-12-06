@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Advertisment',
+            name='Advertisement',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('content', models.CharField(max_length=500, null=True, blank=True)),
@@ -32,6 +32,8 @@ class Migration(migrations.Migration):
                 ('create_time', models.DateTimeField(auto_now_add=True)),
                 ('status', models.IntegerField(max_length=2)),
                 ('photo', models.CharField(max_length=100, null=True, blank=True)),
+                ('address', models.CharField(default=b'', max_length=100)),
+                ('name', models.CharField(default=b'', max_length=10)),
             ],
             options={
             },
@@ -41,11 +43,14 @@ class Migration(migrations.Migration):
             name='Block',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('area_id', models.IntegerField(unique=True)),
                 ('area_name', models.CharField(max_length=10)),
-                ('area_tel', models.IntegerField(max_length=20)),
+                ('area_tel', models.CharField(max_length=20)),
                 ('area_info', models.CharField(max_length=1000, null=True, blank=True)),
                 ('create_time', models.DateTimeField(auto_now_add=True)),
                 ('update_time', models.DateTimeField(auto_now=True)),
+                ('lat', models.FloatField(null=True)),
+                ('lng', models.FloatField(null=True)),
             ],
             options={
             },
@@ -70,12 +75,13 @@ class Migration(migrations.Migration):
                 ('password', models.CharField(max_length=128, verbose_name='password')),
                 ('last_login', models.DateTimeField(default=django.utils.timezone.now, verbose_name='last login')),
                 ('username', models.CharField(max_length=50)),
+                ('nick', models.CharField(default=b'', max_length=50)),
                 ('log_time', models.DateTimeField(max_length=20)),
                 ('reg_time', models.DateTimeField(auto_now_add=True)),
                 ('type', models.IntegerField(default=1, max_length=2)),
                 ('verify', models.BooleanField(default=False)),
                 ('work_num', models.CharField(max_length=50, null=True, blank=True)),
-                ('area', models.CharField(max_length=20)),
+                ('area', models.ForeignKey(to='HomeApi.Block')),
             ],
             options={
             },
@@ -119,7 +125,7 @@ class Migration(migrations.Migration):
             name='Notice',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('content', models.CharField(max_length=100)),
+                ('content', models.TextField()),
                 ('create_time', models.DateTimeField(auto_now_add=True)),
             ],
             options={
@@ -130,7 +136,7 @@ class Migration(migrations.Migration):
             name='PhoneVerify',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('phone', models.IntegerField(max_length=20)),
+                ('phone', models.CharField(max_length=11)),
                 ('verify', models.IntegerField(max_length=10)),
                 ('update_time', models.DateTimeField(auto_now=True)),
             ],
@@ -151,9 +157,9 @@ class Migration(migrations.Migration):
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='block',
-            name='area_admin',
-            field=models.ForeignKey(blank=True, to='HomeApi.HomeAdmin', null=True),
+            model_name='appointment',
+            name='area',
+            field=models.ForeignKey(to='HomeApi.Block'),
             preserve_default=True,
         ),
         migrations.AddField(

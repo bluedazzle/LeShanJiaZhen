@@ -8,4 +8,5 @@ urlpatterns = patterns('',
                        url('^manage_admin$', manage_admin),
                        url('^manage_apply$', manage_apply),
                        url('^about$', about),
+                       url('^delete_admin$', delete_admin)
                        )

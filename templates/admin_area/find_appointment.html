@@ -1,0 +1,116 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+
+    <script>
+        $('#find_appointment').addClass('active')
+        $('#page_title').text('查询预约')
+    </script>
+    <div class="col-md-12 col-lg-12">
+       <div class="col-md-4 col-lg-4" style="margin-left: 25%">
+           <form method="post" action="find_appointment" id="phone_mes">
+               {% csrf_token %}
+             <input id="phone" name="phone" type="text" style="margin-top: 4%" placeholder="输入手机号"
+                    class="form-control input-sm" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                    onafterpaste="this.value=this.value.replace(/\D/g,'')">
+          </form>
+       </div>
+       <div class="col-md-5 col-lg-5">
+           <button id="p_number" class="btn btn-primary" style="margin-top: 2.5%">手机号查询</button>
+       </div>
+        <script>
+            $('#p_number').click(function(){
+                if($('#phone').val().length == 11){
+                    $('#phone_mes').submit()
+                }
+                else{
+                    alert("请输入正确的电话号码！")
+                }
+            })
+        </script>
+       <div class="col-md-4 col-lg-4" style="margin-left: 25%">
+           <form method="post" action="find_appointment" id="appointment_mes">
+               {% csrf_token %}
+             <input id="appointment" name="appointment" type="text" style="margin-top: 4%" placeholder="输入预约号"
+                    class="form-control input-sm" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                    onafterpaste="this.value=this.value.replace(/\D/g,'')">
+          </form>
+       </div>
+       <div class="col-md-5 col-lg-5">
+           <button id="a_number" class="btn btn-primary" style="margin-top: 2.5%">预约号查询</button>
+       </div>
+       <script>
+           $('#a_number').click(function(){
+               if($('#appointment').val()){
+                   $('#appointment_mes').submit()
+               }
+               else{
+                   alert("请输入正确的预约号")
+               }
+           })
+       </script>
+    </div>
+    {% if fault %}
+        <div class="col-md-12 col-lg-12">
+        <h6 style="margin-top: 3%;margin-left: 38%">没有相关的预约</h6>
+        </div>
+    {% endif %}
+   <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
+    {% for item in items %}
+        {% if item.status == 1 %}
+   <div class="panel panel-primary">
+       <div class="panel-heading">
+        {% elif item.status == 2 %}
+   <div class="panel panel-success">
+       <div class="panel-heading">
+        {% elif item.status == 3 %}
+   <div class="panel panel-success">
+       <div class="panel-heading" style="background-color: #1abc9c;color: #ffffff">
+        {% elif item.status == 4 %}
+   <div class="panel panel-default">
+       <div class="panel-heading" style="background-color: #bdc3c7;">
+        {% endif %}
+           预约号：{{ item.id }}
+           <span style="margin-left: 5%">联系方式：{{ item.consumer }}</span>
+           <span style="margin-left: 5%">地址：{{ item.address }}</span>
+       </div>
+       <div class="panel-body">
+       {% if item.status == 1 %}
+            <div class="col-md-12 col-lg-12">状态：未受理</div>
+        {% elif item.status == 2 %}
+            <div class="col-md-12 col-lg-12">状态：已接受</div>
+        {% elif item.status == 3 %}
+            <div class="col-md-12 col-lg-12">状态：已完成</div>
+        {% elif item.status == 4 %}
+            <div class="col-md-12 col-lg-12">状态：已取消</div>
+        {% endif %}
+           <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
+           <div class="col-md-12 col-lg-12">时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
+           <div class="col-md-6 col-lg-6">报修项目：{{ item.content }}
+               {% if item.photo %}
+                   <strong style="color: #27ad60">(有照片)</strong>
+               {% endif %}
+           </div>
+           <div class="col-md-6 col-lg-6">
+               {% if item.photo %}
+                   <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
+                 查看照片
+               </button>
+               <div class="modal fade bs-example-modal-lg" style="padding-top: 10%;padding-left: 10%" id="modal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                   <div class="modal-dialog modal-lg">
+                       <div class="modal-content text-center" style="padding: 2%">
+                           <img src="/img/icons/png/Toilet-Paper.png">
+                       </div>
+                   </div>
+               </div>
+               <script>
+               $('#find_detail{{ item.id }}').click(function(){
+                   $('#modal{{ item.id }}').modal('toggle')
+               })
+           </script>
+               {% endif %}
+           </div>
+       </div>
+   </div>
+{% endfor %}
+{% endblock %}
+
