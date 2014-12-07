@@ -27,7 +27,7 @@ def pull_block_tel(request):
 
 
 @csrf_exempt
-def post_appointment(request):
+def make_appointment(request):
     try:
         req = request.POST
         pic = request.FILES.get('file')

@@ -120,7 +120,7 @@ class Advertisement(models.Model):
         return unicode(self.create_time)
 
 class Block(models.Model):
-    area_id = models.CharField(max_length=3)
+    area_id = models.IntegerField(max_length=3)
     area_name = models.CharField(max_length=10)
     area_tel = models.IntegerField(max_length=20)
     area_info = models.CharField(max_length=1000, null=True, blank=True)
