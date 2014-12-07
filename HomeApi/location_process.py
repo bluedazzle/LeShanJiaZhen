@@ -72,6 +72,5 @@ def getTheNearestFromBaidu(longitude, latitude):
     return r
 
 
-s = getTheNearestFromBaidu(111,39)
-print s
+
 
