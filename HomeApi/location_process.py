@@ -1,8 +1,9 @@
 # -*- coding:utf8 -*-
+
 # from HomeApi.models import *
+#from math import *
 import requests
 import json
-from math import *
 
 
 # def get_nearest(lat, lng):
@@ -17,7 +18,7 @@ from math import *
 #     return nearest_point[0]
 
 
-def BaiduLocation2address(latitude, longitude):
+def BaiduLocation2Address(latitude, longitude):
     url = r'http://api.map.baidu.com/geocoder/v2/'
     ak = r'379b7404f384fa2c66a205200d6d291e'
     location = str(latitude)+','+str(longitude)
@@ -26,7 +27,7 @@ def BaiduLocation2address(latitude, longitude):
     return r.content
 
 
-def BaiduAddress2location(address):
+def BaiduAddress2Location(address):
     ak = r'379b7404f384fa2c66a205200d6d291e'
     url = r'http://api.map.baidu.com/geocoder/v2/'
     payload = {'ak': ak, 'address': address, 'output': 'json'}
@@ -65,13 +66,12 @@ def getTheNearestFromBaidu(longitude, latitude):
         payload = {'ak': ak, 'geotable_id': geotable_id, 'location': location,
                    'radius': radius, 'sortby': sortby, 'q': None
         }
-        city = ''
-        r = json.dumps({'nearest_point':json.loads(requests.get(url, params=payload).content)['contents'][0],
-                        'city': city})
+        r = json.dumps({'status': 1, 'body': {'nearest_point': json.loads(requests.get(url, params=payload).content)['contents'][0]}})
     except Exception:
-        return json.dumps({})
+        return json.dumps({'status': 2, 'body': None})
     return r
 
 
-
+s = getTheNearestFromBaidu(111,39)
+print s
 

@@ -7,13 +7,12 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('HomeApi', '0001_initial'),
+        ('HomeApi', '0002_homeitem_parent_item'),
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='phoneverify',
-            name='phone',
-            field=models.CharField(max_length=11),
+        migrations.RenameModel(
+            old_name='Advertisment',
+            new_name='Advertisement',
         ),
     ]
