@@ -47,7 +47,7 @@ def make_appointment(request):
                     raise NoneExistError
                 p_consumer = Consumer.objects.get(phone=consumer)
                 block = Block.objects.get(area_id=area_id)
-                appoint_status = 0
+                appoint_status = 1
                 p = Appointment(content=content, status=appoint_status)
                 p.area = block
                 p.address = address
@@ -108,7 +108,7 @@ def get_the_full_corresponding(request):
 
 @csrf_exempt
 def test_block(request):
-    try:
+    # try:
         req = json.loads(request.body)
         area_id = int(req['area_id'])
         area_tel = req['area_tel']
@@ -117,9 +117,9 @@ def test_block(request):
         area_info = req['area_info']
         status = add_block(area_id=area_id, area_tel=area_tel, area_name=area_name, area_address=area_address, area_info=area_info)
         return HttpResponse(json.dumps({'status': status, 'body': None}))
-    except Exception:
-        status = 2
-    return HttpResponse(json.dumps({'status': status, 'body': None}))
+    # except Exception:
+    #     status = 2
+    # return HttpResponse(json.dumps({'status': status, 'body': None}))
     # req = json.loads(request.body)
     # area_id = req['area_id']
     # status = del_block(area_id)

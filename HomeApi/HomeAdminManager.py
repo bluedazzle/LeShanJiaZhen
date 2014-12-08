@@ -4,7 +4,7 @@ from HomeApi.errorType import *
 from HomeApi.location_process import *
 
 
-def add_block(area_id, area_name, area_tel, area_info, area_admin, area_address):
+def add_block(area_id, area_name, area_tel, area_info, area_address):
     try:
         #判断该地区id和管理员是否存在
         if len(Block.objects.filter(area_id=area_id)) != 0:
@@ -55,7 +55,7 @@ def del_block(area_id):
     return status
 
 
-def change_block(area_id, area_name, area_tel, area_info, area_admin, area_address):
+def change_block(area_id, area_name, area_tel, area_info, area_address):
     try:
         #判断该地区id和地区管理员是否存在
         if len(Block.objects.filter(area_id=area_id)) == 0:
