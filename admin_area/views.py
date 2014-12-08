@@ -470,8 +470,8 @@ def change_area(request):
                 return HttpResponse(json.dumps('F2'), content_type="application/json")
 
             new_application = Application()
-            new_application.old_area_id = user.area.area_id
-            new_application.new_area_id = area_now.area_id
+            new_application.old_area = user.area.id
+            new_application.new_area = area_now.id
             new_application.apply_user = user
             new_application.save()
             return HttpResponse(json.dumps('T'), content_type="application/json")
@@ -479,21 +479,115 @@ def change_area(request):
         return HttpResponse(json.dumps('F3'), content_type="application/json")
 
 
-
 def notice(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
-    if request.method == 'GET':
-        notices = Notice.objects.order_by('-id').all()
-        notice = []
-        if notices.count() > 0:
-            request.session['notice_id'] = notices[0].id
-            for item in notices:
-                notice.append(item)
-                if len(notice) >= 5:
-                    break
+    if not request.session.get('username'):
+            return HttpResponseRedirect('login_in')
 
-        return render_to_response('admin_area/notice.html', {'items': notice})
+    if request.method == 'GET':
+        all_notice = Notice.objects.order_by('-id').all()
+        page_num = request.GET.get('page')
+        date_start = request.GET.get('date_start')
+        date_end = request.GET.get('date_end')
+        #检查是否是查询某段时间的操作
+        if date_start and date_end:
+            request.session['notice_date_start'] = date_start
+            request.session['notice_date_end'] = date_end
+        #查询首页
+        if not page_num:
+            #查看某段时间的公告
+            if date_start and date_end:
+                result = find_sometime_notices(1, date_start, date_end, all_notice)
+                all_notices = result['notices']
+                count = result['count']
+                return render_to_response('admin_area/notice.html',
+                                          {'items': all_notices,
+                                           'count': count,
+                                           'flag': 'T',
+                                           'date_start': date_start,
+                                           'date_end': date_end}, context_instance=RequestContext(request))
+            #查看所有公告
+            else:
+                if request.session.get('notice_date_start') and request.session.get('notice_date_end'):
+                    del request.session['notice_date_start']
+                    del request.session['notice_date_end']
+                request.session['notice_id'] = all_notice[0].id
+                result = find_all_notices(1, all_notice)
+                all_notices = result['notices']
+                count = result['count']
+                return render_to_response('admin_area/notice.html',
+                                          {'items': all_notices,
+                                           'count': count,
+                                           'flag0': 'T'}, context_instance=RequestContext(request))
+        #查询某一页
+        else:
+            #查询某段时间公告的某一页
+            if request.session.get('notice_date_start') and request.session.get('notice_date_end'):
+                date_start = request.session['notice_date_start']
+                date_end = request.session['notice_date_end']
+                result = find_sometime_notices(page_num, date_start, date_end, all_notice)
+                all_notices = result['notices']
+                count = result['count']
+                return render_to_response('admin_area/notice.html',
+                                          {'items': all_notices,
+                                           'count': count,
+                                           'flag': 'T',
+                                           'date_start': date_start,
+                                           'date_end': date_end}, context_instance=RequestContext(request))
+            #查询所有公告的某一页
+            else:
+                result = find_all_notices(page_num, all_notice)
+                all_notices = result['notices']
+                count = result['count']
+                return render_to_response('admin_area/notice.html',
+                                          {'items': all_notices,
+                                           'count': count,
+                                           'flag0': 'T'}, context_instance=RequestContext(request))
+
+
+def find_all_notices(page_num, all_notices):
+    notices = []
+    if all_notices.count() > 0:
+            for item in all_notices:
+                notices.append(item)
+
+    count = len(notices)
+    paginator = Paginator(notices, 5)
+    try:
+        notices = paginator.page(page_num)
+    except PageNotAnInteger:
+        notices = paginator.page(1)
+    except EmptyPage:
+        notices = paginator.page(paginator.num_pages)
+    except:
+        pass
+    return {'notices': notices, 'count': count}
+
+
+def find_sometime_notices(page_num, date_start, date_end, all_notices):
+    notices = []
+    if all_notices.count() > 0:
+        for item in all_notices:
+            it_date = str(item.create_time)[0:10]
+            date_start = str(date_start)
+            date_end = str(date_end)
+            if it_date >= date_start and it_date <= date_end:
+                notices.append(item)
+            else:
+                continue
+    count = len(notices)
+    paginator = Paginator(notices, 5)
+    try:
+        notices = paginator.page(page_num)
+    except PageNotAnInteger:
+        notices = paginator.page(1)
+    except EmptyPage:
+        notices = paginator.page(paginator.num_pages)
+    except:
+        pass
+
+    return {'notices': notices, 'count': count}
 
 
 def find_appointment(request):

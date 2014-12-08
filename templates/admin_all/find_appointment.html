@@ -31,7 +31,8 @@
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;float:right;padding-left: 0;margin-right: 26.7%">
           <span class="input-group-addon">地区</span>
           <select id="select1" name="area" class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0;">
-                  <option value="0">乐山</option>
+                  <option value="1">乐山</option>
+                  <option value="2">其他</option>
           </select>
       </div>
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;float:right;padding-left: 0;margin-right: 1%;">
@@ -68,10 +69,43 @@
     <div class="col-md-10 col-lg-10" style="float: right;margin-top: 2%;margin-right: 10%;margin-bottom: 2%">
       <div class="col-md-12 col-lg-12">
         <div class="col-md-2 col-lg-2"  style="float: right;margin-bottom: 2%">
-            <button class="btn btn-primary">数据导出</button>
+            <button id="out_data" class="btn btn-primary">数据导出</button>
       </div>
     </div>
     {% endif %}
+    {% if items %}
+      <script>
+          $('#out_data').click(function(){
+              {% if flag0 %}
+               var d = new Date();
+               var date_start = d.getYear()+"-"+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"-"+(d.getDate()<10?"0":"")+d.getDate();
+               var date_end = d.getYear()+"-"+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"-"+(d.getDate()<10?"0":"")+d.getDate();
+              {% else %}
+               var date_start = '{{ date_start }}';
+               var date_end = '{{ date_end }}';
+              {% endif %}
+              var message = {'status': {{ status }},
+                             'date_start': date_start,
+                             'date_end': date_end,
+                             'area': {{ area }},
+                             'csrfmiddlewaretoken': getCookie('csrftoken')};
+              $.ajax({
+                  type: 'POST',
+                  url: 'out_appointment',
+                  data: message,
+                  success: function (data) {
+                      if (data) {
+                          window.location.href = data
+                      }
+                      else {
+                          alert("导出失败！")
+                      }
+                  },
+                  dataType: 'json'
+              });
+          })
+      </script>
+        {% endif %}
    <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
 {% for item in items %}
    {% if item.status == 1 %}

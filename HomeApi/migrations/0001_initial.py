@@ -25,6 +25,18 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
+            name='Application',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('old_area_id', models.IntegerField()),
+                ('new_area_id', models.IntegerField()),
+                ('apply_time', models.DateTimeField(auto_now=True)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
             name='Appointment',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -81,7 +93,7 @@ class Migration(migrations.Migration):
                 ('type', models.IntegerField(default=1, max_length=2)),
                 ('verify', models.BooleanField(default=False)),
                 ('work_num', models.CharField(max_length=50, null=True, blank=True)),
-                ('area', models.ForeignKey(to='HomeApi.Block')),
+                ('area', models.ForeignKey(blank=True, to='HomeApi.Block', null=True)),
             ],
             options={
             },
@@ -172,6 +184,12 @@ class Migration(migrations.Migration):
             model_name='appointment',
             name='process_by',
             field=models.ForeignKey(blank=True, to='HomeApi.HomeAdmin', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='application',
+            name='apply_user',
+            field=models.ForeignKey(to='HomeApi.HomeAdmin'),
             preserve_default=True,
         ),
     ]

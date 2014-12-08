@@ -24,4 +24,5 @@ urlpatterns = patterns('',
     url(r'^img/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.IMG_DIR}),
     url(r'^js/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.JS_DIR}),
     url(r'^fonts/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.FONTS_DIR}),
+    url(r'^out_files/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.OUT_FILES_DIR}),
 )

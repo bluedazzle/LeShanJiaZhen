@@ -142,6 +142,7 @@ class Notice(models.Model):
     def __unicode__(self):
         return self.content
 
+
 class PhoneVerify(models.Model):
     phone = models.CharField(max_length=11)
     verify = models.IntegerField(max_length=10)
@@ -155,6 +156,7 @@ class Application(models.Model):
     old_area_id = models.IntegerField()
     new_area_id = models.IntegerField()
     apply_user = models.ForeignKey(HomeAdmin)
+    apply_time = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return unicode(self.id)

@@ -24,7 +24,7 @@
     {% endif %}
     </div>
     <div class="col-md-12 col-lg-12" style="margin-bottom: 1%">
-      <button class="btn btn-primary" style="float: right;margin-right: 10%">
+      <button id="out_data" class="btn btn-primary" style="float: right;margin-right: 10%">
           数据导出
       </button>
       <div style="float: right;margin-left: 2%;margin-right: 2%">
@@ -50,6 +50,42 @@
               }
           })
       </script>
+      {% if items %}
+      <script>
+          $('#out_data').click(function(){
+              {% if flag0 %}
+               var d = new Date();
+               var date_start = d.getFullYear()+"-"+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"-"+(d.getDate()<10?"0":"")+d.getDate();
+               var date_end = d.getFullYear()+"-"+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"-"+(d.getDate()<10?"0":"")+d.getDate();
+              {% else %}
+               var date_start = '{{ date_start }}';
+               var date_end = '{{ date_end }}';
+              {% endif %}
+              var message = {'status': 4,
+                             'date_start': date_start,
+                             'date_end': date_end,
+                             'csrfmiddlewaretoken': getCookie('csrftoken')};
+              $.ajax({
+                  type: 'POST',
+                  url: 'out_appointment',
+                  data: message,
+                  success: function (data) {
+                      if (data) {
+                          window.location.href = data
+                      }
+                      else {
+                          alert("导出失败！")
+                      }
+                  },
+                  dataType: 'json'
+              });
+          })
+      </script>
+        {% else %}
+      <script>
+          $('#out_data').addClass('disabled')
+      </script>
+        {% endif %}
     </div>
     <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
 {% for item in items %}
@@ -119,6 +155,7 @@
             {% endif %}
           </ul>
       </div>
+   </div>
 {% endif %}
 </div>
 {% endblock %}

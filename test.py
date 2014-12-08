@@ -1,0 +1,27 @@
+# -*- coding: utf-8 -*-
+import xlwt
+
+wb = xlwt.Workbook(encoding='utf-8')
+ws = wb.add_sheet("test")
+style0 = xlwt.easyxf('font: name Times New Roman, color-index red, bold on')
+style1 = xlwt.easyxf(num_format_str='Y-m-d')
+ws.write(0, 0, "预约号")
+ws.write(1, 0, "预约电话")
+ws.write(2, 0, "姓名")
+ws.write(3, 0, "地址")
+ws.write(4, 0, "时间")
+ws.write(5, 0, "预约状态")
+ws.write(6, 0, "地区")
+ws.write(7, 0, "操作员")
+ws.write(8, 0, "预约内容")
+i = 1
+ws.write(0, 1, "1", style0)
+ws.write(1, 1, "123456", style0)
+ws.write(2, 1, "李")
+ws.write(3, 1, "电子科大")
+ws.write(4, 1, "2014-12-07")
+ws.write(5, 1, "已完成", style0)
+ws.write(6, 1, "乐山")
+ws.write(7, 1, "测试员1")
+ws.write(8, 1, "测试")
+wb.save("test.xls")
