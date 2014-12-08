@@ -32,7 +32,9 @@ def BaiduAddress2Location(address):
     url = r'http://api.map.baidu.com/geocoder/v2/'
     payload = {'ak': ak, 'address': address, 'output': 'json'}
     r = requests.get(url, params=payload)
-    return r.content
+    return json.loads(r.content)['result']['location']
+s = BaiduAddress2Location('四川省成都市高新西区西源大道2006号')
+print s
 
 
 def addBlockOnBaidu(name, address, latitude, longitude):
@@ -41,10 +43,44 @@ def addBlockOnBaidu(name, address, latitude, longitude):
         ak = '379b7404f384fa2c66a205200d6d291e'
         geotable_id = 87377
         coord_type = 1
-        block_tel = 123456
         payload = {'ak': ak, 'title': name, 'address': address, 'latitude': latitude,
                    'longitude': longitude, 'geotable_id': geotable_id,
-                   'coord_type': coord_type, 'block_tel': block_tel
+                   'coord_type': coord_type
+        }
+        r = requests.post(url, data=payload)
+        if json.loads(r.content)['status'] != 0:
+            raise Exception
+        status = {'status': 1, 'baidu_id': json.loads(r.content)['id']}
+    except Exception:
+        status = {'status': 2, 'baidu_id': None}
+    return status
+
+
+def delBlockOnBaidu(baidu_id):
+    try:
+        url = r'http://api.map.baidu.com/geodata/v3/poi/delete'
+        ak = '379b7404f384fa2c66a205200d6d291e'
+        geotable_id = 87377
+        payload = {'ak': ak, 'geotable_id': geotable_id, 'id': baidu_id}
+        r = requests.post(url, data=payload)
+        if json.loads(r.content)['status'] != 0:
+            raise Exception
+        status = 1
+    except Exception:
+        status = 2
+    return status
+
+
+
+def changeBlockOnBaidu(name, baidu_id, address, latitude, longitude):
+    try:
+        url = r'http://api.map.baidu.com/geodata/v3/poi/update'
+        ak = '379b7404f384fa2c66a205200d6d291e'
+        geotable_id = 87377
+        coord_type = 1
+        payload = {'ak': ak, 'title': name, 'address': address, 'latitude': latitude,
+                   'longitude': longitude, 'geotable_id': geotable_id,
+                   'coord_type': coord_type, 'id': baidu_id
         }
         r = requests.post(url, data=payload)
         if json.loads(r.content)['status'] != 0:
@@ -66,10 +102,13 @@ def getTheNearestFromBaidu(longitude, latitude):
         payload = {'ak': ak, 'geotable_id': geotable_id, 'location': location,
                    'radius': radius, 'sortby': sortby, 'q': None
         }
-        r = json.dumps({'status': 1, 'body': {'nearest_point': json.loads(requests.get(url, params=payload).content)['contents'][0]}})
+        r = json.loads(requests.get(url, params=payload).content)
+        if r['status'] != 0:
+            raise Exception
+        nearest_id = r['contents'][0]['uid']
     except Exception:
-        return json.dumps({'status': 2, 'body': None})
-    return r
+        return {'status': 2, 'body': None}
+    return {'status': 1, 'baidu_id': nearest_id}
 
 
 

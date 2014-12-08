@@ -121,8 +121,10 @@ class Advertisement(models.Model):
 
 class Block(models.Model):
     area_id = models.IntegerField(max_length=3)
+    baidu_id = models.CharField(max_length=10)
     area_name = models.CharField(max_length=10)
     area_tel = models.IntegerField(max_length=20)
+    area_address = models.CharField(max_length=100, null=True)
     area_info = models.CharField(max_length=1000, null=True, blank=True)
     area_admin = models.ForeignKey(HomeAdmin, null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
