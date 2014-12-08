@@ -115,9 +115,7 @@ def test_block(request):
         area_name = req['area_name']
         area_address = req['area_address']
         area_info = req['area_info']
-        area_admin = req['area_admin']
-        status = add_block(area_id=area_id, area_tel=area_tel, area_name=area_name, area_address=area_address,
-                              area_info=area_info, area_admin=area_admin)
+        status = add_block(area_id=area_id, area_tel=area_tel, area_name=area_name, area_address=area_address, area_info=area_info)
         return HttpResponse(json.dumps({'status': status, 'body': None}))
     except Exception:
         status = 2

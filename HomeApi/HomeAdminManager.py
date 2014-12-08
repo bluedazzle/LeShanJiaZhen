@@ -9,8 +9,8 @@ def add_block(area_id, area_name, area_tel, area_info, area_admin, area_address)
         #判断该地区id和管理员是否存在
         if len(Block.objects.filter(area_id=area_id)) != 0:
             raise AlreadyExitError
-        if len(HomeAdmin.objects.filter(username=area_admin)) == 0:
-            raise NoneExistError
+        # if len(HomeAdmin.objects.filter(username=area_admin)) == 0:
+        #     raise NoneExistError
         #从百度云获得该地址的经纬度
         location = BaiduAddress2Location(area_address)
         lat = float(location['lat'])
@@ -21,8 +21,8 @@ def add_block(area_id, area_name, area_tel, area_info, area_admin, area_address)
             raise Exception
         #将数据存入数据库
         p = Block(area_id=area_id, baidu_id=r_status['baidu_id'], area_name=area_name, area_tel=area_tel, area_info=area_info, area_address=area_address, lat=lat, lng=lng)
-        p_admin = HomeAdmin.objects.get(username=area_admin)
-        p.area_admin = p_admin
+        # p_admin = HomeAdmin.objects.get(username=area_admin)
+        # p.area_admin = p_admin
         p.save()
         status = 1
     except AlreadyExitError:
@@ -60,8 +60,8 @@ def change_block(area_id, area_name, area_tel, area_info, area_admin, area_addre
         #判断该地区id和地区管理员是否存在
         if len(Block.objects.filter(area_id=area_id)) == 0:
             raise NoneExistError
-        if len(HomeAdmin.objects.filter(username=area_admin)) == 0:
-            raise NoneExistError
+        # if len(HomeAdmin.objects.filter(username=area_admin)) == 0:
+        #     raise NoneExistError
         #从百度云获得该地址的经纬度
         location = BaiduAddress2Location(area_address)
         lat = float(location['lat'])
@@ -76,8 +76,8 @@ def change_block(area_id, area_name, area_tel, area_info, area_admin, area_addre
         p.area_tel = area_tel
         p.area_info = area_info
         p.area_address = area_address
-        p_admin = HomeAdmin.objects.get(username=area_admin)
-        p.area_admin = p_admin
+        # p_admin = HomeAdmin.objects.get(username=area_admin)
+        # p.area_admin = p_admin
         p.lat = lat
         p.lng = lng
         p.save()
