@@ -1,0 +1,93 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+    <script type="text/javascript" src="/js/mine.js" charset="UTF-8"></script>
+    <script>
+      $(document).ready(function(){
+          $('#page_title').text('通知公告');
+          $('#notice').addClass('active')
+      })
+    </script>
+    {% if flag %}
+       {% if count > 0 %}
+           {% if date_start == '2000-01-01' and date_end == '2999-11-11' %}
+           <h6>总共有{{ count }}个公告</h6>
+            {% else %}
+           <h6>在{{ date_start }}到{{ date_end }}中，共有{{ count }}个公告</h6>
+            {% endif %}
+       {% else %}
+           {% if date_start == '2000-01-01' and date_end == '2999-11-11' %}
+            <h6>没有公告</h6>
+           {% else %}
+           <h6>在{{ date_start }}到{{ date_end }}中，没有公告</h6>
+           {% endif %}
+       {% endif %}
+    {% endif %}
+    {% if flag0 %}
+       {% if count > 0 %}
+           <h6>总共{{ count }}个公告</h6>
+       {% else %}
+           <h6>没有公告</h6>
+       {% endif %}
+    {% endif %}
+    <div class="col-md-12 col-lg-12" style="margin-top: 1%">
+      <a role="button" class="btn btn-success" style="float: right;margin-right: 10%" href="?date_start=2000-01-01&date_end=2999-11-11">
+          查询所有
+      </a>
+      <div style="float: right;margin-left: 2%;margin-right: 2%">
+          <button class="btn btn-success" id="search">查询</button>
+      </div>
+        <form method="get" action="notice" id="date_form">
+      <div class="input-group has-success" style="float: right;width: 30%;max-width: 300px" >
+         <span class="input-group-addon">截止日期：</span>
+         <input type="text" id="date_end" name="date_end" class="form-control" style="margin-right: 10%" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
+      </div>
+      <div class=" input-group has-success" style="float: right;margin-right: 1%;width: 30%;max-width: 300px">
+         <span class="input-group-addon">起始日期：</span>
+         <input type="text" id="date_start" name="date_start" class="form-control" style="margin-right: 10%" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
+      </div>
+         </form>
+      <script>
+          $('#search').click(function(){
+              if($('#date_start').val() && $('#date_end').val() && $('#date_start').val() <= $('#date_end').val()){
+                  $('#date_form').submit()
+              }
+              else{
+                  alert("请选择正确的查询时间段！")
+              }
+          })
+      </script>
+    </div>
+    {% if items %}
+<div class="col-md-12 col-lg-12" style="padding-top: 5%;padding-left: 10%;padding-right: 10%">
+    {% for item in items %}
+      <div class="jumbotron">
+       <h6>{{ item.create_time | date:'Y-m-d' }}</h6>
+       <p style="margin-left: 5%">{{ item.content }}</p>
+      </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if items.has_previous or items.has_next %}
+  <div class="text-right col-md-12 col-lg-12" style="padding-right: 10%">
+      <div class="pagination pagination-success">
+          <ul>
+              {% if items.has_previous %}
+            <li><a class="btn btn-info previous" href="?page={{ items.previous_page_number }}">上一页</a></li>
+             {% endif %}
+             {% for page in items.paginator.page_range %}
+               {% if page = items.number %}
+            <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+               {% else %}
+            <li><a href="?page={{ page }}">{{ page }}</a></li>
+               {% endif %}
+            {% endfor %}
+            {% if items.has_next %}
+             <li><a class="btn btn-info next" href="?page={{ items.next_page_number }}">下一页</a></li>
+
+            {% endif %}
+          </ul>
+      </div>
+  </div>
+{% endif %}
+{% endblock %}

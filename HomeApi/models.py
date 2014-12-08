@@ -30,6 +30,20 @@ class HomeAdminManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+class Block(models.Model):
+    area_id = models.IntegerField(unique=True)
+    area_name = models.CharField(max_length=10)
+    area_tel = models.CharField(max_length=20)
+    area_info = models.CharField(max_length=1000, null=True, blank=True)
+    create_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
+    lat = models.FloatField(null=True)
+    lng = models.FloatField(null=True)
+
+    def __unicode__(self):
+        return self.area_name
+
+
 class HomeAdmin(AbstractBaseUser):
     username = models.CharField(max_length=50)
     nick = models.CharField(max_length=50, default='')
@@ -38,7 +52,7 @@ class HomeAdmin(AbstractBaseUser):
     type = models.IntegerField(max_length=2, default=1)
     verify = models.BooleanField(default=False)
     work_num = models.CharField(max_length=50, null=True, blank=True)
-    area = models.CharField(max_length=20)
+    area = models.ForeignKey(Block, null=True, blank=True)
 
 
     USERNAME_FIELD = 'username'
@@ -80,6 +94,7 @@ class Appointment(models.Model):
     photo = models.CharField(max_length=100, blank=True, null=True)
     address = models.CharField(max_length=100, default='')
     name = models.CharField(max_length=10, default='')
+    area = models.ForeignKey(Block)
     process_by = models.ForeignKey(HomeAdmin, blank=True, null=True)
     consumer = models.ForeignKey(Consumer)
 
@@ -119,6 +134,7 @@ class Advertisement(models.Model):
     def __unicode__(self):
         return unicode(self.create_time)
 
+
 class Block(models.Model):
     area_id = models.IntegerField(max_length=3)
     baidu_id = models.CharField(max_length=10)
@@ -135,12 +151,14 @@ class Block(models.Model):
     def __unicode__(self):
         return self.area_name
 
+
 class Notice(models.Model):
-    content = models.CharField(max_length=100)
+    content = models.TextField()
     create_time = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return self.content
+
 
 class PhoneVerify(models.Model):
     phone = models.CharField(max_length=11)
@@ -150,3 +168,12 @@ class PhoneVerify(models.Model):
     def __unicode__(self):
         return self.phone
 
+
+class Application(models.Model):
+    old_area_id = models.IntegerField()
+    new_area_id = models.IntegerField()
+    apply_user = models.ForeignKey(HomeAdmin)
+    apply_time = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return unicode(self.id)

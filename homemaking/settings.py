@@ -55,7 +55,7 @@ ROOT_URLCONF = 'homemaking.urls'
 
 WSGI_APPLICATION = 'homemaking.wsgi.application'
 
-SESSION_ENGINE="django.contrib.sessions.backends.file"
+SESSION_ENGINE = "django.contrib.sessions.backends.file"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 
@@ -107,3 +107,4 @@ CSS_DIR = './static/css/'
 IMG_DIR = './static/img/'
 JS_DIR = './static/js/'
 FONTS_DIR = './static/fonts/'
+OUT_FILES_DIR ='./out_files'

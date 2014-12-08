@@ -36,7 +36,7 @@ def login_in(request):
                     return render_to_response('login_in.html', {'fault': 'T'}, context_instance=RequestContext(request))
                 else:
                     request.session['username'] = username
-                    return HttpResponseRedirect('operate_new')
+                    return HttpResponseRedirect('notice')
 
 
 def register(request):
@@ -65,10 +65,14 @@ def register(request):
                 area_admin.password = password
                 area_admin.nick = name
                 area_admin.work_num = work_num
-                area_admin.area = area
                 time_now = datetime.datetime.now()
                 area_admin.log_time = time_now
+                area_admin.type = 1
                 area_admin.save()
+                if area == '1':
+                    area_fi = Block.objects.get(area_id=1)
+                    area_admin.area = area_fi
+                    area_admin.save()
                 return HttpResponseRedirect('login_in')
         else:
             return render_to_response('register.html', context_instance=RequestContext(request))
@@ -93,8 +97,8 @@ def f_phone_verify(request):
         context = {}
         context.update(csrf(request))
         phone = request.POST.get('phone')
-        merchant_have = HomeAdmin.objects.filter(username=phone)
-        if merchant_have.count() == 0:
+        admin_have = HomeAdmin.objects.filter(username=phone, type=1)
+        if admin_have.count() == 0:
             return HttpResponse(json.dumps("false"), content_type="application/json")
         req = createverfiycode(phone)
         print req
@@ -138,7 +142,7 @@ def operate_new(request):
             return HttpResponseRedirect('login_in')
         username = request.session['username']
         user = HomeAdmin.objects.get(username=username)
-        appointments = Appointment.objects.order_by('-id').filter(process_by=user, status=1)
+        appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=1)
         # appointments = []
         # for i in range(0, 10):
         #     for item in appointment:
@@ -167,7 +171,7 @@ def get_new_appointment(request):
         area_admin = HomeAdmin.objects.get(username=user)
         # area_admin.last_login = datetime.datetime.now()
         # area_admin.save()
-        appointments = Appointment.objects.order_by('-id').filter(process_by=area_admin, status=1)
+        appointments = Appointment.objects.order_by('-id').filter(area=area_admin.area, status=1)
         if appointments.count() == 0:
             return HttpResponse(json.dumps('F'), content_type="application/json")
         else:
@@ -183,9 +187,18 @@ def get_new_appointment_count(request):
     else:
         user = request.session['username']
         area_admin = HomeAdmin.objects.get(username=user)
-        appointments = Appointment.objects.filter(process_by=area_admin, status=1)
+        appointments = Appointment.objects.filter(area=area_admin.area, status=1)
         count_num = appointments.count()
-        return HttpResponse(json.dumps(count_num))
+        notices = Notice.objects.order_by("-id").all()
+        notice_id = 'F'
+        if notices.count() > 0:
+            if request.session.get('notice_id'):
+                if request.session['notice_id'] != notices[0].id:
+                    notice_id = 'T'
+
+        content = {'new_appointment': count_num,
+                   'notice_id': notice_id}
+        return HttpResponse(json.dumps(content))
 
 
 def operate_get(request):
@@ -194,7 +207,7 @@ def operate_get(request):
             return HttpResponseRedirect('login_in')
         username = request.session['username']
         user = HomeAdmin.objects.get(username=username)
-        appointments = Appointment.objects.order_by('-id').filter(process_by=user, status=2)
+        appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=2)
         count = appointments.count()
         # appointments = []
         # for i in range(0, 10):
@@ -221,7 +234,7 @@ def operate_finish(request):
     if request.method == 'GET':
         username = request.session['username']
         user = HomeAdmin.objects.get(username=username)
-        all_appointments = Appointment.objects.order_by('-id').filter(process_by=user, status=3)
+        all_appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=3)
         page_num = request.GET.get('page')
         date_start = request.GET.get('date_start')
         date_end = request.GET.get('date_end')
@@ -335,7 +348,7 @@ def operate_cancel(request):
     if request.method == 'GET':
         username = request.session['username']
         user = HomeAdmin.objects.get(username=username)
-        all_appointments = Appointment.objects.order_by('-id').filter(process_by=user, status=4)
+        all_appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=4)
         page_num = request.GET.get('page')
         date_start = request.GET.get('date_start')
         date_end = request.GET.get('date_end')
@@ -395,10 +408,225 @@ def operate_cancel(request):
 
 
 def user_mes(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return render_to_response('admin_area/user_mes.html')
+        user = HomeAdmin.objects.get(username=request.session['username'])
+        applications = Application.objects.filter(apply_user=user)
+        if applications.count() > 0:
+            return render_to_response('admin_area/user_mes.html', {'user': user, 'have_apply': 'T'})
+
+        return render_to_response('admin_area/user_mes.html', {'user': user})
 
 
-def about(request):
+def change_password(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+
+    if request.method == 'POST':
+        username = request.session['username']
+        context = {}
+        context.update(csrf(request))
+        old_password = request.POST.get('old_password')
+        new_password = request.POST.get('new_password')
+        password_again = request.POST.get('password_again')
+        if old_password and new_password and password_again:
+            if old_password != new_password and new_password == password_again:
+                user = HomeAdmin.objects.get(username=username)
+                if user.check_password(old_password):
+                    new_password = hashlib.md5(new_password).hexdigest()
+                    user.password = new_password
+                    user.save()
+                    return HttpResponse(json.dumps('T'), content_type="application/json")
+                else:
+                    return HttpResponse(json.dumps('F'), content_type="application/json")
+
+        return HttpResponse(json.dumps('F1'), content_type="application/json")
+
+
+def change_area(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'POST':
+        username = request.session['username']
+        context = {}
+        context.update(csrf(request))
+        password = request.POST.get('password')
+        area = request.POST.get('area')
+        if password and area:
+            user = HomeAdmin.objects.get(username=username)
+            if not user.check_password(password):
+                return HttpResponse(json.dumps('F'), content_type="application/json")
+
+            applications = Application.objects.filter(apply_user=user)
+            if applications.count() > 0:
+                return HttpResponse(json.dumps('F1'), content_type="application/json")
+
+            if area == '0':
+                area_now = Block.objects.get(area_id=1)
+            else:
+                area_now = Block.objects.get(area_id=2)
+            if area_now == user.area:
+                return HttpResponse(json.dumps('F2'), content_type="application/json")
+
+            new_application = Application()
+            new_application.old_area = user.area.id
+            new_application.new_area = area_now.id
+            new_application.apply_user = user
+            new_application.save()
+            return HttpResponse(json.dumps('T'), content_type="application/json")
+
+        return HttpResponse(json.dumps('F3'), content_type="application/json")
+
+
+def notice(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if not request.session.get('username'):
+            return HttpResponseRedirect('login_in')
+
     if request.method == 'GET':
-        return render_to_response('admin_area/about.html')
+        all_notice = Notice.objects.order_by('-id').all()
+        page_num = request.GET.get('page')
+        date_start = request.GET.get('date_start')
+        date_end = request.GET.get('date_end')
+        #检查是否是查询某段时间的操作
+        if date_start and date_end:
+            request.session['notice_date_start'] = date_start
+            request.session['notice_date_end'] = date_end
+        #查询首页
+        if not page_num:
+            #查看某段时间的公告
+            if date_start and date_end:
+                result = find_sometime_notices(1, date_start, date_end, all_notice)
+                all_notices = result['notices']
+                count = result['count']
+                return render_to_response('admin_area/notice.html',
+                                          {'items': all_notices,
+                                           'count': count,
+                                           'flag': 'T',
+                                           'date_start': date_start,
+                                           'date_end': date_end}, context_instance=RequestContext(request))
+            #查看所有公告
+            else:
+                if request.session.get('notice_date_start') and request.session.get('notice_date_end'):
+                    del request.session['notice_date_start']
+                    del request.session['notice_date_end']
+                request.session['notice_id'] = all_notice[0].id
+                result = find_all_notices(1, all_notice)
+                all_notices = result['notices']
+                count = result['count']
+                return render_to_response('admin_area/notice.html',
+                                          {'items': all_notices,
+                                           'count': count,
+                                           'flag0': 'T'}, context_instance=RequestContext(request))
+        #查询某一页
+        else:
+            #查询某段时间公告的某一页
+            if request.session.get('notice_date_start') and request.session.get('notice_date_end'):
+                date_start = request.session['notice_date_start']
+                date_end = request.session['notice_date_end']
+                result = find_sometime_notices(page_num, date_start, date_end, all_notice)
+                all_notices = result['notices']
+                count = result['count']
+                return render_to_response('admin_area/notice.html',
+                                          {'items': all_notices,
+                                           'count': count,
+                                           'flag': 'T',
+                                           'date_start': date_start,
+                                           'date_end': date_end}, context_instance=RequestContext(request))
+            #查询所有公告的某一页
+            else:
+                result = find_all_notices(page_num, all_notice)
+                all_notices = result['notices']
+                count = result['count']
+                return render_to_response('admin_area/notice.html',
+                                          {'items': all_notices,
+                                           'count': count,
+                                           'flag0': 'T'}, context_instance=RequestContext(request))
+
+
+def find_all_notices(page_num, all_notices):
+    notices = []
+    if all_notices.count() > 0:
+            for item in all_notices:
+                notices.append(item)
+
+    count = len(notices)
+    paginator = Paginator(notices, 5)
+    try:
+        notices = paginator.page(page_num)
+    except PageNotAnInteger:
+        notices = paginator.page(1)
+    except EmptyPage:
+        notices = paginator.page(paginator.num_pages)
+    except:
+        pass
+    return {'notices': notices, 'count': count}
+
+
+def find_sometime_notices(page_num, date_start, date_end, all_notices):
+    notices = []
+    if all_notices.count() > 0:
+        for item in all_notices:
+            it_date = str(item.create_time)[0:10]
+            date_start = str(date_start)
+            date_end = str(date_end)
+            if it_date >= date_start and it_date <= date_end:
+                notices.append(item)
+            else:
+                continue
+    count = len(notices)
+    paginator = Paginator(notices, 5)
+    try:
+        notices = paginator.page(page_num)
+    except PageNotAnInteger:
+        notices = paginator.page(1)
+    except EmptyPage:
+        notices = paginator.page(paginator.num_pages)
+    except:
+        pass
+
+    return {'notices': notices, 'count': count}
+
+
+def find_appointment(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return render_to_response('admin_area/find_appointment.html', context_instance=RequestContext(request))
+
+    if request.method == 'POST':
+        username = request.session['username']
+        context = {}
+        context.update(csrf(request))
+        phone = request.POST.get('phone')
+        appointment = request.POST.get('appointment')
+        if phone:
+            user = HomeAdmin.objects.get(username=username)
+            consumer = Consumer.objects.filter(phone=phone)
+            if consumer.count() == 0:
+                return render_to_response('admin_area/find_appointment.html',
+                                          {'fault': 'T'},
+                                          context_instance=RequestContext(request))
+            consumer1 = consumer[0]
+            appointments = Appointment.objects.order_by('-id').filter(consumer=consumer1, area=user.area)
+            if appointments.count() == 0:
+                return render_to_response('admin_area/find_appointment.html',
+                                          {'fault': 'T'},
+                                          context_instance=RequestContext(request))
+            else:
+                return render_to_response('admin_area/find_appointment.html',
+                                          {'items': appointments},
+                                          context_instance=RequestContext(request))
+        if appointment:
+            user = HomeAdmin.objects.get(username=username)
+            appointments = Appointment.objects.order_by('-id').filter(area=user.area, id=appointment)
+            if appointments.count() == 0:
+                return render_to_response('admin_area/find_appointment.html',
+                                          {'fault': 'T'},
+                                          context_instance=RequestContext(request))
+            else:
+                return render_to_response('admin_area/find_appointment.html',
+                                          {'items': appointments},
+                                          context_instance=RequestContext(request))

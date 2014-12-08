@@ -6,34 +6,43 @@
             $('#find_appointment').addClass('active');
         })
     </script>
+    <div class="col-md-12 col-lg-12 text-center">
+    {% if flag %}
+       {% if count > 0 %}
+           <h6>在{{ date_start }}到{{ date_end }}中，共有{{ count }}个符合查找条件的预约</h6>
+       {% else %}
+           <h6>没有符合查找条件的预约</h6>
+       {% endif %}
+    {% endif %}
+    </div>
     <script type="text/javascript" src="/js/mine.js" charset="UTF-8"></script>
+    <form method="get" action="find_appointment" id="search_mes">
     <div class="col-md-12 col-lg-12" style="margin-top: 3%">
-      <div class="col-md-2 col-lg-2" style="float: right">
-          <button class="btn btn-success">查询</button>
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;margin-right:27%;float: right">
+         <span class="input-group-addon" style="width: 80px">截止日期:</span>
+         <input id="end_date" name="end_date" type="text" class="form-control" style="margin-right: 10%;" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
       </div>
-      <div class="col-md-2 col-lg-2 input-group has-success" style="float: right">
-         <span class="input-group-addon">截止日期：</span>
-         <input type="text" class="form-control"style="margin-right: 10%" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;margin-right: 1%;float: right">
+         <span class="input-group-addon">起始日期:</span>
+         <input id="start_date" name="start_date" type="text" class="form-control" style="margin-right: 10%;" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
       </div>
-      <div class="col-md-2 col-lg-2 input-group has-success" style="float: right;margin-right: 1%">
-         <span class="input-group-addon">起始日期：</span>
-         <input type="text" class="form-control"style="margin-right: 10%" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
-      </div>
-      <div class="col-md-2 col-lg-2 input-group has-success" style="padding-left: 0;float: right;margin-right: 1%">
+    </div>
+    <div class="col-md-12 col-lg-12" style="margin-top: 1%">
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;float:right;padding-left: 0;margin-right: 26.7%">
           <span class="input-group-addon">地区</span>
-          <select id="select1" class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0">
-                  <option value="0">成都</option>
+          <select id="select1" name="area" class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0;">
                   <option value="1">乐山</option>
-                  <option value="2">遂宁</option>
+                  <option value="2">其他</option>
           </select>
       </div>
-      <div class="col-md-2 col-lg-2 input-group has-success" style="padding-left: 0;float: right;margin-right: 1%;">
-          <span class="input-group-addon">预约类型</span>
-          <select id="select2" class="form-control select select-primary select-block mbl">
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;float:right;padding-left: 0;margin-right: 1%;">
+          <span class="input-group-addon" style="width: 101px">预约类型</span>
+          <select id="select2" name="type" class="form-control select select-primary select-block mbl">
                   <option value="0">所有预约</option>
                   <option value="1">未受理预约</option>
                   <option value="2">已接受预约</option>
                   <option value="3">已完成预约</option>
+                  <option value="4">取消的预约</option>
           </select>
       </div>
       <script>
@@ -41,60 +50,146 @@
               $("#select2").select2({dropdownCssClass: 'dropdown-inverse'});
       </script>
     </div>
+    </form>
+    <div class="col-md-2 col-lg-2" style="float: right;margin-right: 7%;margin-top: -38px;">
+          <button id="search" class="btn btn-success">查询</button>
+      </div>
+    <script>
+       $('#search').click(function(){
+           if($('#select1').val() && $('#select2').val() &&
+                   $('#start_date').val() && $('#end_date').val()){
+               $('#search_mes').submit()
+           }
+           else{
+               alert("查询信息不完整！")
+           }
+       })
+    </script>
+    {% if items %}
     <div class="col-md-10 col-lg-10" style="float: right;margin-top: 2%;margin-right: 10%;margin-bottom: 2%">
       <div class="col-md-12 col-lg-12">
         <div class="col-md-2 col-lg-2"  style="float: right;margin-bottom: 2%">
-            <button class="btn btn-primary">数据导出</button>
+            <button id="out_data" class="btn btn-primary">数据导出</button>
       </div>
     </div>
-    {% for i in items %}
-   <div class="panel panel-finish" style="margin-top: 5%">
+    {% endif %}
+    {% if items %}
+      <script>
+          $('#out_data').click(function(){
+              {% if flag0 %}
+               var d = new Date();
+               var date_start = d.getYear()+"-"+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"-"+(d.getDate()<10?"0":"")+d.getDate();
+               var date_end = d.getYear()+"-"+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"-"+(d.getDate()<10?"0":"")+d.getDate();
+              {% else %}
+               var date_start = '{{ date_start }}';
+               var date_end = '{{ date_end }}';
+              {% endif %}
+              var message = {'status': {{ status }},
+                             'date_start': date_start,
+                             'date_end': date_end,
+                             'area': {{ area }},
+                             'csrfmiddlewaretoken': getCookie('csrftoken')};
+              $.ajax({
+                  type: 'POST',
+                  url: 'out_appointment',
+                  data: message,
+                  success: function (data) {
+                      if (data) {
+                          window.location.href = data
+                      }
+                      else {
+                          alert("导出失败！")
+                      }
+                  },
+                  dataType: 'json'
+              });
+          })
+      </script>
+        {% endif %}
+   <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
+{% for item in items %}
+   {% if item.status == 1 %}
+   <div class="panel panel-primary">
        <div class="panel-heading">
-           预约号：10000001
-           <span style="margin-left: 5%">时间：2014-11-28 13:00</span>
-           <span style="margin-left: 5%">地址：电子科技大学清水河校区本科18栋616寝室</span>
+        {% elif item.status == 2 %}
+   <div class="panel panel-success">
+       <div class="panel-heading">
+        {% elif item.status == 3 %}
+   <div class="panel panel-success">
+       <div class="panel-heading" style="background-color: #1abc9c;color: #ffffff">
+        {% elif item.status == 4 %}
+   <div class="panel panel-default">
+       <div class="panel-heading" style="background-color: #bdc3c7;">
+        {% endif %}
+           预约号：{{ item.id }}
+           <span style="margin-left: 5%">联系方式：{{ item.consumer }}</span>
+           <span style="margin-left: 5%">地址：{{ item.address }}</span>
        </div>
        <div class="panel-body">
-           <div class="col-md-12 col-lg-12">姓名：张先生</div>
-           <div class="col-md-12 col-lg-12">联系方式：12345678901</div>
-           <div class="col-md-6 col-lg-6">报修项目：水 水管坏了
+           {% if item.status == 1 %}
+            <div class="col-md-12 col-lg-12">状态：未受理</div>
+        {% elif item.status == 2 %}
+            <div class="col-md-12 col-lg-12">状态：已接受</div>
+        {% elif item.status == 3 %}
+            <div class="col-md-12 col-lg-12">状态：已完成</div>
+        {% elif item.status == 4 %}
+            <div class="col-md-12 col-lg-12">状态：已取消</div>
+        {% endif %}
+           <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
+           <div class="col-md-12 col-lg-12">时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
+           <div class="col-md-6 col-lg-6">报修项目：{{ item.content }}
+               {% if item.photo %}
+                   <strong style="color: #27ad60">(有照片)</strong>
+               {% endif %}
            </div>
            <div class="col-md-6 col-lg-6">
-               <button class="btn btn-large btn-success" id="find_detail{{ i }}" style="float: right;margin-right: 20%">
-                 查看详情
+               {% if item.photo %}
+                   <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
+                 查看照片
                </button>
-               <div class="modal fade bs-example-modal-lg" style="padding-top: 10%" id="modal{{ i }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+               <div class="modal fade bs-example-modal-lg" style="padding-top: 10%;padding-left: 10%" id="modal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                    <div class="modal-dialog modal-lg">
-                       <div class="modal-content">
-                             <div class="row">
-                                 <div class="col-md-4 col-lg-4">
-                                     <a href="/img/icons/png/Toilet-Paper.png" class="thumbnail">
-                                         <img src="/img/icons/png/Toilet-Paper.png">
-                                     </a>
-                                 </div>
-                             </div>
+                       <div class="modal-content text-center" style="padding: 2%">
+{#                             <div class="row">#}
+{#                                 <div class="col-md-4 col-lg-4">#}
+{#                                     <a href="/img/icons/png/Toilet-Paper.png" class="thumbnail">#}
+{#                                         <img src="/img/icons/png/Toilet-Paper.png">#}
+{#                                     </a>#}
+{#                                 </div>#}
+{#                             </div>#}
+                           <img src="/img/icons/png/Toilet-Paper.png">
                        </div>
                    </div>
                </div>
-           </div>
-           <script>
-               $('#find_detail{{ i }}').click(function(){
-                   $('#modal{{ i }}').modal('toggle')
+               <script>
+               $('#find_detail{{ item.id }}').click(function(){
+                   $('#modal{{ item.id }}').modal('toggle')
                })
            </script>
+               {% endif %}
+           </div>
        </div>
    </div>
 {% endfor %}
-  <div class="text-right">
+{% if items.has_previous or items.has_next %}
+  <div class="text-right" style="margin-right: 4%">
       <div class="pagination pagination-success">
-          <a href="#" class="btn btn-info previous">上一页</a>
           <ul>
-              <li class="active"><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
+              {% if items.has_previous %}
+            <li><a class="btn btn-info previous" href="?page={{ items.previous_page_number }}">上一页</a></li>
+             {% endif %}
+             {% for page in items.paginator.page_range %}
+               {% if page = items.number %}
+            <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+               {% else %}
+            <li><a href="?page={{ page }}">{{ page }}</a></li>
+               {% endif %}
+            {% endfor %}
+            {% if items.has_next %}
+             <li><a class="btn btn-info next" href="?page={{ items.next_page_number }}">下一页</a></li>
+
+            {% endif %}
           </ul>
-          <a href="#" class="btn btn-info next">下一页</a>
       </div>
-  </div>
-</div>
+{% endif %}
 {% endblock %}
