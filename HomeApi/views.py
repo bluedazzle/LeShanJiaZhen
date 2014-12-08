@@ -35,19 +35,23 @@ def make_appointment(request):
             req = request.POST
             pic = request.FILES.get('file')
             content = req['content']
-            process_by = req['process_by']
+            name = req['name']
+            area_id = req['area_id']
+            address = req['address']
             consumer = int(req['consumer'])
             if len(Consumer.objects.filter(phone=consumer)) == 0:
                 status = 13
                 return HttpResponse(json.dumps({'status': status, 'body': None}))
             else:
-                if len(HomeAdmin.objects.filter(username=process_by)) == 0:
+                if len(Block.objects.filter(area_id=area_id)) == 0:
                     raise NoneExistError
                 p_consumer = Consumer.objects.get(phone=consumer)
-                p_process_by = HomeAdmin.objects.get(username=process_by)
+                block = Block.objects.get(area_id=area_id)
                 appoint_status = 0
                 p = Appointment(content=content, status=appoint_status)
-                p.process_by = p_process_by
+                p.area = block
+                p.address = address
+                p.name = name
                 p.consumer = p_consumer
                 pic_url = None
                 if pic:
