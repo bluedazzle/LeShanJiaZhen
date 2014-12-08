@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import random
 import simplejson
 import datetime
@@ -23,9 +24,9 @@ def sendverifycode(content, phone):
         lasttime = result.update_time.replace(tzinfo=None)
         if (nowtime - lasttime) < datetime.timedelta(seconds=30):
             return False
-    apikey = '72c9f01d5db2dc40f4aa31865b17940c'
-    tplvalue = '#code#=' + content
-    res = tpl_send_sms(apikey, '512797', tplvalue, phone)
+    apikey = 'e1ebef39f28c86fdb57808eb45ab713a'
+    tplvalue = '#code#=' + content + "&#company#=四川亿和网络科技有限公司"
+    res = tpl_send_sms(apikey, '1', tplvalue, phone)
     jsres = simplejson.loads(res)
     msg = jsres['code']
     print msg
