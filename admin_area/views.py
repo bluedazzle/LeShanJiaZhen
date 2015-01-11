@@ -487,6 +487,8 @@ def notice(request):
 
     if request.method == 'GET':
         all_notice = Notice.objects.order_by('-id').all()
+        if all_notice.count() == 0:
+            return render_to_response('admin_area/notice.html')
         page_num = request.GET.get('page')
         date_start = request.GET.get('date_start')
         date_end = request.GET.get('date_end')
