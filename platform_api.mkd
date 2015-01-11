@@ -1,0 +1,218 @@
+##**STATUS结果码对照表**
+|status结果码|状态|
+| --------------  | :---: |
+|1|成功|
+|2|未知错误|
+|3|订单状态改变|
+|4|密码错误|
+|5|超时|
+|6|已存在|
+|7|不存在|
+|9|权限不足|
+|11|验证码为空|
+|12|验证码错误|
+|13|非法操作|
+
+##**大项操作**
+####添加、删除、修改“水”之类的大项
+>####**添加大项**
+>```
+>POST /homeitem/addp
+>```
+>>#####**Parameters**
+>>>*    item_name(_Required_|string)——大项名称
+>>#####**Request**
+>>>```
+>>>{"item_name":"水"}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+>####**删除大项**
+>```
+>POST /homeitem/delp
+>```
+>>#####**Parameters**
+>>>*    item_name(_Required_|string)——大项名称
+>>#####**Request**
+>>>```
+>>>{"item_name":"水"}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+>####**修改大项**
+>```
+>POST /homeitem/chp
+>```
+>>#####**Parameters**
+>>>*    item_name(_Required_|string)——大项名称
+>>>*    new_item_name(_Required_|string)——大项新名称
+>>#####**Request**
+>>>```
+>>>{"item_name":"水","new_item_name":"电"}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+
+
+##**中项操作**
+####添加、删除、修改“水管”之类的中项
+>####**添加中项**
+>```
+>POST /homeitem/addo
+>```
+>>#####**Parameters**
+>>>*    item_name(_Required_|string)——中项名称
+>>>*    parent_item(_Required_|string)——父项名称
+>>#####**Request**
+>>>```
+>>>{"item_name":"水管","parent_item":"水"}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+>####**删除中项**
+>```
+>POST /homeitem/delo
+>```
+>>#####**Parameters**
+>>>*    item_name(_Required_|string)——中项名称
+>>#####**Request**
+>>>```
+>>>{"item_name":"水管"}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+>####**修改中项**
+>```
+>POST /homeitem/cho
+>```
+>>#####**Parameters**
+>>>*    item_name(_Required_|string)——中项名称
+>>>*    new_item_name(_Required_|string)——中项新名称
+>>>*    parent_item(_Required_|string)——父项名称
+>>#####**Request**
+>>>```
+>>>{"item_name":"水管","new_item_name":"电线","parent_item":"电",}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+
+##**具体项操作**
+####添加、删除、修改“富土康水管”之类的具体项
+>####**添加具体项**
+>```
+>POST /homeitem/add
+>```
+>>#####**Parameters**
+>>>*    title(_Required_|string)——具体项名称
+>>>*    parent_item(_Required_|string)——父项名称
+>>>*    content(_Required_|string)——具体项的详细信息
+>>#####**Request**
+>>>```
+>>>{"title":"富土康水管","parent_item":"水管","content":"你值得拥有"}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+>####**删除具体项**
+>```
+>POST /homeitem/del
+>```
+>>#####**Parameters**
+>>>*    title(_Required_|string)——具体项名称
+>>#####**Request**
+>>>```
+>>>{"title":"富土康水管"}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+>####**修改具体项**
+>```
+>POST /homeitem/ch
+>```
+>>#####**Parameters**
+>>>*    title(_Required_|string)——具体项名称
+>>>*    new_title(_Required_|string)——具体项新名称
+>>>*    content(_Required_|string)——具体项的详细信息
+>>>*    parent_item(_Required_|string)——父项名称
+>>#####**Request**
+>>>```
+>>>{"title":"富土康水管","new_title":"金坷垃电线","content":"金坷垃电线，上吊就用它","parent_item":"电线",}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+
+##**地区操作**
+####添加、删除、修改“成都”、“杭州”等地区
+>####**添加地区**
+>```
+>POST /block/add
+>```
+>>#####**Parameters**
+>>>*    area_name(_Required_|string)——地区名称
+>>>*    area_tel(_Required_|int)——地区电话
+>>>*    area_info(_Required_|string)——地区的详细信息
+>>>*    area_admin(_Required_|string)——地区管理员
+>>#####**Request**
+>>>```
+>>>{"area_name":"成都","area_tel":"123456","area_info":"一个风骚的城市，一个风骚的店面","area_admin":"张全蛋"}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+>####**删除地区**
+>```
+>POST /block/del
+>```
+>>#####**Parameters**
+>>>*    area_name(_Required_|string)——地区名称
+>>#####**Request**
+>>>```
+>>>{"area_name":"成都"}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+>####**修改具体项**
+>```
+>POST /block/ch
+>```
+>>#####**Parameters**
+>>>*    area_name(_Required_|string)——地区名称
+>>>*    new_area_name(_Required_|string)——地区新名
+>>>*    area_tel(_Required_|int)——地区电话
+>>>*    area_info(_Required_|string)——地区的详细信息
+>>>*    area_admin(_Required_|string)——地区管理员
+>>#####**Request**
+>>>```
+>>>{"area_name":"成都","new_area_name":"杭州","area_tel":"123456","area_info":"一个风骚的城市，一个风骚的店面","area_admin":"李小花"}
+>>>```
+>>#####**Return**
+>>>```
+>>>{"status":1,"body":null}
+>>>```
+
+
+
+
+
+
+
