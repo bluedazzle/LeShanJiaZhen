@@ -33,8 +33,8 @@ def BaiduAddress2Location(address):
     payload = {'ak': ak, 'address': address, 'output': 'json'}
     r = requests.get(url, params=payload)
     return json.loads(r.content)['result']['location']
-s = BaiduAddress2Location('四川省成都市高新西区西源大道2006号')
-print s
+# s = BaiduAddress2Location('四川省成都市高新西区西源大道2006号')
+# print s
 
 
 def addBlockOnBaidu(name, address, latitude, longitude):

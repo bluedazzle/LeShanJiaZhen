@@ -60,18 +60,50 @@ GET /getad/
 ```
 
 
-##**刷新费用单详情**
+##**刷新大类**
 ```
-暂无
-```
-
-##**地区对应表**
-```
-GET /fullcorrespond/
+GET /getcategory/
 ```
 ###**Return**
 ```
-{"status": 1, "body": {"1": {"area_tel": 123456, "area_id": 1, "area_name": "乐山总店"}}}
+{
+    "status": 1,
+    "body": {
+        "1": "水",
+        "2": "电",
+        "3": "装修"
+    }
+}
+```
+
+##**刷新具体类目**
+```
+GET /getitem/
+```
+###**Parameters**
+*   id(_Required_|int)——大类编号，效果 http://127.0.0.1:8000/getitem/?category_id=2
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "2": {
+            "content": "已布的线路修起来比较麻烦",
+            "price": "50元",
+            "title": "电线损坏"
+        },
+        "4": {
+            "content": "应对这种情况我们很专业",
+            "price": "50元",
+            "title": "电线被老鼠咬了"
+        },
+        "5": {
+            "content": "更换各种电灯泡",
+            "price": "50元",
+            "title": "电灯坏了"
+        }
+    }
+}
 ```
 
 ##**根据地理位置获取当前城市与最近服务点(返回id)**

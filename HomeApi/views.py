@@ -9,6 +9,9 @@ from PIL import Image
 from HomeApi.HomeAdminManager import *
 from HomeApi.location_process import *
 
+pathToStorePicture = r'/var/www/LeShanJiaZhen/'
+pathToGetPicture = r'http://127.0.0.1:8080/'
+
 
 @csrf_exempt
 def pull_block_tel(request):
@@ -56,10 +59,10 @@ def make_appointment(request):
                 pic_url = None
                 if pic:
                     pic_name = str(consumer)+str(int(time.time()))
-                    path = r'/path/to/store/'+pic_name
+                    path = pathToStorePicture+pic_name
                     img = Image.open(pic)
                     img.save(path, "png")
-                    pic_url = r'http://path/to/get/'+pic_name
+                    pic_url = pathToGetPicture+pic_name
                 p.photo = pic_url
                 p.save()
                 status = 1
@@ -78,9 +81,13 @@ def pull_advertisement(request):
         try:
             if len(Advertisement.objects.all()) == 0:
                 raise NoneExistError
-            p = Advertisement.objects.all()[0]
-            content = p.content
-            photo = p.photo
+            p = Advertisement.objects.filter(is_new=True)
+            body = []
+            for ads in p:
+                adp={}
+                adp['content'] = ads.content
+                adp['photo'] = ads.photo
+                body.append(adp)
             status = 1
         except NoneExistError:
             status = 7
@@ -88,22 +95,43 @@ def pull_advertisement(request):
         except Exception:
             status = 2
             return HttpResponse(json.dumps({'status': status, 'body': None}))
-        return HttpResponse(json.dumps({'status': status, 'body': {'content': content, 'photo': photo}}))
+        return HttpResponse(json.dumps({'status': status, 'body': body}))
 
 
 @csrf_exempt
-def get_the_full_corresponding(request):
+def get_detail_item(request):
     if request.method == 'GET':
         try:
-            querylist = Block.objects.all()
-            blocklist = {}
+            category_id = request.GET['category_id']
+            if len(HomeItem_P.objects.filter(id=category_id)) == 0:
+                raise NoneExistError
+            itemlist = {}
+            category = HomeItem_P.objects.get(id=category_id)
+            for p in category.homeitem_set.all():
+                itemlist[p.id] = {'title': p.title, 'content': p.content, 'price': p.price}
+            status = 1
+        except NoneExistError:
+            status = 7
+            return HttpResponse(json.dumps({'status': status, 'body': None}))
+        # except Exception:
+        #     status = 2
+        #     return HttpResponse(json.dumps({'status': status, 'body': None}))
+        return HttpResponse(json.dumps({'status': status, 'body': itemlist}))
+
+
+@csrf_exempt
+def get_categories(request):
+    if request.method == 'GET':
+        try:
+            querylist = HomeItem_P.objects.all()
+            category_list = {}
             for p in querylist:
-                blocklist[p.area_id] = {'area_id': p.area_id, 'area_name': p.area_name, 'area_tel': p.area_tel}
+                category_list[p.id] = p.item_name
             status = 1
         except Exception:
             status = 2
             return HttpResponse(json.dumps({'status': status, 'body': None}))
-        return HttpResponse(json.dumps({'status': status, 'body': blocklist}))
+        return HttpResponse(json.dumps({'status': status, 'body': category_list}))
 
 
 @csrf_exempt

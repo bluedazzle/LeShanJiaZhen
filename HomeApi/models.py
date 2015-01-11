@@ -35,7 +35,7 @@ class Block(models.Model):
     area_id = models.IntegerField(max_length=3)
     baidu_id = models.CharField(max_length=10)
     area_name = models.CharField(max_length=10)
-    area_tel = models.IntegerField(max_length=20)
+    area_tel = models.CharField(max_length=20)
     area_address = models.CharField(max_length=100, null=True)
     area_info = models.CharField(max_length=1000, null=True, blank=True)
     # area_admin = models.ForeignKey(HomeAdmin, null=True, blank=True)
@@ -122,12 +122,14 @@ class HomeItem_O(models.Model):
 
 class HomeItem(models.Model):
     title = models.CharField(max_length=30)
+    price = models.CharField(max_length=10, blank=True, null=True)
     content = models.CharField(max_length=500)
     create_time = models.DateTimeField(auto_now_add=True)
-    parent_item = models.ForeignKey(HomeItem_O, null=True, blank=True)
+    parent_item = models.ForeignKey(HomeItem_P, null=True, blank=True)
 
     def __unicode__(self):
         return self.title
+
 
 class Advertisement(models.Model):
     content = models.CharField(max_length=500, blank=True, null=True)
