@@ -23,7 +23,7 @@ GET /area_tel/
 *   area_id(_Required_|int)——地区编号
 ###**Request**
 ```
-{"area_id":333}
+{"area_id":1}
 ```
 ###**Return**
 ```
@@ -37,8 +37,11 @@ POST /mkappoint/
 ###**Parameters**
 *   content(_Required_|string)——预约内容
 *   area_id(_Required_|int)——受理地区
-*   consumer(_Required_|int)——客户（电话）
-*   file(_Optional_|file)——照片
+*   consumer(_Required_|string)——客户（电话）
+*   file1(_Optional_|file1)——照片1
+*   file2(_Optional_|file2)——照片2
+*   file3(_Optional_|file3)——照片3
+*   file4(_Optional_|file4)——照片4
 *   name(_Optional_|string)——客户姓名
 *   address(_Optional_|string)——客户住址
 ###**Request**
@@ -47,7 +50,7 @@ POST /mkappoint/
 ```
 ###**Return**
 ```
-{'status': 1, 'body': {'pic_url': pic_url}}
+{'status': 1, 'body': None}
 ```
 
 ##**拉取广告**
@@ -56,7 +59,19 @@ GET /getad/
 ```
 ###**Return**
 ```
-{'status': 1, 'body': {'content': 'XXX','photo':url}}
+{
+    "status": 1,
+    "body": [
+        {
+            "content": "修水管，送福利",
+            "photo": "http://127.0.0.1/meizi.jpg"
+        },
+        {
+            "content": "快来吃屎",
+            "photo": "heheheh"
+        }
+    ]
+}
 ```
 
 
@@ -68,11 +83,20 @@ GET /getcategory/
 ```
 {
     "status": 1,
-    "body": {
-        "1": "水",
-        "2": "电",
-        "3": "装修"
-    }
+    "body": [
+        {
+            "category": "水",
+            "category_id": 1
+        },
+        {
+            "category": "电",
+            "category_id": 2
+        },
+        {
+            "category": "装修",
+            "category_id": 3
+        }
+    ]
 }
 ```
 
@@ -86,23 +110,26 @@ GET /getitem/
 ```
 {
     "status": 1,
-    "body": {
-        "2": {
-            "content": "已布的线路修起来比较麻烦",
-            "price": "50元",
-            "title": "电线损坏"
-        },
-        "4": {
+    "body": [
+        {
+            "item_id": 4,
             "content": "应对这种情况我们很专业",
             "price": "50元",
             "title": "电线被老鼠咬了"
         },
-        "5": {
+        {
+            "item_id": 5,
             "content": "更换各种电灯泡",
             "price": "50元",
             "title": "电灯坏了"
+        },
+        {
+            "item_id": 2,
+            "content": "已布的线路修起来比较麻烦",
+            "price": "50元",
+            "title": "电线损坏"
         }
-    }
+    ]
 }
 ```
 

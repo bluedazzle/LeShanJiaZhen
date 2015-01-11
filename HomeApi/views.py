@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+import random
 from HomeApi.errorType import *
 from HomeApi.models import *
 import time
@@ -36,7 +37,10 @@ def make_appointment(request):
     if request.method == 'POST':
         try:
             req = request.POST
-            pic = request.FILES.get('file')
+            pic1 = request.FILES.get('file1')
+            pic2 = request.FILES.get('file2')
+            pic3 = request.FILES.get('file3')
+            pic4 = request.FILES.get('file4')
             content = req['content']
             name = req['name']
             area_id = req['area_id']
@@ -56,14 +60,34 @@ def make_appointment(request):
                 p.address = address
                 p.name = name
                 p.consumer = p_consumer
-                pic_url = None
-                if pic:
-                    pic_name = str(consumer)+str(int(time.time()))
+                if pic1:
+                    pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
                     path = pathToStorePicture+pic_name
-                    img = Image.open(pic)
+                    img = Image.open(pic1)
                     img.save(path, "png")
                     pic_url = pathToGetPicture+pic_name
-                p.photo = pic_url
+                    p.photo1 = pic_url
+                if pic2:
+                    pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
+                    path = pathToStorePicture+pic_name
+                    img = Image.open(pic2)
+                    img.save(path, "png")
+                    pic_url = pathToGetPicture+pic_name
+                    p.photo2 = pic_url
+                if pic3:
+                    pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
+                    path = pathToStorePicture+pic_name
+                    img = Image.open(pic3)
+                    img.save(path, "png")
+                    pic_url = pathToGetPicture+pic_name
+                    p.photo3 = pic_url
+                if pic4:
+                    pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
+                    path = pathToStorePicture+pic_name
+                    img = Image.open(pic4)
+                    img.save(path, "png")
+                    pic_url = pathToGetPicture+pic_name
+                    p.photo4 = pic_url
                 p.save()
                 status = 1
         except NoneExistError:
@@ -72,7 +96,7 @@ def make_appointment(request):
         except Exception:
             status = 2
             return HttpResponse(json.dumps({'status': status, 'body': None}))
-        return HttpResponse(json.dumps({'status': status, 'body': {'pic_url': pic_url}}))
+        return HttpResponse(json.dumps({'status': status, 'body': None}))
 
 
 @csrf_exempt
@@ -105,17 +129,17 @@ def get_detail_item(request):
             category_id = request.GET['category_id']
             if len(HomeItem_P.objects.filter(id=category_id)) == 0:
                 raise NoneExistError
-            itemlist = {}
+            itemlist = []
             category = HomeItem_P.objects.get(id=category_id)
             for p in category.homeitem_set.all():
-                itemlist[p.id] = {'title': p.title, 'content': p.content, 'price': p.price}
+                itemlist.append({'item_id': p.id, 'title': p.title, 'content': p.content, 'price': p.price})
             status = 1
         except NoneExistError:
             status = 7
             return HttpResponse(json.dumps({'status': status, 'body': None}))
-        # except Exception:
-        #     status = 2
-        #     return HttpResponse(json.dumps({'status': status, 'body': None}))
+        except Exception:
+            status = 2
+            return HttpResponse(json.dumps({'status': status, 'body': None}))
         return HttpResponse(json.dumps({'status': status, 'body': itemlist}))
 
 
@@ -124,9 +148,9 @@ def get_categories(request):
     if request.method == 'GET':
         try:
             querylist = HomeItem_P.objects.all()
-            category_list = {}
+            category_list = []
             for p in querylist:
-                category_list[p.id] = p.item_name
+                category_list.append({'category_id': p.id, 'category': p.item_name})
             status = 1
         except Exception:
             status = 2
