@@ -1,5 +1,4 @@
 from django.conf.urls import patterns, include, url
-from views import *
 from appointment_detail import *
 
 
@@ -18,6 +17,9 @@ urlpatterns = patterns('',
     url('^find_appointment$', find_appointment),
     url('^user_mes$', user_mes),
     url('^notice$', notice),
+    url('^program_manage$', program_manage),
+    url('^advertisement_manage$', advertisement_manage),
+    #option
     url('^register_verify$', phone_verify),
     url('^f_register_verify$', f_phone_verify),
     url('^get_new_appointment$', get_new_appointment),

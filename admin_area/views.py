@@ -630,3 +630,17 @@ def find_appointment(request):
                 return render_to_response('admin_area/find_appointment.html',
                                           {'items': appointments},
                                           context_instance=RequestContext(request))
+
+
+def program_manage(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return render_to_response('admin_area/program_manage.html')
+
+
+def advertisement_manage(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return render_to_response('admin_area/advertisement_manage.html')
