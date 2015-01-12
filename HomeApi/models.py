@@ -87,6 +87,7 @@ class Consumer(models.Model):
     phone = models.CharField(max_length=15)
     verified = models.BooleanField(default=False)
     create_time = models.DateTimeField(auto_now_add=True)
+    token = models.CharField(max_length=100, null=True)
 
     def __unicode__(self):
         return self.phone
@@ -136,7 +137,7 @@ class HomeItem(models.Model):
 
 class Advertisement(models.Model):
     content = models.CharField(max_length=500, blank=True, null=True)
-    photo = models.CharField(max_length=50, blank=True, null=True)
+    photo = models.CharField(max_length=150, blank=True, null=True)
     create_time = models.DateTimeField(auto_now_add=True)
     is_new = models.BooleanField(default=True)
 

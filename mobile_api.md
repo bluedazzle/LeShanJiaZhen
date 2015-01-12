@@ -30,7 +30,45 @@ GET /area_tel/
 {'status': 1, 'body': {'tel': 123456}}
 ```
 
-##**提交订单（含上传图片）**
+##**获取验证码**
+```
+POST /getverify/
+```
+###**Parameters**
+*   consumer(_Required_|string)——用户电话
+###**Request**
+```
+{"consumer":"15008242734"}
+```
+###**Return**
+```
+{'status': 1, 'body': None}
+```
+
+##**通过验证码获取token**
+```
+POST /phoneverify/
+```
+###**Parameters**
+*   consumer(_Required_|string)——用户电话
+*   vercode(_Required_|string)——验证码
+###**Request**
+```
+{"consumer":"15008242734","vercode":"123456"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": [
+        {
+            "token": "bFV2Rm8wMTUwMDgyNDI3MzQ="
+        }
+    ]
+}
+```
+
+##**提交预约（含上传图片）**
 ```
 POST /mkappoint/
 ```
@@ -38,6 +76,7 @@ POST /mkappoint/
 *   content(_Required_|string)——预约内容
 *   area_id(_Required_|int)——受理地区
 *   consumer(_Required_|string)——客户（电话）
+*   token(_Required_|string)——号码token
 *   file1(_Optional_|file1)——照片1
 *   file2(_Optional_|file2)——照片2
 *   file3(_Optional_|file3)——照片3
@@ -46,11 +85,11 @@ POST /mkappoint/
 *   address(_Optional_|string)——客户住址
 ###**Request**
 ```
-{"content":"水管坏了","area_id":333,"consumer":123456,"name":"张三","address":"XXX"}
+{"content":"水管坏了","area_id":1,"consumer":15008242734,"name":"张三","address":"XXX"}
 ```
 ###**Return**
 ```
-{'status': 1, 'body': None}
+{'status': 1, 'body': Null}
 ```
 
 ##**拉取广告**
@@ -67,8 +106,8 @@ GET /getad/
             "photo": "http://127.0.0.1/meizi.jpg"
         },
         {
-            "content": "快来吃屎",
-            "photo": "heheheh"
+            "content": "年前搞清洗，爽爽地过年",
+            "photo": "http://127.0.0.1/meizi.jpg"
         }
     ]
 }
