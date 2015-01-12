@@ -144,7 +144,7 @@ GET /getcategory/
 GET /getitem/
 ```
 ###**Parameters**
-*   id(_Required_|int)——大类编号，效果 http://127.0.0.1:8000/getitem/?category_id=2
+*   category_id(_Required_|int)——大类编号，效果 http://127.0.0.1:8000/getitem/?category_id=2
 ###**Return**
 ```
 {
