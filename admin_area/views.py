@@ -453,6 +453,7 @@ def change_area(request):
         context.update(csrf(request))
         password = request.POST.get('password')
         area = request.POST.get('area')
+        print "OK"
         if password and area:
             user = HomeAdmin.objects.get(username=username)
             if not user.check_password(password):
@@ -463,9 +464,9 @@ def change_area(request):
                 return HttpResponse(json.dumps('F1'), content_type="application/json")
 
             if area == '0':
-                area_now = Block.objects.get(area_id=1)
+                area_now = Block.objects.get(area_name="乐山")
             else:
-                area_now = Block.objects.get(area_id=2)
+                area_now = Block.objects.get(area_name="测试")
             if area_now == user.area:
                 return HttpResponse(json.dumps('F2'), content_type="application/json")
 
@@ -473,7 +474,9 @@ def change_area(request):
             new_application.old_area = user.area.id
             new_application.new_area = area_now.id
             new_application.apply_user = user
+            print "OK1"
             new_application.save()
+            print "OK2"
             return HttpResponse(json.dumps('T'), content_type="application/json")
 
         return HttpResponse(json.dumps('F3'), content_type="application/json")
@@ -638,11 +641,76 @@ def program_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return render_to_response('admin_area/program_manage.html')
+        item_p_id = request.GET.get('item_p_id')
+        user = HomeAdmin.objects.get(username=request.session['username'])
+        programs = HomeItem_P.objects.filter(area=user.area)
+        if not item_p_id:
+            return render_to_response('admin_area/program_manage.html', {'programs': programs})
+        else:
+            item_p = HomeItem_P.objects.filter(id=item_p_id)
+            if item_p.count() == 0:
+                return render_to_response('admin_area/program_manage.html', {'programs': programs})
+            else:
+                item_details = HomeItem.objects.filter(parent_item=item_p)
+                return render_to_response('admin_area/program_manage.html', {'programs': programs,
+                                                                             'item_details': item_details,
+                                                                             'item_p': item_p[0],
+                                                                             'flag0': 'T'})
+
+
+def delete_program_detail(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        item_id = request.GET.get('item_id')
+        item_p_id = request.GET.get('item_p_id')
+        item = HomeItem.objects.get(id=item_id)
+        item.delete()
+        return HttpResponseRedirect('program_manage?item_p_id='+item_p_id)
 
 
 def advertisement_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return render_to_response('admin_area/advertisement_manage.html')
+        items = range(0, 8)
+        return render_to_response('admin_area/advertisement_manage.html', {'items': items})
+
+
+def edit_program_detail(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        item_p_id = request.GET.get('item_p_id')
+        item_id = request.GET.get('item_id')
+        item_p = HomeItem_P.objects.get(id=item_p_id)
+        if not item_id:
+            return render_to_response('admin_area/edit_program_detail.html', {'item_p': item_p})
+        item = HomeItem.objects.get(id=item_id)
+        return render_to_response('admin_area/edit_program_detail.html', {'item_p': item_p,
+                                                                          'item': item})
+    if request.method == 'POST':
+        item_name = request.POST.get('item_name')
+        price = request.POST.get('price')
+        content = request.POST.get('content')
+        item_p_id = request.POST.get('item_p_id')
+        item_id = request.POST.get('item_id')
+        if item_name and price and content and item_p_id:
+            if item_id:
+                item = HomeItem.objects.get(id=item_id)
+                item.title = item_name
+                item.price = price
+                item.content = content
+                item.save()
+                return HttpResponse(json.dumps('T'), content_type="application/json")
+
+            item_p = HomeItem_P.objects.get(id=item_p_id)
+            new_item = HomeItem()
+            new_item.title = item_name
+            new_item.price = price
+            new_item.content = content
+            new_item.parent_item = item_p
+            new_item.save()
+            return HttpResponse(json.dumps('T'), content_type="application/json")
+        else:
+            return HttpResponse(json.dumps('F'), content_type="application/json")

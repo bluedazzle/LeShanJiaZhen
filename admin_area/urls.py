@@ -35,4 +35,6 @@ urlpatterns = patterns('',
     url('^change_password$', change_password),
     url('^change_area$', change_area),
     url('^out_appointment$', out_appointment),
+    url('^delete_program_detail$', delete_program_detail),
+    url('^edit_program_detail$', edit_program_detail),
 )

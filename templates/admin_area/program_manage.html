@@ -1,6 +1,66 @@
 {% extends 'admin_area/base.html' %}
 {% block define %}
-    <script>
+    <script xmlns="http://www.w3.org/1999/html">
         $('#page_title').text('项目管理')
     </script>
+<div class="col-lg-12 col-md-12">
+  <table style="margin-bottom: 5%">
+    <thead>
+     <h6 style="border-bottom: 3px #1abc9c solid;padding-bottom: 1%">
+         项目分类
+     </h6>
+    </thead>
+    <tbody>
+    {% for item in programs %}
+      <a role="button" href="?item_p_id={{ item.id }}" class="btn btn-hg btn-primary" style="margin-right: 2%">{{ item.item_name }}</a>
+
+    {% endfor %}
+{#      <button class="btn btn-hg btn-success" style="margin-right: 2%">+</button>#}
+    </tbody>
+  </table>
+  {% if flag0 %}
+  <table class="table">
+           <thead>
+             <tr>
+                 <h6 style="padding-bottom: 1%">
+                 {{ item_p.item_name }}的详细项目列表
+{#                     <button id="delete" class="btn btn-danger" style="float: right;margin-right: 2%">删除分类</button>#}
+{#                     <button id="delete" class="btn btn-default" style="float: right;margin-left: 2%;margin-right: 1%">修改名称</button>#}
+                 </h6>
+             </tr>
+           </thead>
+           <tbody>
+              <tr style="background-color: #1abc9c; color: #ffffff">
+                  <th>项目名称</th>
+                  <th>价格</th>
+                  <th style="max-width: 150px">说明</th>
+                  <th style="max-width: 50px">
+                  </th>
+              </tr>
+              {% for item in item_details %}
+              <tr>
+                  <td>{{ item.title }}</td>
+                  <td>{{ item.price }}</td>
+                  <td style="max-width: 150px">{{ item.content }}</td>
+                  <td style="max-width: 50px">
+                     <a role="button" href="edit_program_detail?item_p_id={{ item_p.id }}&item_id={{ item.id }}" class="btn btn-sm btn-default">修改</a>
+                     <button class="btn btn-sm btn-danger" onclick="delete_item_detail('{{ item.id }}', '{{ item.parent_item.id }}')">删除</button>
+                  </td>
+              </tr>
+              {% endfor %}
+           </tbody>
+           <script>
+               function delete_item_detail(item_id, item_p_id){
+                   r = confirm("确定删除该项目?");
+                   if(r == true){
+                       window.location.href = "delete_program_detail?item_id="+item_id+"&item_p_id="+item_p_id;
+                   }
+               }
+           </script>
+  </table>
+  <div class="text-right">
+      <a role="button" href="edit_program_detail?item_p_id={{ item_p.id }}" class="btn btn-lg btn-success" style="width: 250px;font-size: 20px;">添加</a>
+  </div>
+ {% endif %}
+</div>
 {% endblock %}

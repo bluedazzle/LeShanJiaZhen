@@ -67,7 +67,8 @@
           <a>
               <span class="glyphicon glyphicon-th-list" style="margin-right: 3%"></span>
              信息管理
-              <span class="glyphicon glyphicon-chevron-down" style="margin-left: 10%"></span>
+              <span id="menu-down" class="glyphicon glyphicon-chevron-down" style="margin-left: 10%"></span>
+              <span id="menu-up" class="glyphicon glyphicon-chevron-up" style="display: none;margin-left: 10%"></span>
           </a>
           <ul class="nav" id="programs" style="display: none;line-height: 0.9;padding-left: 10%">
               <li>
@@ -104,11 +105,11 @@
       </li>
 </ul>
 <script>
-    $('#message_manage').mouseenter(function(){
+    $('#message_manage').click(function(){
         $('#programs').toggle('normal');
-    });
-    $('#message_manage').mouseleave(function(){
-        $('#programs').toggle('normal');
+        $('#menu-down').toggle('fast');
+        $('#menu-up').toggle('fast');
+
     });
 </script>
 <nav class="navbar navbar-default" role="navigation" style="margin-bottom: 0;background-color: #3498db;border-radius: 0">
