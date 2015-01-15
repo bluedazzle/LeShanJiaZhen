@@ -7,12 +7,17 @@ from django.template import RequestContext
 from django.core.paginator import Paginator
 from django.core.paginator import PageNotAnInteger
 from django.core.paginator import EmptyPage
+from django import forms
 from HomeApi.models import *
 from HomeApi.method import *
 import json
 import simplejson
 import hashlib
 import datetime
+import time
+import os
+from PIL import Image
+BASE = os.path.dirname(os.path.dirname(__file__))
 
 
 def login_in(request):
@@ -149,9 +154,12 @@ def operate_new(request):
         #         appointments.append(item)
         #
         count = appointments.count()
+        if count == 0:
+            request.session['new_appointment_id'] = -1
+        else:
+            request.session['new_appointment_id'] = appointments[0].id
         paginator = Paginator(appointments, 10)
         try:
-            request.session['new_appointment_id'] = appointments[0].id
             page_num = request.GET.get('page')
             appointments = paginator.page(page_num)
         except PageNotAnInteger:
@@ -197,7 +205,8 @@ def get_new_appointment_count(request):
                     notice_id = 'T'
 
         content = {'new_appointment': count_num,
-                   'notice_id': notice_id}
+                   'notice_id': notice_id,
+                   'n_area': area_admin.area.area_name}
         return HttpResponse(json.dumps(content))
 
 
@@ -471,8 +480,8 @@ def change_area(request):
                 return HttpResponse(json.dumps('F2'), content_type="application/json")
 
             new_application = Application()
-            new_application.old_area = user.area.id
-            new_application.new_area = area_now.id
+            new_application.old_area_id = user.area.id
+            new_application.new_area_id = area_now.id
             new_application.apply_user = user
             print "OK1"
             new_application.save()
@@ -673,9 +682,36 @@ def advertisement_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        items = range(0, 8)
-        return render_to_response('admin_area/advertisement_manage.html', {'items': items})
+        items = Advertisement.objects.all()
+        return render_to_response('admin_area/advertisement_manage.html',
+                                  {'items': items},
+                                  context_instance=RequestContext(request))
+    if request.method == 'POST':
+        context = {}
+        context.update(csrf(request))
+        ad_file = request.FILES.get('file0', None)
+        if ad_file == None:
+            return HttpResponse('file not existing in the request')
+        file_name = str(int(time.time())) + '.png'
+        file_full_path = BASE + '/static/img/advertisement/' + file_name
+        Image.open(ad_file).save(file_full_path)
+        new_advertisement = Advertisement()
+        new_advertisement.content = file_name
+        new_advertisement.photo = '/img/advertisement/'+file_name
+        new_advertisement.save()
+        return HttpResponseRedirect('advertisement_manage')
 
+
+def delete_advertisement(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        ad_id = request.GET.get('advertisement_id')
+        advertisement = Advertisement.objects.get(id=ad_id)
+        file_full_path = BASE+'/static'+advertisement.photo
+        os.remove(file_full_path)
+        advertisement.delete()
+        return HttpResponseRedirect('advertisement_manage')
 
 def edit_program_detail(request):
     if not request.session.get('username'):
@@ -714,3 +750,5 @@ def edit_program_detail(request):
             return HttpResponse(json.dumps('T'), content_type="application/json")
         else:
             return HttpResponse(json.dumps('F'), content_type="application/json")
+
+

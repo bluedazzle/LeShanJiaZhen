@@ -4,17 +4,19 @@
         $('#page_title').text('广告管理')
     </script>
 <div class="col-md-12 col-lg-12 text-center">
-<h6>请选择图片文件(JPG/PNG/JEPG，400 x 200)</h6>
-<form name="form0" id="form0" >
+<h6>请选择图片文件(png，400 x 200)</h6>
+<form name="form0" method="post" action="advertisement_manage" id="form0" enctype="multipart/form-data">
+    {% csrf_token %}
   <input type="file" name="file0" id="file0" multiple="multiple" style="margin-left: 40%;line-height: 1;font-size: 16px;"/><br>
 <img style="width: 500px;height: 200px;" src="" id="img0" >
 </form>
-<button class="disabled btn btn-success" style="margin-top: 1%;margin-left: 43%" id="submit">提交</button>
-<p id="warning"></p>
+<button class="disabled btn btn-success" style="margin-top: 1%;margin-left: 38%" id="submit">提交</button>
+<p id="warning" style="color: red"></p>
 </div>
 <script>
 $("#file0").change(function(){
-	var objUrl = getObjectURL(this.files[0]);
+    var file0 = this.files[0];
+	var objUrl = getObjectURL(file0);
 	console.log("objUrl = "+objUrl) ;
 	if (objUrl) {
 		$("#img0").attr("src", objUrl);
@@ -23,6 +25,12 @@ $("#file0").change(function(){
             image.src = $('#img0').attr('src');
             var height = image.height;
             var width = image.width;
+            var f = $('#img0').val();
+            if(!/(png|PNG)$/.test(file0.type)){
+                $('#submit').addClass('disabled');
+                $('#warning').text('图像格式不正确，请上传PNG图片');
+                return false
+            }
             if(height==200&&width==400){
                 $('#submit').removeClass('disabled')
             }
@@ -32,8 +40,7 @@ $("#file0").change(function(){
             }
         })
 	}
-}) ;
-
+});
 //建立一個可存取到該file的url
 function getObjectURL(file) {
 	var url = null ;
@@ -46,15 +53,26 @@ function getObjectURL(file) {
 	}
 	return url ;
 }
+$('#submit').click(function(){
+    $('#form0').submit();
+})
 </script>
 <div class="row" style="margin-top: 5%">
  {% for i in items %}
-  <div class="col-md-4 col-md-4 text-right" style="margin-top: 2%">
-    <a href="/img/advertisement/test1.jpg" class="thumbnail">
-      <img src="/img/advertisement/test1.jpg" alt="...">
+  <div class="col-md-3 col-md-3 text-right" style="margin-top: 2%">
+    <a href="{{ i.photo }}" class="thumbnail" target="_blank">
+      <img src="{{ i.photo }}" alt="...">
     </a>
-    <a href="#" style="color: red">删除 test1.jpg</a>
+    <button onclick="delete_ad({{ i.id }})" class="btn btn-danger">删除 {{ i.content }}</button>
   </div>
  {% endfor %}
 </div>
+<script>
+  function delete_ad(id){
+      var r = confirm("确定要删除这个广告？")
+      if(r){
+          window.location.href = "delete_advertisement?advertisement_id="+id;
+      }
+  }
+</script>
 {% endblock %}

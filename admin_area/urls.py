@@ -37,4 +37,5 @@ urlpatterns = patterns('',
     url('^out_appointment$', out_appointment),
     url('^delete_program_detail$', delete_program_detail),
     url('^edit_program_detail$', edit_program_detail),
+    url('^delete_advertisement$', delete_advertisement),
 )

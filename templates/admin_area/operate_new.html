@@ -95,21 +95,6 @@
        $(document).ready(function(){
            $('#page_title').text('未受理预约');
            $('#new').addClass("active");
-           function fresh(){
-                    $.ajax({
-                        type: 'GET',
-                        url: 'get_new_appointment',
-                        data: '',
-                        success: function(data){
-                            if(data == 'T'){
-                                clearInterval(countdown);
-                                window.location.href = 'operate_new'
-                            }
-                        },
-                        dataType: 'json'
-                    });
-                }
-                var countdown = setInterval(fresh, 8000);
        })
     </script>
 {% endblock %}

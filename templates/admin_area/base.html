@@ -13,6 +13,9 @@
     <script src="/js/detail.js"></script>
 </head>
 <body style="font-family:microsoft YaHei;">
+<audio  controls="controls" id="music" src="/js/567.wav" loop="true" style="display:none;">
+        Your browser does not support the audio element.
+    </audio>
 <ul class="demo-sidebar nav nav-pills nav-stacked col-md-2 col-lg-2" style="border-right:2px solid rgba(255,255,255,0.14);max-width: 170px">
       <li style="padding-top: 1%;background-color: #2980b9;height: 53px;color: #ffffff;">
           <p style="font-size: 20px;">
@@ -23,7 +26,7 @@
       <li style="margin-top:2%;color: #16a085">
           <p>
               <span class="glyphicon glyphicon-road" style="margin-right: 3%"></span>
-              当前地区：乐山
+              <span id="n_area"></span>
           </p>
       </li>
       <li id="notice" style="margin-top: 20%">
@@ -125,7 +128,17 @@
     {% endblock %}
 </div>
 <script>
+    function music_play(){
+        var music = document.getElementById("music");
+        music.play();
+    }
     $(document).ready(function(){
+          if(localStorage['music'] == '1'){
+              music_play();
+              var m_count = parseInt(localStorage['music']);
+              m_count++;
+              localStorage['music'] = m_count;
+          }
           $.ajax({
                         type: 'GET',
                         url: 'get_new_appointment_count',
@@ -140,10 +153,36 @@
                             if(data['notice_id'] != 'F'){
                                 $('#notice_is').removeClass('hidden')
                             }
+                            if(data['n_area']){
+                                $('#n_area').text('当前地区：'+data['n_area'])
+                            }
+{#                            if(localStorage['music'] == '1'){#}
+{#                                var music = document.getElementById("music");#}
+{#                                music.play();#}
+{#                                var m_count = parseInt(localStorage['music']);#}
+{#                                m_count++;#}
+{#                                localStorage['music'] = m_count;#}
+{#                            }#}
                         },
                         dataType: 'json'
                     });
           function fresh_count(){
+                    $.ajax({
+                        type: 'GET',
+                        url: 'get_new_appointment',
+                        data: '',
+                        success: function(data){
+                            if(data == 'T'){
+                                localStorage['music'] = 2;
+                                music_play();
+                                if(/operate_new$/.test(window.location.href)){
+                                    localStorage['music'] = 1;
+                                    window.location.href = 'operate_new'
+                                }
+                            }
+                        },
+                        dataType: 'json'
+                    });
                     $.ajax({
                         type: 'GET',
                         url: 'get_new_appointment_count',
