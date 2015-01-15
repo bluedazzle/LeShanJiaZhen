@@ -68,7 +68,7 @@ POST /phoneverify/
 }
 ```
 
-##**提交预约（含上传图片）**
+##**提交预约**
 ```
 POST /mkappoint/
 ```
@@ -77,15 +77,30 @@ POST /mkappoint/
 *   area_id(_Required_|int)——受理地区
 *   consumer(_Required_|string)——客户（电话）
 *   token(_Required_|string)——号码token
-*   file1(_Optional_|file1)——照片1
-*   file2(_Optional_|file2)——照片2
-*   file3(_Optional_|file3)——照片3
-*   file4(_Optional_|file4)——照片4
+*   time(_Required_|string)——上门维修时间
 *   name(_Optional_|string)——客户姓名
 *   address(_Optional_|string)——客户住址
 ###**Request**
 ```
-{"content":"水管坏了","area_id":1,"consumer":15008242734,"name":"张三","address":"XXX"}
+{"content":"水管坏了","area_id":1,"consumer":15008242734,"name":"张三","address":"XXX","time":XXX}
+```
+###**Return**
+```
+{'status': 1, 'body': Null}
+```
+
+##**上传预约照片**
+```
+POST /appointpic/
+```
+###**Parameters**
+*   consumer(_Required_|string)——客户（电话）
+*   token(_Required_|string)——号码token
+*   picindex(_Required_|string)——照片序号
+*   file(_Required_|file)——照片
+###**Request**
+```
+{"consumer":'15008242734","token":XXX,"picindex":"1"}
 ```
 ###**Return**
 ```
