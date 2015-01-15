@@ -65,9 +65,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 DB_ENGINE = 'django.db.backends.postgresql_psycopg2'
 DB_NAME = 'homemaking'
 DB_USER = 'postgres'                      # Not used with sqlite3.
-DB_PASSWORD = '123456'                  # Not used with sqlite3.
+DB_PASSWORD = 'GDBDYL886'                  # Not used with sqlite3.
 DB_HOST = 'localhost'                      # Set to empty string for localhost. Not used with sqlite3.
-DB_PORT = ''
+DB_PORT = '5433'
 
 DATABASES = {
     'default': {
@@ -107,4 +107,4 @@ CSS_DIR = './static/css/'
 IMG_DIR = './static/img/'
 JS_DIR = './static/js/'
 FONTS_DIR = './static/fonts/'
-OUT_FILES_DIR ='./out_files'
+OUT_FILES_DIR ='./out_files/'

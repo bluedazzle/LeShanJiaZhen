@@ -33,7 +33,7 @@ class HomeAdminManager(BaseUserManager):
 
 class Block(models.Model):
     area_id = models.IntegerField(max_length=3)
-    baidu_id = models.CharField(max_length=10)
+    baidu_id = models.CharField(max_length=10, blank=True, null=True)
     area_name = models.CharField(max_length=10)
     area_tel = models.CharField(max_length=20)
     area_address = models.CharField(max_length=100, null=True)
@@ -113,6 +113,7 @@ class Appointment(models.Model):
 class HomeItem_P(models.Model):
     item_name = models.CharField(max_length=10)
     create_time = models.DateTimeField(auto_now_add=True)
+    area = models.ForeignKey(Block, null=True, blank=True)
 
     def __unicode__(self):
         return self.item_name

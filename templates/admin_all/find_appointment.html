@@ -84,25 +84,7 @@
                var date_start = '{{ date_start }}';
                var date_end = '{{ date_end }}';
               {% endif %}
-              var message = {'status': {{ status }},
-                             'date_start': date_start,
-                             'date_end': date_end,
-                             'area': {{ area }},
-                             'csrfmiddlewaretoken': getCookie('csrftoken')};
-              $.ajax({
-                  type: 'POST',
-                  url: 'out_appointment',
-                  data: message,
-                  success: function (data) {
-                      if (data) {
-                          window.location.href = data
-                      }
-                      else {
-                          alert("导出失败！")
-                      }
-                  },
-                  dataType: 'json'
-              });
+              p
           })
       </script>
         {% endif %}
