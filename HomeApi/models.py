@@ -100,6 +100,7 @@ class Appointment(models.Model):
     photo2 = models.CharField(max_length=100, blank=True, null=True)
     photo3 = models.CharField(max_length=100, blank=True, null=True)
     photo4 = models.CharField(max_length=100, blank=True, null=True)
+    appoint_time = models.CharField(max_length=30, blank=True, null=True)
     address = models.CharField(max_length=100, default='')
     name = models.CharField(max_length=10, default='')
     area = models.ForeignKey(Block)

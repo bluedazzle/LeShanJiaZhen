@@ -43,16 +43,17 @@ def make_appointment(request):
     if request.method == 'POST':
         try:
             req = request.POST
-            pic1 = request.FILES.get('file1')
-            pic2 = request.FILES.get('file2')
-            pic3 = request.FILES.get('file3')
-            pic4 = request.FILES.get('file4')
+            # pic1 = request.FILES.get('file1')
+            # pic2 = request.FILES.get('file2')
+            # pic3 = request.FILES.get('file3')
+            # pic4 = request.FILES.get('file4')
             content = req['content']
             name = req['name']
             area_id = req['area_id']
             address = req['address']
             token = req['token']
             consumer = req['consumer']
+            time = req['time']
             if len(Consumer.objects.filter(phone=consumer)) != 0:
                 if Consumer.objects.get(phone=consumer).token != token:
                     status = 13
@@ -68,34 +69,35 @@ def make_appointment(request):
                     p.address = address
                     p.name = name
                     p.consumer = p_consumer
-                    if pic1:
-                        pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
-                        path = pathToStorePicture+pic_name
-                        img = Image.open(pic1)
-                        img.save(path, "png")
-                        pic_url = pathToGetPicture+pic_name
-                        p.photo1 = pic_url
-                    if pic2:
-                        pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
-                        path = pathToStorePicture+pic_name
-                        img = Image.open(pic2)
-                        img.save(path, "png")
-                        pic_url = pathToGetPicture+pic_name
-                        p.photo2 = pic_url
-                    if pic3:
-                        pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
-                        path = pathToStorePicture+pic_name
-                        img = Image.open(pic3)
-                        img.save(path, "png")
-                        pic_url = pathToGetPicture+pic_name
-                        p.photo3 = pic_url
-                    if pic4:
-                        pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
-                        path = pathToStorePicture+pic_name
-                        img = Image.open(pic4)
-                        img.save(path, "png")
-                        pic_url = pathToGetPicture+pic_name
-                        p.photo4 = pic_url
+                    p.appoint_time = time
+                    # if pic1:
+                    #     pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
+                    #     path = pathToStorePicture+pic_name
+                    #     img = Image.open(pic1)
+                    #     img.save(path, "png")
+                    #     pic_url = pathToGetPicture+pic_name
+                    #     p.photo1 = pic_url
+                    # if pic2:
+                    #     pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
+                    #     path = pathToStorePicture+pic_name
+                    #     img = Image.open(pic2)
+                    #     img.save(path, "png")
+                    #     pic_url = pathToGetPicture+pic_name
+                    #     p.photo2 = pic_url
+                    # if pic3:
+                    #     pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
+                    #     path = pathToStorePicture+pic_name
+                    #     img = Image.open(pic3)
+                    #     img.save(path, "png")
+                    #     pic_url = pathToGetPicture+pic_name
+                    #     p.photo3 = pic_url
+                    # if pic4:
+                    #     pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
+                    #     path = pathToStorePicture+pic_name
+                    #     img = Image.open(pic4)
+                    #     img.save(path, "png")
+                    #     pic_url = pathToGetPicture+pic_name
+                    #     p.photo4 = pic_url
                     p.save()
                     status = 1
             else:
@@ -106,6 +108,47 @@ def make_appointment(request):
         except Exception:
             status = 2
             return HttpResponse(json.dumps({'status': status, 'body': None}))
+        return HttpResponse(json.dumps({'status': status, 'body': None}))
+
+
+@csrf_exempt
+def appointment_pic(request):
+    if request.method == 'POST':
+        try:
+            req = request.POST
+            token = req['token']
+            consumer = req['consumer']
+            picindex = req['picindex']
+            pic = request.FILES.get('file')
+            if len(Consumer.objects.filter(phone=consumer)) != 0:
+                if Consumer.objects.get(phone=consumer).token != token:
+                    status = 13
+                    return HttpResponse(json.dumps({'status': status, 'body': None}))
+                else:
+                    p_consumer = Consumer.objects.get(phone=consumer)
+                    appoint_id = p_consumer.appointment_set.latest('create_time').id
+                    appoint = Appointment.objects.get(id=appoint_id)
+                    if pic:
+                        pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
+                        path = pathToStorePicture+pic_name
+                        img = Image.open(pic)
+                        img.save(path, "png")
+                        pic_url = pathToGetPicture+pic_name
+                        # pic_dic = {'1': appoint.photo1, '2': appoint.photo2, '3': appoint.photo3, '4': appoint.photo4}
+                        if picindex == '1':
+                            appoint.photo1 = pic_url
+                        if picindex == '2':
+                            appoint.photo2 = pic_url
+                        if picindex == '3':
+                            appoint.photo3 = pic_url
+                        if picindex == '4':
+                            appoint.photo4 = pic_url
+                    appoint.save()
+                    status = 1
+            else:
+                status = 13
+        except Exception:
+            status = 2
         return HttpResponse(json.dumps({'status': status, 'body': None}))
 
 
@@ -140,7 +183,7 @@ def verify_get_token(request):
             phone = request.POST['consumer']
             vercode = request.POST['vercode']
             if (datetime.datetime.now().replace(tzinfo=None)-PhoneVerify.objects.get(phone=phone).update_time.replace(
-                    tzinfo=None)).seconds < 12000:
+                    tzinfo=None)).seconds < 120:
                 print int(vercode)
                 print type(int(vercode))
                 print type(PhoneVerify.objects.get(phone=phone).verify)
