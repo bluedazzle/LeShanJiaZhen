@@ -172,11 +172,11 @@ def out_excel(appointments, file_name):
         ws.write(i, 3, item.address)
         it_date = str(item.create_time)[0:10]
         ws.write(i, 4, it_date)
-        if item.status == '1':
+        if item.status == 1:
             status_text = "未受理"
-        elif item.status == '2':
+        elif item.status == 2:
             status_text = "已接受"
-        elif item.status == '3':
+        elif item.status == 3:
             status_text = "已完成"
         else:
             status_text = "已取消"

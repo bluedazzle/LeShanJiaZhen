@@ -150,7 +150,7 @@ def operate_new(request):
         appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=1)
         # appointments = []
         # for i in range(0, 10):
-        #     for item in appointment:
+        #     for item in appointments:
         #         appointments.append(item)
         #
         count = appointments.count()
@@ -220,7 +220,7 @@ def operate_get(request):
         count = appointments.count()
         # appointments = []
         # for i in range(0, 10):
-        #     for item in appointment:
+        #     for item in appointments:
         #         appointments.append(item)
 
         paginator = Paginator(appointments, 10)
@@ -615,7 +615,7 @@ def find_appointment(request):
         context = {}
         context.update(csrf(request))
         phone = request.POST.get('phone')
-        appointment = request.POST.get('appointment')
+        appointment = request.POST.get('appointments')
         if phone:
             user = HomeAdmin.objects.get(username=username)
             consumer = Consumer.objects.filter(phone=phone)
@@ -713,6 +713,7 @@ def delete_advertisement(request):
         advertisement.delete()
         return HttpResponseRedirect('advertisement_manage')
 
+
 def edit_program_detail(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
@@ -752,3 +753,16 @@ def edit_program_detail(request):
             return HttpResponse(json.dumps('F'), content_type="application/json")
 
 
+def push_message(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return render_to_response('admin_area/push_message.html', context_instance=RequestContext(request))
+    if request.method == 'POST':
+        message = request.POST.get('mes_push')
+        message = message.encode('utf-8')
+        req = customedPush(message)
+        if req:
+            return HttpResponse(json.dumps('T'))
+        else:
+            return HttpResponse(json.dumps('F'))

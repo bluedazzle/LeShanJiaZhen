@@ -44,7 +44,7 @@
                    <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
                  查看照片
                </button>
-               <div class="modal fade bs-example-modal-lg" style="padding-top: 10%;padding-left: 10%" id="modal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+               <div class="modal fade bs-example-modal-lg" style="padding-top: 5%;padding-left: 10%" id="modal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                    <div class="modal-dialog modal-lg">
                        <div class="modal-content text-center" style="padding: 2%">
 {#                             <div class="row">#}
@@ -55,16 +55,20 @@
 {#                                 </div>#}
 {#                             </div>#}
                            {% if item.photo1 %}
-                           <img src="/img/icons/png/Toilet-Paper.png">
+                           <img src="{{ item.photo1 }}">
+                           <br/>
                            {% endif %}
                            {% if item.photo2 %}
-                           <img src="/img/icons/png/Toilet-Paper.png">
+                           <img style="margin-top: 2%" src="{{ item.photo2 }}">
+                           <br/>
                            {% endif %}
                            {% if item.photo3 %}
-                           <img src="/img/icons/png/Toilet-Paper.png">
+                           <img style="margin-top: 2%" src="{{ item.photo3 }}">
+                           <br/>
                            {% endif %}
                            {% if item.photo4 %}
-                           <img src="/img/icons/png/Toilet-Paper.png">
+                           <img style="margin-top: 2%" src="{{ item.photo4 }}">
+                           <br/>
                            {% endif %}
                        </div>
                    </div>
