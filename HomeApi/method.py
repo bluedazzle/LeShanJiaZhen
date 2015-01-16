@@ -5,6 +5,7 @@ import datetime
 import string
 from HomeApi.yunpian import *
 from HomeApi.models import *
+import xinge
 
 def createverfiycode(phone, count=6):
     result = {}
@@ -45,5 +46,28 @@ def sendverifycode(content, phone):
         return True
     else:
         print jsres
+        return False
+
+
+def customedPush(msg):
+    xios = xinge.XingeApp(2200050216, '2f7f56e61191393d6b25079ee9d839b0')
+    ios = xinge.MessageIOS()
+    ios.alert = msg
+    ios.sound = "default"
+    ios.badge = 1
+    ios.expireTime = 86400
+    ret = xios.PushAllDevices(0, ios, xinge.XingeApp.ENV_DEV)
+
+    xandroid = xinge.XingeApp(2100050215, '5e640e7c8ce451bca7dfd21ce6c29686')
+    android =xinge.Message()
+    android.type = xinge.Message.TYPE_NOTIFICATION
+    android.title = '易修哥'
+    android.content = msg
+    android.expireTime = 86400
+    res = xandroid.PushAllDevices(0,android)
+
+    if ret[0] == 0 and res[0] == 0:
+        return True
+    else:
         return False
 
