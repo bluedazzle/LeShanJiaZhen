@@ -77,16 +77,22 @@ POST /mkappoint/
 *   area_id(_Required_|int)——受理地区
 *   consumer(_Required_|string)——客户（电话）
 *   token(_Required_|string)——号码token
-*   time(_Required_|string)——上门维修时间
-*   name(_Optional_|string)——客户姓名
-*   address(_Optional_|string)——客户住址
+*   time(_Required_|string)——上门维修时间，时间戳保留整数
+*   name(_Required_|string)——客户姓名
+*   address(_Required_|string)——客户住址
+*   remark(_Optional_|string)——备注
 ###**Request**
 ```
-{"content":"水管坏了","area_id":1,"consumer":15008242734,"name":"张三","address":"XXX","time":XXX}
+{"content":"水管坏了","area_id":1,"consumer":15008242734,"name":"张三","address":"XXX","time":XXX,"remark":XXX}
 ```
 ###**Return**
 ```
-{'status': 1, 'body': Null}
+{
+    "status": 1,
+    "body": {
+        "appointmentid": "15008242734142146281035235"
+    }
+}
 ```
 
 ##**上传预约照片**
@@ -97,6 +103,7 @@ POST /appointpic/
 *   consumer(_Required_|string)——客户（电话）
 *   token(_Required_|string)——号码token
 *   picindex(_Required_|string)——照片序号
+*   appointmentid(_Required_|string)——预约号
 *   file(_Required_|file)——照片
 ###**Request**
 ```
