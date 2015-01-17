@@ -53,7 +53,8 @@ def make_appointment(request):
             address = req['address']
             token = req['token']
             consumer = req['consumer']
-            time = req['time']
+            appoint_time = req['time']
+            remark = req['remark']
             if len(Consumer.objects.filter(phone=consumer)) != 0:
                 if Consumer.objects.get(phone=consumer).token != token:
                     status = 13
@@ -69,7 +70,10 @@ def make_appointment(request):
                     p.address = address
                     p.name = name
                     p.consumer = p_consumer
-                    p.appoint_time = time
+                    p.appoint_time = datetime.datetime.fromtimestamp(int(appoint_time)).replace(tzinfo=None)
+                    p.appointment_id = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
+                    print p.appointment_id
+                    p.remark = remark
                     # if pic1:
                     #     pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
                     #     path = pathToStorePicture+pic_name
@@ -108,7 +112,7 @@ def make_appointment(request):
         except Exception:
             status = 2
             return HttpResponse(json.dumps({'status': status, 'body': None}))
-        return HttpResponse(json.dumps({'status': status, 'body': None}))
+        return HttpResponse(json.dumps({'status': status, 'body': {'appointmentid': p.appointment_id}}))
 
 
 @csrf_exempt
@@ -119,15 +123,14 @@ def appointment_pic(request):
             token = req['token']
             consumer = req['consumer']
             picindex = req['picindex']
+            appointment_id = req['appointmentid']
             pic = request.FILES.get('file')
-            if len(Consumer.objects.filter(phone=consumer)) != 0:
+            if len(Appointment.objects.filter(appointment_id=appointment_id)) != 0:
                 if Consumer.objects.get(phone=consumer).token != token:
                     status = 13
                     return HttpResponse(json.dumps({'status': status, 'body': None}))
                 else:
-                    p_consumer = Consumer.objects.get(phone=consumer)
-                    appoint_id = p_consumer.appointment_set.latest('create_time').id
-                    appoint = Appointment.objects.get(id=appoint_id)
+                    appoint = Appointment.objects.get(appointment_id=appointment_id)
                     if pic:
                         pic_name = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
                         path = pathToStorePicture+pic_name
@@ -137,12 +140,14 @@ def appointment_pic(request):
                         # pic_dic = {'1': appoint.photo1, '2': appoint.photo2, '3': appoint.photo3, '4': appoint.photo4}
                         if picindex == '1':
                             appoint.photo1 = pic_url
-                        if picindex == '2':
+                        elif picindex == '2':
                             appoint.photo2 = pic_url
-                        if picindex == '3':
+                        elif picindex == '3':
                             appoint.photo3 = pic_url
-                        if picindex == '4':
+                        elif picindex == '4':
                             appoint.photo4 = pic_url
+                        else:
+                            raise Exception
                     appoint.save()
                     status = 1
             else:
