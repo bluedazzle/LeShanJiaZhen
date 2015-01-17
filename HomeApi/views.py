@@ -237,12 +237,12 @@ def get_detail_item(request):
     if request.method == 'GET':
         try:
             category_id = request.GET['category_id']
-            if len(HomeItem_P.objects.filter(id=category_id)) == 0:
+            if len(HomeItem_P.objects.filter(sort_id=category_id)) == 0:
                 raise NoneExistError
             itemlist = []
-            category = HomeItem_P.objects.get(id=category_id)
+            category = HomeItem_P.objects.get(sort_id=category_id)
             for p in category.homeitem_set.all():
-                itemlist.append({'item_id': p.id, 'title': p.title, 'content': p.content, 'price': p.price})
+                itemlist.append({'item_id': p.sort_id, 'title': p.title, 'content': p.content, 'price': p.price})
             status = 1
         except NoneExistError:
             status = 7
@@ -260,7 +260,7 @@ def get_categories(request):
             querylist = HomeItem_P.objects.all()
             category_list = []
             for p in querylist:
-                category_list.append({'category_id': p.id, 'category': p.item_name, 'url': p.icon})
+                category_list.append({'category_id': p.sort_id, 'category': p.item_name, 'url': p.icon})
             status = 1
         except Exception:
             status = 2

@@ -15,7 +15,8 @@
             <input type="text" class="form-control" id="item_name" name='item_name'
                    placeholder="请输入项目名称" style="width: 300px;margin-top: 0.5%" value="{{ item.title }}">
             <input type="text" class="form-control" id="sort_id" name='sort_id'
-                   placeholder="请输入排序id" style="width: 300px;margin-top: 2.5%" value="{{ item.sort_id }}"> 
+                   placeholder="请输入排序id" style="width: 300px;margin-top: 2.5%" value="{{ item.sort_id }}"
+                    onkeyup="this.value=this.value.replace(/\D/g,'')">
             <input type="text" class="form-control" id="price" name='price'
                    placeholder="请输入价格" style="width: 300px;margin-top: 2.5%" value="{{ item.price }}">
             <textarea class="form-control" rows="5" id="content" name='content'
@@ -33,7 +34,7 @@
                                'price': $('#price').val(),
                                'content': $('#content').val(),
                                'item_p_id': {{ item_p.id }},
-                               'sort_id': {{ item.sort_id }},
+                               'sort_id': $('#sort_id').val(),
                                'csrfmiddlewaretoken': getCookie('csrftoken')};
                 {% else %}
                  var message = {'item_name': $('#item_name').val(),
@@ -41,6 +42,7 @@
                                'content': $('#content').val(),
                                'item_p_id': {{ item_p.id }},
                                'item_id': {{ item.id }},
+                               'sort_id': $('#sort_id'),
                                'csrfmiddlewaretoken': getCookie('csrftoken')};
                 {% endif %}
                 $.ajax({

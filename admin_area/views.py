@@ -654,7 +654,7 @@ def program_manage(request):
     if request.method == 'GET':
         item_p_id = request.GET.get('item_p_id')
         user = HomeAdmin.objects.get(username=request.session['username'])
-        programs = HomeItem_P.objects.filter(area=user.area)
+        programs = HomeItem_P.objects.order_by('sort_id').filter(area=user.area)
         if not item_p_id:
             return render_to_response('admin_area/program_manage.html', {'programs': programs})
         else:
@@ -662,7 +662,7 @@ def program_manage(request):
             if item_p.count() == 0:
                 return render_to_response('admin_area/program_manage.html', {'programs': programs})
             else:
-                item_details = HomeItem.objects.order_by('id').filter(parent_item=item_p)
+                item_details = HomeItem.objects.order_by('sort_id').filter(parent_item=item_p)
                 return render_to_response('admin_area/program_manage.html', {'programs': programs,
                                                                              'item_details': item_details,
                                                                              'item_p': item_p[0],
@@ -737,7 +737,7 @@ def edit_program_detail(request):
         price = request.POST.get('price')
         content = request.POST.get('content')
         item_p_id = request.POST.get('item_p_id')
-        item_sort_id = request.POST.get('item_sort_id')
+        item_sort_id = request.POST.get('sort_id')
         item_id = request.POST.get('item_id')
         if item_name and price and content and item_p_id:
             if item_id:
@@ -779,7 +779,7 @@ def edit_program_p_detail(request):
         context.update(csrf(request))
         icon_file = request.FILES.get('icon_file')
         item_p_id = request.POST.get('item_p_id')
-        item_sort_id = request.POST.get('item_sort_id')
+        item_sort_id = request.POST.get('sort_id')
         item_name = request.POST.get('item_name')
         user = HomeAdmin.objects.get(username=request.session['username'])
         i_id = 1

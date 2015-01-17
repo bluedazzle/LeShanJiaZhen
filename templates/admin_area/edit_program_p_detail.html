@@ -7,6 +7,7 @@
  <div class="panel-body">
        <div class="col-lg-4 col-md-4 text-right">
             <h6>项目名称:</h6>
+            <h6 style="margin-top: 9%">排序ID:</h6>
             <h6 style="margin-top: 9%">(可选)项目图标:</h6>
         </div>
        <div class="col-lg-6 col-md-6" style="padding-top: 0.5%;padding-left: 0">
@@ -15,6 +16,9 @@
             <input style="display: none" type="text" name="item_p_id" value="{{ item_p.id }}">
             <input type="text" class="form-control" id="item_name" name='item_name'
                    placeholder="请输入项目名称" style="width: 300px;margin-top: 0.5%" value="{{ item_p.item_name }}">
+            <input type="text" class="form-control" id="sort_id" name='sort_id'
+                   placeholder="请输入排序ID" style="width: 300px;margin-top: 3%" value="{{ item_p.sort_id }}"
+                    onkeyup="this.value=this.value.replace(/\D/g,'')">
             <input type="file" name="icon_file" id="file0" multiple="multiple" style="margin-top:5%;line-height: 1;font-size: 16px;"/><br>
             <p>请上传50*50的PNG图片</p>
               {% if item_p %}
@@ -75,7 +79,7 @@ function getObjectURL(file) {
 	return url ;
 }
         $('#submit').click(function(){
-            if($('#item_name').val()){
+            if($('#item_name').val()&&$('#sort_id').val()){
                 $('#p_mes').submit();
             }
             else{
