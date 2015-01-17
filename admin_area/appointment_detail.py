@@ -164,13 +164,14 @@ def out_excel(appointments, file_name):
     ws.write(0, 6, "地区")
     ws.write(0, 7, "操作员")
     ws.write(0, 8, "预约内容")
+    ws.write(0, 9, "备注")
     i = 1
     for item in appointments:
-        ws.write(i, 0, item.id, style0)
+        ws.write(i, 0, item.appointment_id, style0)
         ws.write(i, 1, item.consumer.phone, style0)
         ws.write(i, 2, item.name)
         ws.write(i, 3, item.address)
-        it_date = str(item.create_time)[0:10]
+        it_date = str(item.appoint_time)[0:10]
         ws.write(i, 4, it_date)
         if item.status == 1:
             status_text = "未受理"
@@ -184,6 +185,7 @@ def out_excel(appointments, file_name):
         ws.write(i, 6, item.area.area_name)
         ws.write(i, 7, item.process_by.nick)
         ws.write(i, 8, item.content)
+        ws.write(i, 9, item.remark)
         i += 1
 
     wb.save("out_files/"+file_name+".xls")

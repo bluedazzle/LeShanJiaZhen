@@ -10,11 +10,12 @@ def out_appointment(request):
     if request.method == 'POST':
         context = {}
         context.update(csrf(request))
+        print "OK"
         a_status = request.POST.get('status')
         a_date_start = request.POST.get('date_start')
         a_date_end = request.POST.get('date_end')
-        area_id = request.POST.get('area')
-        area = Block.objects.get(area_id=area_id)
+        area = request.POST.get('area')
+        area = Block.objects.get(area_name=area)
         if a_status == '0':
             all_appointments = Appointment.objects.order_by('-id').filter(area=area)
         else:
@@ -64,26 +65,31 @@ def out_excel(appointments, file_name):
     ws.write(0, 6, "地区")
     ws.write(0, 7, "操作员")
     ws.write(0, 8, "预约内容")
+    ws.write(0, 9, "备注")
     i = 1
     for item in appointments:
-        ws.write(i, 0, item.id, style0)
+        ws.write(i, 0, item.appointment_id, style0)
         ws.write(i, 1, item.consumer.phone, style0)
         ws.write(i, 2, item.name)
         ws.write(i, 3, item.address)
-        it_date = str(item.create_time)[0:10]
+        it_date = str(item.appoint_time)[0:10]
         ws.write(i, 4, it_date)
-        if item.status == '1':
+        if item.status == 1:
             status_text = "未受理"
-        elif item.status == '2':
+        elif item.status == 2:
             status_text = "已接受"
-        elif item.status == '3':
+        elif item.status == 3:
             status_text = "已完成"
         else:
             status_text = "已取消"
         ws.write(i, 5, status_text, style0)
         ws.write(i, 6, item.area.area_name)
-        ws.write(i, 7, item.process_by.nick)
+        if item.process_by:
+            ws.write(i, 7, item.process_by.nick)
+        else:
+            ws.write(i, 7, "无")
         ws.write(i, 8, item.content)
+        ws.write(i, 9, item.remark)
         i += 1
 
     wb.save("out_files/"+file_name+".xls")

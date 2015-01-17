@@ -91,7 +91,7 @@
 {% for item in items %}
    <div class="panel panel-default">
        <div class="panel-heading" style="background-color: #bdc3c7;">
-           预约号：{{ item.id }}
+           预约号：{{ item.appointment_id }}
            <span style="margin-left: 5%">联系方式：{{ item.consumer }}</span>
            <span style="margin-left: 5%">地址：{{ item.address }}</span>
        </div>
@@ -101,27 +101,42 @@
               {% if item.process_by %}
             <div class="col-md-12 col-lg-12">操作员：{{ item.process_by.nick }}</div>
                {% endif %}
-           <div class="col-md-6 col-lg-6">报修项目：{{ item.content }}
-               {% if item.photo %}
+           <div class="col-md-12 col-lg-12">报修项目：{{ item.content }}
+               {% if item.photo1 %}
                    <strong style="color: #27ad60">(有照片)</strong>
                {% endif %}
            </div>
            <div class="col-md-6 col-lg-6">
-               {% if item.photo %}
+               {% if item.remark %}
+               备注：{{ item.remark }}
+               {% else %}
+               备注：无
+               {% endif %}
+           </div>
+           <div class="col-md-6 col-lg-6">
+               {% if item.photo1 %}
                    <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
                  查看照片
                </button>
-               <div class="modal fade bs-example-modal-lg" style="padding-top: 10%;padding-left: 10%" id="modal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+               <div class="modal fade bs-example-modal-lg" style="padding-top: 5%;padding-left: 10%" id="modal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                    <div class="modal-dialog modal-lg">
                        <div class="modal-content text-center" style="padding: 2%">
-{#                             <div class="row">#}
-{#                                 <div class="col-md-4 col-lg-4">#}
-{#                                     <a href="/img/icons/png/Toilet-Paper.png" class="thumbnail">#}
-{#                                         <img src="/img/icons/png/Toilet-Paper.png">#}
-{#                                     </a>#}
-{#                                 </div>#}
-{#                             </div>#}
-                           <img src="/img/icons/png/Toilet-Paper.png">
+                           {% if item.photo1 %}
+                           <img src="{{ item.photo1 }}">
+                           <br/>
+                           {% endif %}
+                           {% if item.photo2 %}
+                           <img style="margin-top: 2%" src="{{ item.photo2 }}">
+                           <br/>
+                           {% endif %}
+                           {% if item.photo3 %}
+                           <img style="margin-top: 2%" src="{{ item.photo3 }}">
+                           <br/>
+                           {% endif %}
+                           {% if item.photo4 %}
+                           <img style="margin-top: 2%" src="{{ item.photo4 }}">
+                           <br/>
+                           {% endif %}
                        </div>
                    </div>
                </div>
