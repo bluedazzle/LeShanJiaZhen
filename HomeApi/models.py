@@ -117,6 +117,7 @@ class HomeItem_P(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     area = models.ForeignKey(Block, null=True, blank=True)
     icon = models.CharField(max_length=100, blank=True, null=True)
+    sort_id = models.IntegerField(max_length=10,blank=True,null=True)
 
     def __unicode__(self):
         return self.item_name
@@ -135,6 +136,7 @@ class HomeItem(models.Model):
     content = models.CharField(max_length=500)
     create_time = models.DateTimeField(auto_now_add=True)
     parent_item = models.ForeignKey(HomeItem_P, null=True, blank=True)
+    sort_id = models.IntegerField(max_length=20,blank=True,null=True)
 
     def __unicode__(self):
         return self.title

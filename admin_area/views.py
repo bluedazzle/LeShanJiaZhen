@@ -662,7 +662,7 @@ def program_manage(request):
             if item_p.count() == 0:
                 return render_to_response('admin_area/program_manage.html', {'programs': programs})
             else:
-                item_details = HomeItem.objects.filter(parent_item=item_p)
+                item_details = HomeItem.objects.order_by('id').filter(parent_item=item_p)
                 return render_to_response('admin_area/program_manage.html', {'programs': programs,
                                                                              'item_details': item_details,
                                                                              'item_p': item_p[0],
@@ -737,6 +737,7 @@ def edit_program_detail(request):
         price = request.POST.get('price')
         content = request.POST.get('content')
         item_p_id = request.POST.get('item_p_id')
+        item_sort_id = request.POST.get('item_sort_id')
         item_id = request.POST.get('item_id')
         if item_name and price and content and item_p_id:
             if item_id:
@@ -744,6 +745,7 @@ def edit_program_detail(request):
                 item.title = item_name
                 item.price = price
                 item.content = content
+                item.sort_id = item_sort_id
                 item.save()
                 return HttpResponse(json.dumps('T'), content_type="application/json")
 
@@ -753,6 +755,7 @@ def edit_program_detail(request):
             new_item.price = price
             new_item.content = content
             new_item.parent_item = item_p
+            new_item.sort_id = item_sort_id
             new_item.save()
             return HttpResponse(json.dumps('T'), content_type="application/json")
         else:
@@ -776,18 +779,21 @@ def edit_program_p_detail(request):
         context.update(csrf(request))
         icon_file = request.FILES.get('icon_file')
         item_p_id = request.POST.get('item_p_id')
+        item_sort_id = request.POST.get('item_sort_id')
         item_name = request.POST.get('item_name')
         user = HomeAdmin.objects.get(username=request.session['username'])
         i_id = 1
         if item_p_id:
             item_p = HomeItem_P.objects.get(id=item_p_id)
             item_p.item_name = item_name
+            item_p.sort_id = item_sort_id
             item_p.save()
             i_id = item_p.id
         else:
             new_item_p = HomeItem_P()
             new_item_p.item_name = item_name
             new_item_p.area = user.area
+            new_item_p.sort_id = item_sort_id
             new_item_p.save()
             i_id = new_item_p.id
         if icon_file != None:

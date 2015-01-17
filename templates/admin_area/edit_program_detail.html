@@ -7,12 +7,15 @@
  <div class="panel-body">
        <div class="col-lg-4 col-md-4 text-right">
             <h6>项目名称:</h6>
+            <h6 style="margin-top: 9%">排序id:</h6>
             <h6 style="margin-top: 9%">价格:</h6>
             <h6 style="margin-top: 9%">说明:</h6>
         </div>
        <div class="col-lg-6 col-md-6" style="padding-top: 0.5%;padding-left: 0">
             <input type="text" class="form-control" id="item_name" name='item_name'
                    placeholder="请输入项目名称" style="width: 300px;margin-top: 0.5%" value="{{ item.title }}">
+            <input type="text" class="form-control" id="sort_id" name='sort_id'
+                   placeholder="请输入排序id" style="width: 300px;margin-top: 2.5%" value="{{ item.sort_id }}"> 
             <input type="text" class="form-control" id="price" name='price'
                    placeholder="请输入价格" style="width: 300px;margin-top: 2.5%" value="{{ item.price }}">
             <textarea class="form-control" rows="5" id="content" name='content'
@@ -24,12 +27,13 @@
     </div>
     <script>
         $('#submit').click(function(){
-            if($('#item_name').val() && $('#price').val() && $('#content').val()){
+            if($('#item_name').val() && $('#price').val() && $('#content').val() && $('#sort_id').val()){
                 {% if not item %}
                 var message = {'item_name': $('#item_name').val(),
                                'price': $('#price').val(),
                                'content': $('#content').val(),
                                'item_p_id': {{ item_p.id }},
+                               'sort_id': {{ item.sort_id }},
                                'csrfmiddlewaretoken': getCookie('csrftoken')};
                 {% else %}
                  var message = {'item_name': $('#item_name').val(),
