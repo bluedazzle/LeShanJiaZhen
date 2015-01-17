@@ -89,19 +89,7 @@
            <div class="col-md-12 col-lg-12">操作员：{{ item.process_by.nick }}</div>
            {% endif %}
            <div class="col-md-12 col-lg-12">报修项目：{{ item.content }}
-               {% if item.photo1 %}
-                   <strong style="color: #27ad60">(有照片)</strong>
-               {% endif %}
-           </div>
-           <div class="col-md-6 col-lg-6">
-               {% if item.remark %}
-               备注：{{ item.remark }}
-               {% else %}
-               备注：无
-               {% endif %}
-           </div>
-           <div class="col-md-6 col-lg-6">
-               {% if item.photo1 %}
+               {% if item.photo1 or item.photo2 or item.photo3 or item.photo4 %}
                    <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
                  查看照片
                </button>
@@ -109,19 +97,19 @@
                    <div class="modal-dialog modal-lg">
                        <div class="modal-content text-center" style="padding: 2%">
                            {% if item.photo1 %}
-                           <img src="{{ item.photo1 }}">
+                           <img src="{{ item.photo1 }}" style="max-width: 850px">
                            <br/>
                            {% endif %}
                            {% if item.photo2 %}
-                           <img style="margin-top: 2%" src="{{ item.photo2 }}">
+                           <img style="margin-top: 2%;max-width: 850px" src="{{ item.photo2 }}">
                            <br/>
                            {% endif %}
                            {% if item.photo3 %}
-                           <img style="margin-top: 2%" src="{{ item.photo3 }}">
+                           <img style="margin-top: 2%;max-width: 850px" src="{{ item.photo3 }}">
                            <br/>
                            {% endif %}
                            {% if item.photo4 %}
-                           <img style="margin-top: 2%" src="{{ item.photo4 }}">
+                           <img style="margin-top: 2%;max-width: 850px" src="{{ item.photo4 }}">
                            <br/>
                            {% endif %}
                        </div>
