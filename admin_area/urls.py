@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     url('^notice$', notice),
     url('^program_manage$', program_manage),
     url('^advertisement_manage$', advertisement_manage),
+    url('^push_message$', push_message),
     #option
     url('^register_verify$', phone_verify),
     url('^f_register_verify$', f_phone_verify),

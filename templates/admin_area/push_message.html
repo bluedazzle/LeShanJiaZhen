@@ -1,0 +1,51 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+    <script>
+        $('#page_title').text('消息推送');
+        {% if req == 'T' %}
+        $(document).ready(function(){
+            alert("发送成功！")
+        });
+        {% elif req == 'F' %}
+         $(document).ready(function(){
+            alert("发送失败！请重新尝试")
+        });
+        {% endif %}
+    </script>
+   <div style="padding-left: 3%;padding-right: 10%;padding-top: 5%">
+      <div class="text-center">
+           <textarea name="mes_push" id="input_mes" style="width: 630px;height: 200px;" placeholder="请输入要推送的消息"></textarea>
+           <button id="push_m" class="btn btn-hg btn-success" style="margin-top: -40px;" onclick="push_mes()">发送</button>
+      </div>
+   </div>
+   <script>
+   function push_mes(){
+       if($('#input_mes').val()){
+           $('#push_m').addClass('disabled');
+           $('#push_m').text('请等待');
+           var message = {'mes_push': $('#input_mes').val(),
+                          'csrfmiddlewaretoken': getCookie('csrftoken')};
+           $.ajax({
+               type: 'POST',
+               url: 'push_message',
+               data: message,
+               success: function (data) {
+                   if (data == 'T') {
+                       alert("发布成功！");
+                       window.location.href = "push_message"
+                   }
+                   else {
+                       alert("发布失败！请重新尝试");
+                       $('#push_me').text('发送');
+                       $('#push_m').removeClass('disabled')
+                   }
+               },
+               dataType: 'json'
+           });
+       }
+       else{
+           alert("输入信息不能为空！！")
+       }
+   }
+   </script>
+{% endblock %}
