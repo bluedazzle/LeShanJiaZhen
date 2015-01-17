@@ -1,0 +1,88 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+    <script>
+        $('#page_title').text('编辑项目信息')
+    </script>
+<div class="col-lg-12 col-md-12 panel panel-default" style="margin-top: 5%;padding-left: 7%">
+ <div class="panel-body">
+       <div class="col-lg-4 col-md-4 text-right">
+            <h6>项目名称:</h6>
+            <h6 style="margin-top: 9%">(可选)项目图标:</h6>
+        </div>
+       <div class="col-lg-6 col-md-6" style="padding-top: 0.5%;padding-left: 0">
+          <form action="edit_program_p_detail" method="post" id="p_mes" enctype="multipart/form-data">
+              {% csrf_token %}
+            <input style="display: none" type="text" name="item_p_id" value="{{ item_p.id }}">
+            <input type="text" class="form-control" id="item_name" name='item_name'
+                   placeholder="请输入项目名称" style="width: 300px;margin-top: 0.5%" value="{{ item_p.item_name }}">
+            <input type="file" name="icon_file" id="file0" multiple="multiple" style="margin-top:5%;line-height: 1;font-size: 16px;"/><br>
+            <p>请上传50*50的PNG图片</p>
+              {% if item_p %}
+                {% if item_p.icon %}
+                   <img style="width: 50px;height: 50px;margin-left: 18%" src="{{ item_p.icon }}" id="img0" >
+                {% else %}
+                   <img style="width: 50px;height: 50px;margin-left: 18%" src="" id="img0" >
+                {% endif %}
+              {% else %}
+                 <img style="width: 50px;height: 50px;margin-left: 18%" src="" id="img0" >
+              {% endif %}
+            <p style="color: red" id="warning"></p>
+          </form>
+       </div>
+
+    <div class="col-lg-12 col-md-12" style="margin-top: 2%">
+        <button id="submit" class="btn btn-success btn-lg" style="margin-left: 36%">提交</button>
+        <a href="program_manage" role="button" class="btn btn-default btn-lg" style="margin-left: 5%">取消</a>
+    </div>
+    <script>
+        $("#file0").change(function(){
+    var file0 = this.files[0];
+	var objUrl = getObjectURL(file0);
+	console.log("objUrl = "+objUrl) ;
+	if (objUrl) {
+		$("#img0").attr("src", objUrl);
+        $('#img0').load(function(){
+            var image = new Image();
+            image.src = $('#img0').attr('src');
+            var height = image.height;
+            var width = image.width;
+            var f = $('#img0').val();
+            if(!/(png|PNG)$/.test(file0.type)){
+                $('#submit').addClass('disabled');
+                $('#warning').text('图像格式不正确，请上传PNG图片');
+                return false
+            }
+            if(height==50&&width==50){
+                $('#submit').removeClass('disabled')
+            }
+            else{
+                $('#submit').addClass('disabled');
+                $('#warning').text('图片像素不正确，请使用50 x 50像素的图片')
+            }
+        })
+	}
+});
+//建立一個可存取到該file的url
+function getObjectURL(file) {
+	var url = null ;
+	if (window.createObjectURL!=undefined) { // basic
+		url = window.createObjectURL(file) ;
+	} else if (window.URL!=undefined) { // mozilla(firefox)
+		url = window.URL.createObjectURL(file) ;
+	} else if (window.webkitURL!=undefined) { // webkit or chrome
+		url = window.webkitURL.createObjectURL(file) ;
+	}
+	return url ;
+}
+        $('#submit').click(function(){
+            if($('#item_name').val()){
+                $('#p_mes').submit();
+            }
+            else{
+                alert("请完善信息！！")
+            }
+        })
+    </script>
+ </div>
+</div>
+{% endblock %}

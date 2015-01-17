@@ -65,9 +65,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 DB_ENGINE = 'django.db.backends.postgresql_psycopg2'
 DB_NAME = 'homemaking'
 DB_USER = 'postgres'                      # Not used with sqlite3.
-DB_PASSWORD = 'GDBDYL886'                  # Not used with sqlite3.
+DB_PASSWORD = '123456'                  # Not used with sqlite3.
 DB_HOST = 'localhost'                      # Set to empty string for localhost. Not used with sqlite3.
-DB_PORT = '5433'
+DB_PORT = ''
 
 DATABASES = {
     'default': {
@@ -98,6 +98,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),

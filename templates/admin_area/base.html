@@ -138,6 +138,10 @@
         var music = document.getElementById("music");
         music.play();
     }
+    $('button').click(function(){
+        var music = document.getElementById("music");
+        music.pause();
+    });
     $(document).ready(function(){
           if(localStorage['music'] == '1'){
               music_play();

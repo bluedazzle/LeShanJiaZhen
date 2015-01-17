@@ -183,6 +183,8 @@ def get_new_appointment(request):
         if appointments.count() == 0:
             return HttpResponse(json.dumps('F'), content_type="application/json")
         else:
+            if not request.session.get('new_appointment_id'):
+                return HttpResponse(json.dumps('T'), content_type="application/json")
             if not appointments[0].id == request.session['new_appointment_id']:
                 return HttpResponse(json.dumps('T'), content_type="application/json")
             else:
@@ -697,7 +699,7 @@ def advertisement_manage(request):
         Image.open(ad_file).save(file_full_path)
         new_advertisement = Advertisement()
         new_advertisement.content = file_name
-        new_advertisement.photo = '/img/advertisement/'+file_name
+        new_advertisement.photo ='http://115.29.138.80' + '/img/advertisement/'+file_name
         new_advertisement.save()
         return HttpResponseRedirect('advertisement_manage')
 
@@ -722,10 +724,14 @@ def edit_program_detail(request):
         item_id = request.GET.get('item_id')
         item_p = HomeItem_P.objects.get(id=item_p_id)
         if not item_id:
-            return render_to_response('admin_area/edit_program_detail.html', {'item_p': item_p})
+            return render_to_response('admin_area/edit_program_detail.html',
+                                      {'item_p': item_p},
+                                      context_instance=RequestContext(request))
         item = HomeItem.objects.get(id=item_id)
-        return render_to_response('admin_area/edit_program_detail.html', {'item_p': item_p,
-                                                                          'item': item})
+        return render_to_response('admin_area/edit_program_detail.html',
+                                  {'item_p': item_p,
+                                   'item': item},
+                                  context_instance=RequestContext(request))
     if request.method == 'POST':
         item_name = request.POST.get('item_name')
         price = request.POST.get('price')
@@ -751,6 +757,64 @@ def edit_program_detail(request):
             return HttpResponse(json.dumps('T'), content_type="application/json")
         else:
             return HttpResponse(json.dumps('F'), content_type="application/json")
+
+
+def edit_program_p_detail(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        item_id = request.GET.get('item_id')
+        if item_id:
+            item_p = HomeItem_P.objects.get(id=item_id)
+            return render_to_response('admin_area/edit_program_p_detail.html',
+                                      {'item_p': item_p},
+                                      context_instance=RequestContext(request))
+        return render_to_response('admin_area/edit_program_p_detail.html',
+                                  context_instance=RequestContext(request))
+    if request.method == 'POST':
+        context = {}
+        context.update(csrf(request))
+        icon_file = request.FILES.get('icon_file')
+        item_p_id = request.POST.get('item_p_id')
+        item_name = request.POST.get('item_name')
+        user = HomeAdmin.objects.get(username=request.session['username'])
+        i_id = 1
+        if item_p_id:
+            item_p = HomeItem_P.objects.get(id=item_p_id)
+            item_p.item_name = item_name
+            item_p.save()
+            i_id = item_p.id
+        else:
+            new_item_p = HomeItem_P()
+            new_item_p.item_name = item_name
+            new_item_p.area = user.area
+            new_item_p.save()
+            i_id = new_item_p.id
+        if icon_file != None:
+            print "OK"
+            file_name = str(i_id) + '.png'
+            file_full_path = BASE + '/static/img/program_icons/' + file_name
+            Image.open(icon_file).save(file_full_path)
+            item_p = HomeItem_P.objects.get(id=i_id)
+            item_p.icon = 'http://115.29.138.80'+'/img/program_icons/'+file_name
+            item_p.save()
+
+        return HttpResponseRedirect('program_manage')
+
+
+def delete_program_p(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_id')
+    if request.method == 'GET':
+        item_p_id = request.GET.get('item_id')
+        item_p = HomeItem_P.objects.get(id=item_p_id)
+        items = HomeItem.objects.filter(parent_item=item_p)
+        if items.count() != 0:
+            for item in items:
+                item.delete()
+
+        item_p.delete()
+        return HttpResponseRedirect('program_manage')
 
 
 def push_message(request):

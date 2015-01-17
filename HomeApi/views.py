@@ -16,8 +16,9 @@ from PIL import Image
 from HomeApi.HomeAdminManager import *
 from HomeApi.location_process import *
 
-pathToStorePicture = r'/var/www/LeShanJiaZhen/'
-pathToGetPicture = r'http://127.0.0.1:8080/'
+pathToStorePicture = r'/var/leshanjiazheng/uploadpicture/'
+pathToGetPicture = r'http://115.29.138.80/uploadpicture/'
+
 
 
 @csrf_exempt
@@ -160,7 +161,7 @@ def appointment_pic(request):
 @csrf_exempt
 def send_phone_verify(request):
     if request.method == 'POST':
-        try:
+       # try:
             phone = request.POST['consumer']
             if len(Consumer.objects.filter(phone=phone)) == 0:
                 aaa = string.ascii_letters+'0123456789'
@@ -176,9 +177,9 @@ def send_phone_verify(request):
                 status = 1
             else:
                 status = 2
-        except Exception:
-            status = 2
-        return HttpResponse(json.dumps({'status': status, 'body': None}))
+  #      except Exception:
+ #           status = 2
+            return HttpResponse(json.dumps({'status': status, 'body': None}))
 
 
 @csrf_exempt
@@ -259,7 +260,7 @@ def get_categories(request):
             querylist = HomeItem_P.objects.all()
             category_list = []
             for p in querylist:
-                category_list.append({'category_id': p.id, 'category': p.item_name})
+                category_list.append({'category_id': p.id, 'category': p.item_name, 'url': p.icon})
             status = 1
         except Exception:
             status = 2

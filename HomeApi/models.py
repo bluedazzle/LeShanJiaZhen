@@ -116,6 +116,7 @@ class HomeItem_P(models.Model):
     item_name = models.CharField(max_length=10)
     create_time = models.DateTimeField(auto_now_add=True)
     area = models.ForeignKey(Block, null=True, blank=True)
+    icon = models.CharField(max_length=100, blank=True, null=True)
 
     def __unicode__(self):
         return self.item_name
