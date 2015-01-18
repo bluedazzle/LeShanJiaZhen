@@ -40,6 +40,7 @@
            </thead>
            <tbody>
               <tr style="background-color: #1abc9c; color: #ffffff">
+                  <th>排序ID</th>
                   <th>项目名称</th>
                   <th>价格</th>
                   <th style="max-width: 150px">说明</th>
@@ -48,6 +49,7 @@
               </tr>
               {% for item in item_details %}
               <tr>
+                  <td>{{ item.sort_id }}</td>
                   <td>{{ item.title }}</td>
                   <td>{{ item.price }}</td>
                   <td style="max-width: 150px">{{ item.content }}</td>

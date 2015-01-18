@@ -161,7 +161,7 @@ def appointment_pic(request):
 @csrf_exempt
 def send_phone_verify(request):
     if request.method == 'POST':
-       # try:
+        try:
             phone = request.POST['consumer']
             if len(Consumer.objects.filter(phone=phone)) == 0:
                 aaa = string.ascii_letters+'0123456789'
@@ -177,9 +177,9 @@ def send_phone_verify(request):
                 status = 1
             else:
                 status = 2
-  #      except Exception:
- #           status = 2
-            return HttpResponse(json.dumps({'status': status, 'body': None}))
+        except Exception:
+            status = 2
+        return HttpResponse(json.dumps({'status': status, 'body': None}))
 
 
 @csrf_exempt
@@ -189,10 +189,7 @@ def verify_get_token(request):
             phone = request.POST['consumer']
             vercode = request.POST['vercode']
             if (datetime.datetime.now().replace(tzinfo=None)-PhoneVerify.objects.get(phone=phone).update_time.replace(
-                    tzinfo=None)).seconds < 120:
-                print int(vercode)
-                print type(int(vercode))
-                print type(PhoneVerify.objects.get(phone=phone).verify)
+                    tzinfo=None)).seconds < 240:
                 if PhoneVerify.objects.get(phone=phone).verify == int(vercode):
                     token = Consumer.objects.get(phone=phone).token
                     body = [{'token': token}]
