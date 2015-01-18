@@ -71,7 +71,7 @@ def make_appointment(request):
                     p.address = address
                     p.name = name
                     p.consumer = p_consumer
-                    p.appoint_time = datetime.datetime.fromtimestamp(int(appoint_time)).replace(tzinfo=None)
+                    p.appoint_time = datetime.datetime.fromtimestamp(int(appoint_time))
                     p.appointment_id = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
                     print p.appointment_id
                     p.remark = remark
@@ -238,7 +238,7 @@ def get_detail_item(request):
                 raise NoneExistError
             itemlist = []
             category = HomeItem_P.objects.get(sort_id=category_id)
-            for p in category.homeitem_set.all():
+            for p in category.homeitem_set.order_by('sort_id'):
                 itemlist.append({'item_id': p.sort_id, 'title': p.title, 'content': p.content, 'price': p.price})
             status = 1
         except NoneExistError:

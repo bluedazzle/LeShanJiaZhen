@@ -42,7 +42,7 @@
                                'content': $('#content').val(),
                                'item_p_id': {{ item_p.id }},
                                'item_id': {{ item.id }},
-                               'sort_id': $('#sort_id'),
+                               'sort_id': $('#sort_id').val(),
                                'csrfmiddlewaretoken': getCookie('csrftoken')};
                 {% endif %}
                 $.ajax({

@@ -118,7 +118,7 @@ def find_sometime_appointment(page_num, date_start, date_end, all_appointments):
     appointments = []
     if all_appointments.count() > 0:
         for item in all_appointments:
-            it_date = str(item.create_time)[0:10]
+            it_date = str(item.appoint_time)[0:10]
             date_start = str(date_start)
             date_end = str(date_end)
             if it_date >= date_start and it_date <= date_end:

@@ -20,7 +20,7 @@
                    placeholder="请输入排序ID" style="width: 300px;margin-top: 3%" value="{{ item_p.sort_id }}"
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
             <input type="file" name="icon_file" id="file0" multiple="multiple" style="margin-top:5%;line-height: 1;font-size: 16px;"/><br>
-            <p>请上传50*50的PNG图片</p>
+            <p>请上传64*64的PNG图片</p>
               {% if item_p %}
                 {% if item_p.icon %}
                    <img style="width: 50px;height: 50px;margin-left: 18%" src="{{ item_p.icon }}" id="img0" >
@@ -56,12 +56,12 @@
                 $('#warning').text('图像格式不正确，请上传PNG图片');
                 return false
             }
-            if(height==50&&width==50){
+            if(height==64&&width==64){
                 $('#submit').removeClass('disabled')
             }
             else{
                 $('#submit').addClass('disabled');
-                $('#warning').text('图片像素不正确，请使用50 x 50像素的图片')
+                $('#warning').text('图片像素不正确，请使用64 x 64像素的图片')
             }
         })
 	}

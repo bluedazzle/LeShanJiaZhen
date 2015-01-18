@@ -185,7 +185,7 @@ def get_new_appointment(request):
         else:
             if not request.session.get('new_appointment_id'):
                 return HttpResponse(json.dumps('T'), content_type="application/json")
-            if not appointments[0].id == request.session['new_appointment_id']:
+            if  appointments[0].id > request.session['new_appointment_id']:
                 return HttpResponse(json.dumps('T'), content_type="application/json")
             else:
                 return HttpResponse(json.dumps('F'), content_type="application/json")
@@ -309,7 +309,7 @@ def find_now_appointment(page_num, all_appointments):
     if all_appointments.count() > 0:
             for item in all_appointments:
                 now_date = str(datetime.datetime.now())[0:10]
-                it_date = str(item.create_time)[0:10]
+                it_date = str(item.appoint_time)[0:10]
                 if it_date == now_date:
                     appointments.append(item)
                 else:
@@ -331,7 +331,7 @@ def find_sometime_appointment(page_num, date_start, date_end, all_appointments):
     appointments = []
     if all_appointments.count() > 0:
         for item in all_appointments:
-            it_date = str(item.create_time)[0:10]
+            it_date = str(item.appoint_time)[0:10]
             date_start = str(date_start)
             date_end = str(date_end)
             if it_date >= date_start and it_date <= date_end:
@@ -745,11 +745,20 @@ def edit_program_detail(request):
                 item.title = item_name
                 item.price = price
                 item.content = content
-                item.sort_id = item_sort_id
+                item0 = HomeItem.objects.get(parent_item=item.parent_item, sort_id=item_sort_id)
+                if not item0:
+                     item.sort_id = item_sort_id
+		else:
+		     item0.sort_id = item.sort_id
+                     item0.save()
+                     item.sort_id = item_sort_id
                 item.save()
                 return HttpResponse(json.dumps('T'), content_type="application/json")
 
             item_p = HomeItem_P.objects.get(id=item_p_id)
+            item_have = HomeItem.objects.filter(parent_item=item_p, sort_id=item_sort_id)
+            if item_have.count() != 0:
+                return HttpResponse(json.dumps('F'), content_type="application/json")
             new_item = HomeItem()
             new_item.title = item_name
             new_item.price = price
