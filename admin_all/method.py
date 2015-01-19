@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import xlwt
 from views import *
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 def out_appointment(request):
@@ -36,13 +39,13 @@ def out_appointment(request):
 
         print len(appointments)
         if a_status == 1:
-            file_name = area.area_name + a_date_start + unicode('到', 'utf-8') + a_date_end + unicode('未受理的预约', 'utf-8')
+            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("未受理的预约", "utf-8")
         elif a_status == 2:
-            file_name = area.area_name + a_date_start + unicode('到', 'utf-8') + a_date_end + unicode('已接受的预约', 'utf-8')
+            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("已接受的预约", "utf-8")
         elif a_status == 3:
-            file_name = area.area_name + a_date_start + unicode('到', 'utf-8') + a_date_end + unicode('完成的预约', 'utf-8')
+            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("完成的预约", "utf-8")
         elif a_status == 4:
-            file_name = area.area_name + a_date_start + unicode('到', 'utf-8') + a_date_end + unicode('取消的预约', 'utf-8')
+            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("取消的预约", "utf-8")
         else:
             file_name = area.area_name + a_date_start + u'到' + a_date_end + u'所有预约'
 

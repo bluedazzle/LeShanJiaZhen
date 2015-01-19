@@ -46,8 +46,11 @@
 
                           <input type="password" id="password_1" name="password_1" class="form-control input-sm">
                           <select id="select1" name="area" class="form-control select select-primary select-block mbl" style="margin-top: 3%;width: 100%">
-                              <option value="0" selected>乐山</option>
-                              <option value="1">测试</option>
+                          {% if areas %}
+                              {% for area in areas %}
+                            <option value="{{ area.area_name }}">{{ area.area_name }}</option>
+                              {% endfor %}
+                          {% endif %}
                           </select>
 
                       </div>

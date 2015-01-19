@@ -290,3 +290,67 @@ def put_notice(request):
         new_notice.content = notice_text
         new_notice.save()
         return HttpResponse(json.dumps('T'))
+
+
+def manage_area(request):
+    if not request.session.get('a_username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        areas = Block.objects.all()
+        return render_to_response('admin_all/manage_area.html', {'areas': areas})
+
+
+def edit_area(request):
+    if not request.session.get('a_username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        area_id = request.GET.get('area_id')
+        if not area_id:
+            return render_to_response('admin_all/edit_area_detail.html')
+        else:
+            area = Block.objects.get(id=area_id)
+            return render_to_response('admin_all/edit_area_detail.html', {'item': area})
+    if request.method == 'POST':
+        area_id = request.POST.get('area_id')
+        area_name = request.POST.get('area_name')
+        area_tel = request.POST.get('area_tel')
+        area_address = request.POST.get('address')
+        area_have = Block.objects.filter(area_name=area_name)
+        if area_have.count() > 0:
+            return HttpResponse(json.dumps('F'), content_type="application/json")
+
+        lat = "43.32515"
+        lng = "100.33242"
+        if not area_id:
+            new_area = Block()
+            print "OK"
+            new_area.area_id = -1
+            new_area.area_name = area_name
+            new_area.area_tel = area_tel
+            new_area.area_address = area_address
+            new_area.lat = lat
+            new_area.lng = lng
+            new_area.save()
+            new_area.area_id = new_area.id
+            new_area.save()
+            return HttpResponse(json.dumps('T'), content_type="application/json")
+        else:
+            area = Block.objects.get(id=area_id)
+            area.area_name = area_name
+            area.area_tel = area_tel
+            area.area_address = area_address
+            area.lat = lat
+            area.lng = lng
+            area.save()
+            return HttpResponse(json.dumps('T'), content_type="application/json")
+
+
+def delete_area(request):
+    if not request.session.get('a_username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        area_id = request.GET.get('area_id')
+        if area_id:
+            area = Block.objects.get(id=area_id)
+            area.delete()
+            return HttpResponseRedirect('manage_area')

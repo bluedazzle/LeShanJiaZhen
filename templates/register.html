@@ -45,7 +45,11 @@
         <div class="input-group" style="margin-top: 3%;">
           <span class="input-group-addon" style="min-width: 80px;">地区</span>
           <select id="area" name="area" class="form-control select select-primary select-block mbl" style="width: 100%">
-              <option value="1" selected>乐山</option>
+              {% if areas %} }
+                  {% for area in areas %}
+              <option value="{{ area.area_name }}" selected>{{ area.area_name }}</option>
+                  {% endfor %}
+              {% endif %}
           </select>
             <script>
                 $("#area").select2({dropdownCssClass: 'dropdown-inverse'});

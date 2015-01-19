@@ -46,7 +46,10 @@ def login_in(request):
 
 def register(request):
     if request.method == 'GET':
-        return render_to_response('register.html', context_instance=RequestContext(request))
+        areas = Block.objects.all()
+        return render_to_response('register.html',
+                                  {'areas': areas},
+                                  context_instance=RequestContext(request))
     if request.method == 'POST':
         phone = request.POST.get('phone')
         verify = request.POST.get('verify')
@@ -73,11 +76,9 @@ def register(request):
                 time_now = datetime.datetime.now()
                 area_admin.log_time = time_now
                 area_admin.type = 1
+                area_block = Block.objects.get(area_name=area)
+                area_admin.area = area_block
                 area_admin.save()
-                if area == '1':
-                    area_fi = Block.objects.get(area_id=1)
-                    area_admin.area = area_fi
-                    area_admin.save()
                 return HttpResponseRedirect('login_in')
         else:
             return render_to_response('register.html', context_instance=RequestContext(request))
@@ -185,7 +186,7 @@ def get_new_appointment(request):
         else:
             if not request.session.get('new_appointment_id'):
                 return HttpResponse(json.dumps('T'), content_type="application/json")
-            if  appointments[0].id > request.session['new_appointment_id']:
+            if appointments[0].id > request.session['new_appointment_id']:
                 return HttpResponse(json.dumps('T'), content_type="application/json")
             else:
                 return HttpResponse(json.dumps('F'), content_type="application/json")
@@ -424,10 +425,14 @@ def user_mes(request):
     if request.method == 'GET':
         user = HomeAdmin.objects.get(username=request.session['username'])
         applications = Application.objects.filter(apply_user=user)
+        areas = Block.objects.all()
         if applications.count() > 0:
-            return render_to_response('admin_area/user_mes.html', {'user': user, 'have_apply': 'T'})
+            return render_to_response('admin_area/user_mes.html', {'user': user,
+                                                                   'have_apply': 'T',
+                                                                   'areas': areas})
 
-        return render_to_response('admin_area/user_mes.html', {'user': user})
+        return render_to_response('admin_area/user_mes.html', {'user': user,
+                                                               'areas': areas})
 
 
 def change_password(request):
@@ -474,10 +479,7 @@ def change_area(request):
             if applications.count() > 0:
                 return HttpResponse(json.dumps('F1'), content_type="application/json")
 
-            if area == '0':
-                area_now = Block.objects.get(area_name="乐山")
-            else:
-                area_now = Block.objects.get(area_name="测试")
+            area_now = Block.objects.get(area_name=area)
             if area_now == user.area:
                 return HttpResponse(json.dumps('F2'), content_type="application/json")
 
