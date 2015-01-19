@@ -188,8 +188,8 @@ def verify_get_token(request):
         try:
             phone = request.POST['consumer']
             vercode = request.POST['vercode']
-            if (datetime.datetime.now().replace(tzinfo=None)-PhoneVerify.objects.get(phone=phone).update_time.replace(
-                    tzinfo=None)).seconds < 240:
+            delta = (datetime.datetime.utcnow() - PhoneVerify.objects.get(phone=phone).update_time.replace(tzinfo=None)).seconds
+            if delta < 600:
                 if PhoneVerify.objects.get(phone=phone).verify == int(vercode):
                     token = Consumer.objects.get(phone=phone).token
                     body = [{'token': token}]
@@ -199,7 +199,7 @@ def verify_get_token(request):
                     body = None
             else:
                 status = 5
-                body = None
+                body = delta
         except Exception:
             status = 2
             body = None
