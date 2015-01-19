@@ -30,7 +30,7 @@
     <div class="col-md-12 col-lg-12" style="margin-top: 1%">
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;float:right;padding-left: 0;margin-right: 26.7%">
           <span class="input-group-addon">地区</span>
-          <select id="select1" name="area" class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0;">
+          <select id="select1" name="area"  class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0;">
                   <option value="乐山">乐山</option>
                   <option value="测试">测试</option>
           </select>
@@ -83,11 +83,13 @@
               {% else %}
                var date_start = '{{ date_start }}';
                var date_end = '{{ date_end }}';
+               var status = {{ status }};
+               var area = '{{ area }}'
               {% endif %}
-              var message = {'status': $('#select2').val(),
+              var message = {'status': status,
                              'date_start': date_start,
                              'date_end': date_end,
-                             'area': $('#select1').val(),
+                             'area': area,
                              'csrfmiddlewaretoken': getCookie('csrftoken')};
               $.ajax({
                   type: 'POST',

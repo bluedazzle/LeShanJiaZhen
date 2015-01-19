@@ -50,25 +50,25 @@ def find_appointment(request):
         page_num = request.GET.get('page')
         date_start = request.GET.get('start_date')
         date_end = request.GET.get('end_date')
-        area_id = request.GET.get('area')
-        type = request.GET.get('type')
+        area_name = request.GET.get('area')
+        status = request.GET.get('type')
 
         #检查是否是查询某段时间的操作
-        if date_start and date_end and area_id and type:
+        if date_start and date_end and area_name and status:
             request.session['a_date_start'] = date_start
             request.session['a_date_end'] = date_end
-            request.session['area'] = area_id
-            request.session['type'] = type
+            request.session['area'] = area_name
+            request.session['status'] = status
         #查询首页
         if not page_num:
             #查看某段时间的预约
-            if date_start and date_end and area_id and type:
-                area = Block.objects.get(area_id=area_id)
-                if type == '0':
+            if date_start and date_end and area_name and status:
+                area = Block.objects.get(area_name=area_name)
+                if status == '0':
                     all_appointments = Appointment.objects.order_by('-id').filter(area=area)
                 else:
-                    type = int(type)
-                    all_appointments = Appointment.objects.order_by('-id').filter(status=type, area=area)
+                    status = int(status)
+                    all_appointments = Appointment.objects.order_by('-id').filter(status=status, area=area)
 
                 result = find_sometime_appointment(1, date_start, date_end, all_appointments)
                 appointments = result['appointments']
@@ -79,25 +79,25 @@ def find_appointment(request):
                                            'flag': 'T',
                                            'date_start': date_start,
                                            'date_end': date_end,
-                                           'status': type,
-                                           'area': area_id}, context_instance=RequestContext(request))
+                                           'status': status,
+                                           'area': area_name}, context_instance=RequestContext(request))
             else:
                 return render_to_response('admin_all/find_appointment.html')
 
         #查询某一页
         else:
             #查询某段时间预约的某一页
-            if request.session.get('a_date_start') and request.session.get('a_date_end') and request.session.get('type') and request.session['area']:
+            if request.session.get('a_date_start') and request.session.get('a_date_end') and request.session.get('status') and request.session['area']:
                 date_start = request.session['a_date_start']
                 date_end = request.session['a_date_end']
-                type = request.session['type']
-                area_id = request.session['area']
-                area = Block.objects.get(area_id=area_id)
-                if type == '0':
+                status = request.session['status']
+                area_name = request.session['area']
+                area = Block.objects.get(area_name=area_name)
+                if status == 0:
                     all_appointments = Appointment.objects.order_by('-id').filter(area=area)
                 else:
-                    type = int(type)
-                    all_appointments = Appointment.objects.order_by('-id').filter(status=type, area=area)
+                    status = int(status)
+                    all_appointments = Appointment.objects.order_by('-id').filter(status=status, area=area)
 
                 result = find_sometime_appointment(page_num, date_start, date_end, all_appointments)
                 appointments = result['appointments']
@@ -108,8 +108,8 @@ def find_appointment(request):
                                            'flag': 'T',
                                            'date_start': date_start,
                                            'date_end': date_end,
-                                           'status': type,
-                                           'area': area_id}, context_instance=RequestContext(request))
+                                           'status': status,
+                                           'area': area_name}, context_instance=RequestContext(request))
             else:
                 return render_to_response('admin_all/find_appointment.html')
 
@@ -126,7 +126,7 @@ def find_sometime_appointment(page_num, date_start, date_end, all_appointments):
             else:
                 continue
     count = len(appointments)
-    paginator = Paginator(appointments, 1)
+    paginator = Paginator(appointments, 15)
     try:
         appointments = paginator.page(page_num)
     except PageNotAnInteger:

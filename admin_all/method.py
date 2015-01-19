@@ -14,8 +14,8 @@ def out_appointment(request):
         a_status = request.POST.get('status')
         a_date_start = request.POST.get('date_start')
         a_date_end = request.POST.get('date_end')
-        area = request.POST.get('area')
-        area = Block.objects.get(area_name=area)
+        area_name = request.POST.get('area')
+        area = Block.objects.get(area_name=area_name)
         if a_status == '0':
             all_appointments = Appointment.objects.order_by('-id').filter(area=area)
         else:
@@ -35,13 +35,13 @@ def out_appointment(request):
                         appointments.append(item)
 
         print len(appointments)
-        if a_status == '1':
+        if a_status == 1:
             file_name = area.area_name + a_date_start + unicode('到', 'utf-8') + a_date_end + unicode('未受理的预约', 'utf-8')
-        elif a_status == '2':
+        elif a_status == 2:
             file_name = area.area_name + a_date_start + unicode('到', 'utf-8') + a_date_end + unicode('已接受的预约', 'utf-8')
-        elif a_status == '3':
+        elif a_status == 3:
             file_name = area.area_name + a_date_start + unicode('到', 'utf-8') + a_date_end + unicode('完成的预约', 'utf-8')
-        elif a_status == '4':
+        elif a_status == 4:
             file_name = area.area_name + a_date_start + unicode('到', 'utf-8') + a_date_end + unicode('取消的预约', 'utf-8')
         else:
             file_name = area.area_name + a_date_start + unicode('到', 'utf-8') + a_date_end + unicode('所有预约', 'utf-8')

@@ -807,7 +807,7 @@ def edit_program_p_detail(request):
             i_id = new_item_p.id
         if icon_file != None:
             print "OK"
-            file_name = str(i_id) + '.png'
+            file_name = str(int(time.time())) + '.png'
             file_full_path = BASE + '/static/img/program_icons/' + file_name
             Image.open(icon_file).save(file_full_path)
             item_p = HomeItem_P.objects.get(id=i_id)
