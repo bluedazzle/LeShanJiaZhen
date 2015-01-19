@@ -44,7 +44,7 @@ def out_appointment(request):
         elif a_status == 4:
             file_name = area.area_name + a_date_start + unicode('到', 'utf-8') + a_date_end + unicode('取消的预约', 'utf-8')
         else:
-            file_name = area.area_name + a_date_start + unicode('到', 'utf-8') + a_date_end + unicode('所有预约', 'utf-8')
+            file_name = area.area_name + a_date_start + u'到' + a_date_end + u'所有预约'
 
         print file_name
         req = out_excel(appointments, file_name)
