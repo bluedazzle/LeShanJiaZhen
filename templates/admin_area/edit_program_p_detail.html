@@ -39,6 +39,11 @@
         <a href="program_manage" role="button" class="btn btn-default btn-lg" style="margin-left: 5%">取消</a>
     </div>
     <script>
+        {% if flag %}
+        $(document).ready(function(){
+              alert("排序id已存在，请重新填写！")
+        });
+        {% endif %}
         $("#file0").change(function(){
     var file0 = this.files[0];
 	var objUrl = getObjectURL(file0);
