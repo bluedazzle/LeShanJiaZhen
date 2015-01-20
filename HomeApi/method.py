@@ -56,9 +56,9 @@ def customedPush(msg):
     ios.sound = "default"
     ios.badge = 1
     ios.expireTime = 86400
-    ret = xios.PushAllDevices(0, ios, xinge.XingeApp.ENV_DEV)
+    ret = xios.PushAllDevices(0, ios, 1)
 
-    xandroid = xinge.XingeApp(2100050215, '5e640e7c8ce451bca7dfd21ce6c29686')
+    xandroid = xinge.XingeApp(2100081128, 'db2f948d8f2b962fc4e1cb4a26f7d87d')
     android =xinge.Message()
     android.type = xinge.Message.TYPE_NOTIFICATION
     android.title = '易修哥'

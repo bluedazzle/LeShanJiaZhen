@@ -795,26 +795,29 @@ def edit_program_p_detail(request):
         user = HomeAdmin.objects.get(username=request.session['username'])
         i_id = 1
         item_p_have = HomeItem_P.objects.filter(sort_id=item_sort_id)
-        if item_p_have.count() > 0:
-            item_p_temp = HomeItem_P()
-            item_p_temp.item_name = item_name
-            item_p_temp.sort_id = item_sort_id
-            return render_to_response('admin_area/edit_program_p_detail.html',
-                                      {'flag': 'T',
-                                       'item_p': item_p_temp},
-                                      context_instance=RequestContext(request))
 
-        if item_p_id and item_p_id != "None":
+        if item_p_id:
             item_p = HomeItem_P.objects.get(id=item_p_id)
+            if item_p.sort_id != int(item_sort_id):
+                 if item_p_have.count() > 0:
+                      return render_to_response('admin_area/edit_program_p_detail.html', 
+                              {'sort_id_have': 'T',
+                               'item_p': item_p},
+                              context_instance=RequestContext(request))
             item_p.item_name = item_name
             item_p.sort_id = item_sort_id
             item_p.save()
             i_id = item_p.id
-        elif not item_p_id or item_p_id == "None":
+        else:
             new_item_p = HomeItem_P()
             new_item_p.item_name = item_name
             new_item_p.area = user.area
             new_item_p.sort_id = item_sort_id
+            if item_p_have.count() > 0:
+                 return render_to_response('admin_area/edit_program_p_detail.html',
+                                           {'sort_id_have': 'T',
+                                            'item_p': new_item_p},
+                                            context_instance=RequestContext(request))
             new_item_p.save()
             i_id = new_item_p.id
         if icon_file != None:
