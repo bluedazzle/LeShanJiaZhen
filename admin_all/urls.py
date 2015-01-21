@@ -18,4 +18,5 @@ urlpatterns = patterns('',
                        url('^manage_area$', manage_area),
                        url('^edit_area$', edit_area),
                        url('^delete_area$', delete_area),
+                       url('^manage_calendar$', manage_calendar),
                        )

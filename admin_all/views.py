@@ -354,3 +354,10 @@ def delete_area(request):
             area = Block.objects.get(id=area_id)
             area.delete()
             return HttpResponseRedirect('manage_area')
+
+
+def manage_calendar(request):
+    if not request.session.get('a_username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return render_to_response('admin_all/manage_calendar.html')
