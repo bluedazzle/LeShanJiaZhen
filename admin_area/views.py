@@ -712,7 +712,7 @@ def delete_advertisement(request):
     if request.method == 'GET':
         ad_id = request.GET.get('advertisement_id')
         advertisement = Advertisement.objects.get(id=ad_id)
-        file_full_path = BASE+'/static'+advertisement.photo
+        file_full_path = './static/img/advertisement/'+advertisement.content
         os.remove(file_full_path)
         advertisement.delete()
         return HttpResponseRedirect('advertisement_manage')
