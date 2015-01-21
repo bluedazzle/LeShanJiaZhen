@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+from admin_area.views import *
 import admin_all.urls
 import admin_area.urls
 import settings
@@ -12,6 +13,7 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^master_admin/', include(admin_all.urls)),
+    url(r'^$', index),
     url(r'^area_admin/', include(admin_area.urls)),
     # url(r'^add/', test_block),
     # url(r'^del/', del_block),

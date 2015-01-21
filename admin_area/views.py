@@ -860,3 +860,7 @@ def push_message(request):
             return HttpResponse(json.dumps('T'))
         else:
             return HttpResponse(json.dumps('F'))
+
+
+def index(req):
+    return  render_to_response('index.html')
