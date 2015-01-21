@@ -6,6 +6,18 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 
+def send_get_message(appointments):
+    apikey = 'e1ebef39f28c86fdb57808eb45ab713a'
+    for appointment in appointments:
+        content = "#order_num#=" + appointment.appointment_id
+        res = tpl_send_sms(apikey, '669219', content, appointment.consumer.phone)
+        jsres = simplejson.loads(res)
+        msg = jsres['code']
+        print jsres
+        print msg
+    return True
+
+
 def get_appointment(request):
     if request.method == 'GET':
         if request.session.get('username'):
@@ -15,7 +27,9 @@ def get_appointment(request):
             appointment.status = 2
             appointment.process_by = user
             appointment.save()
-            return HttpResponseRedirect('operate_new')
+            appointments = [appointment]
+            if send_get_message(appointments):
+                return HttpResponseRedirect('operate_new')
         else:
             return HttpResponseRedirect('login_in')
 
@@ -30,7 +44,8 @@ def get_appointment_all(request):
                 item.status = 2
                 item.process_by = user
                 item.save()
-            return HttpResponseRedirect('operate_new')
+            if send_get_message(appointments):
+                return HttpResponseRedirect('operate_new')
         else:
             return HttpResponseRedirect('login_in')
 
