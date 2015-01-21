@@ -5,6 +5,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+
 def get_appointment(request):
     if request.method == 'GET':
         if request.session.get('username'):
