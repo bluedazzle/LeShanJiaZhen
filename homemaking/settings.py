@@ -108,5 +108,6 @@ TEMPLATE_DIRS = (
 CSS_DIR = './static/css/'
 IMG_DIR = './static/img/'
 JS_DIR = './static/js/'
+FILE_DIR = './static/file/'
 FONTS_DIR = './static/fonts/'
 OUT_FILES_DIR ='./out_files/'
