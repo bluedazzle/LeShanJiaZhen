@@ -701,7 +701,7 @@ def advertisement_manage(request):
         Image.open(ad_file).save(file_full_path)
         new_advertisement = Advertisement()
         new_advertisement.content = file_name
-        new_advertisement.photo ='http://115.29.138.80' + '/img/advertisement/'+file_name
+        new_advertisement.photo = 'http://115.29.138.80' + '/img/advertisement/'+file_name
         new_advertisement.save()
         return HttpResponseRedirect('advertisement_manage')
 
@@ -712,7 +712,7 @@ def delete_advertisement(request):
     if request.method == 'GET':
         ad_id = request.GET.get('advertisement_id')
         advertisement = Advertisement.objects.get(id=ad_id)
-        file_full_path = BASE+'/static'+advertisement.photo
+        file_full_path = './static/img/advertisement/'+advertisement.content
         os.remove(file_full_path)
         advertisement.delete()
         return HttpResponseRedirect('advertisement_manage')
@@ -749,11 +749,12 @@ def edit_program_detail(request):
                 item.content = content
                 item0 = HomeItem.objects.get(parent_item=item.parent_item, sort_id=item_sort_id)
                 if not item0:
-                     item.sort_id = item_sort_id
-		else:
-		     item0.sort_id = item.sort_id
-                     item0.save()
-                     item.sort_id = item_sort_id
+                    item.sort_id = item_sort_id
+                else:
+                    item0.sort_id = item.sort_id
+                    item0.save()
+                    item.sort_id = item_sort_id
+
                 item.save()
                 return HttpResponse(json.dumps('T'), content_type="application/json")
 
@@ -799,11 +800,11 @@ def edit_program_p_detail(request):
         if item_p_id:
             item_p = HomeItem_P.objects.get(id=item_p_id)
             if item_p.sort_id != int(item_sort_id):
-                 if item_p_have.count() > 0:
-                      return render_to_response('admin_area/edit_program_p_detail.html', 
-                              {'sort_id_have': 'T',
-                               'item_p': item_p},
-                              context_instance=RequestContext(request))
+                if item_p_have.count() > 0:
+                    return render_to_response('admin_area/edit_program_p_detail.html',
+                                              {'sort_id_have': 'T',
+                                              'item_p': item_p},
+                                              context_instance=RequestContext(request))
             item_p.item_name = item_name
             item_p.sort_id = item_sort_id
             item_p.save()
@@ -814,10 +815,9 @@ def edit_program_p_detail(request):
             new_item_p.area = user.area
             new_item_p.sort_id = item_sort_id
             if item_p_have.count() > 0:
-                 return render_to_response('admin_area/edit_program_p_detail.html',
-                                           {'sort_id_have': 'T',
-                                            'item_p': new_item_p},
-                                            context_instance=RequestContext(request))
+                return render_to_response('admin_area/edit_program_p_detail.html',
+                                          {'sort_id_have': 'T',
+                                           'item_p': new_item_p}, context_instance=RequestContext(request))
             new_item_p.save()
             i_id = new_item_p.id
         if icon_file != None:

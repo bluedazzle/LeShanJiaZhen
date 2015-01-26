@@ -3,9 +3,6 @@ Author URL: http://w3layouts.com
 License: Creative Commons Attribution 3.0 Unported
 License URL: http://creativecommons.org/licenses/by/3.0/
 --*/
-body{
-	font-family: 'Open Sans', sans-serif;
-}
 .header{
 	padding:2em 0;
 }
@@ -464,7 +461,7 @@ input[type="submit"]:hover{
 	text-transform: uppercase;
 	border: 1px solid #D4D5D5;
 	padding: 1em 3em;
-	text-align:right;
+	text-align：left;
 	margin:0em;
 }
 .integer{
@@ -507,7 +504,7 @@ input[type="submit"]:hover{
 	border-bottom: none;
 }
 .integer h5{
-    font-size:2.2em;
+    font-size:1.8em;
 	font-weight:700;
 	color:#7C7C7C;
 	font-family: 'Open Sans', sans-serif;

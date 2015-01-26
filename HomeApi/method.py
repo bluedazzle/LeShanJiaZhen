@@ -61,7 +61,7 @@ def customedPush(msg):
     xandroid = xinge.XingeApp(2100081128, 'db2f948d8f2b962fc4e1cb4a26f7d87d')
     android =xinge.Message()
     android.type = xinge.Message.TYPE_NOTIFICATION
-    android.title = '易修哥'
+    android.title = '快乐居家'
     android.content = msg
     android.expireTime = 86400
     res = xandroid.PushAllDevices(0,android)
