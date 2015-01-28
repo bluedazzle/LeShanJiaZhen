@@ -117,6 +117,19 @@ def finish_appointment(request):
             appointment.save()
             return HttpResponseRedirect('operate_get')
 
+def appointment_add_info(request):
+    if request.method == 'GET':
+        if request.session.get('username'):
+            user = HomeAdmin.objects.get(username=request.session['username'])
+            id = request.GET.get('aid')
+            s_person = request.GET.get('service_person')
+            s_time = request.GET.get('service_time')
+            appointment = Appointment.objects.get(id=id, status=2)
+            appointment.service_person = s_person
+            appointment.service_time = s_time
+            appointment.save()
+            return HttpResponseRedirect('operate_get')
+
 
 def finish_appointment_all(request):
     if request.method == 'GET':

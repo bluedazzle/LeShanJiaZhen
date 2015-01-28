@@ -109,7 +109,7 @@ class Appointment(models.Model):
     process_by = models.ForeignKey(HomeAdmin, blank=True, null=True)
     consumer = models.ForeignKey(Consumer)
     service_person = models.CharField(max_length=20, blank=True, null=True)
-    service_time = models.DateTimeField(max_length=30, blank=True, null=True)
+    service_time = models.CharField(max_length=50, blank=True, null=True)
 
     def __unicode__(self):
         return self.content

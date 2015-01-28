@@ -54,6 +54,10 @@ function finish_appointment(id){
     window.location.href = 'appointment_finish?id='+id
 }
 
+function add_service_info(id, person, time){
+    window.location.href = 'appointment_info_add?id=' + id + '&serive_person=' + person + '&servie_time=' + time
+}
+
 function finish_all_appointment(){
     window.location.href = 'appointment_finish_all'
 }

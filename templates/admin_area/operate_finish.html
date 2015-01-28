@@ -115,6 +115,8 @@
                    <strong style="color: #27ad60">(有照片)</strong>
                {% endif %}
            </div>
+           <div class="col-md-12 col-lg-12">维修人员：{{ item.service_person }}</div>
+           <div class="col-md-12 col-lg-12">上门时间：{{ item.service_time }}</div>
            <div class="col-md-6 col-lg-6">
                {% if item.remark %}
                备注：{{ item.remark }}

@@ -34,13 +34,27 @@
                    <strong style="color: #27ad60">(有照片)</strong>
                {% endif %}
            </div>
-           <div class="col-md-6 col-lg-6">
+           <div class="col-md-12 col-lg-12">
                {% if item.remark %}
                备注：{{ item.remark }}
                {% else %}
                备注：无
                {% endif %}
            </div>
+           <form action="appointment_info_add" method="get">
+               <input type="hidden" name="aid" value="{{ item.id }}"/>
+           <div class="col-md-12 col-lg-12">
+               维修人员：<input type="text" id="w{{ item.id }}" name="service_person" value="{{ item.service_person }}"/>
+           </div>
+           <div class="col-md-12 col-lg-12">
+               上门时间：<input type="text" id="t{{ item.id }}" name="service_time" value="{{ item.service_time }}"/>
+           </div>
+           <div class="col-md-6 col-lg-6">
+               <button class="btn btn-large btn-info" type="submit">
+                 保存修改
+               </button>
+           </div>
+           </form>
            <div class="col-md-6 col-lg-6">
                <button class="btn btn-large btn-default" style="float: right;margin-right: 3%" onclick="cancel_appointment_g('{{ item.id }}')">
                  取消预约
