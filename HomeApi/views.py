@@ -72,7 +72,7 @@ def make_appointment(request):
                     p.name = name
                     p.consumer = p_consumer
                     p.appoint_time = datetime.datetime.fromtimestamp(int(appoint_time))
-                    p.appointment_id = str(consumer)+str(int(time.time()))+str(random.randint(10000, 99999))
+                    p.appointment_id = str(int(time.time()))[:10] + str(consumer)[:4]
                     print p.appointment_id
                     p.remark = remark
                     # if pic1:

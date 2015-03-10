@@ -30,6 +30,32 @@ class HomeAdminManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+class AssociatorManager(BaseUserManager):
+    def create_user(self, email, phone, passwd=None):
+        if not email:
+            raise ValueError('Users must have an email address')
+
+        user = self.model(
+            email = AssociatorManager.normalize_email(email),
+            username = phone,
+        )
+
+        user.set_password(passwd)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, phone, passwd):
+
+        user = self.create_user(email,
+            username = phone,
+            password = passwd,
+        )
+        user.is_staff = True
+        user.is_active = True
+        user.is_admin = False
+        user.save(using=self._db)
+        return user
+
 
 class Block(models.Model):
     area_id = models.IntegerField(max_length=3)
@@ -181,3 +207,115 @@ class Application(models.Model):
 
     def __unicode__(self):
         return unicode(self.id)
+
+class Coupon(models.Model):
+    cou_id = models.CharField(max_length=13, unique=True)
+    num = models.IntegerField(max_length=3)
+    if_use = models.BooleanField(default=False)
+    type = models.IntegerField(max_length=2)
+    have = models.ForeignKey(Associator, null=True, blank=True)
+    create_time = models.DateTimeField(auto_now=True)
+    deadline = models.DateTimeField(max_length=30)
+
+    def __unicode__(self):
+        return self.cou_id
+
+
+
+class Associator(AbstractBaseUser):
+    username = models.CharField(max_length=15)
+    nick = models.CharField(max_length=30, null=True, blank=True)
+    sex = models.IntegerField(max_length=1, null=True, blank=True)
+    birthday = models.DateTimeField(max_length=30, null=True, blank=True)
+    password = models.CharField(max_length=50)
+    address = models.CharField(max_length=200, null=True, blank=True)
+    invite_code = models.CharField(max_length=6, null=True, blank=True)
+    device_code = models.CharField(max_length=128, null=True, blank=True)
+    reg_time = models.DateTimeField(auto_now=True)
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['username']
+    objects = HomeAdminManager()
+
+    def __unicode__(self):
+        return self.username
+
+    def is_authenticated(self):
+        return True
+
+    def hashed_password(self, password=None):
+        if not password:
+            return self.password
+        else:
+            return hashlib.md5(password).hexdigest()
+
+    def check_password(self, password):
+        if self.hashed_password(password) == self.password:
+            return True
+        return False
+
+class CouponControl(models.Model):
+    game_money_low = models.FloatField(max_length=5, null=True, blank=True)
+    game_money_high = models.FloatField(max_length=5, null=True, blank=True)
+    game_start_time = models.DateTimeField(max_length=30, null=True, blank=True)
+    game_end_time = models.DateTimeField(max_length=30, null=True, blank=True)
+    game_coupon_num = models.IntegerField(max_length=10, null=True, blank=True)
+    game_active = models.BooleanField(default=False)
+
+    online_money_low = models.FloatField(max_length=5, null=True, blank=True)
+    online_money_high = models.FloatField(max_length=5, null=True, blank=True)
+    online_active = models.BooleanField(default=False)
+
+    reg_money = models.FloatField(max_length=5, null=True, blank=True)
+
+    invite_money = models.FloatField(max_length=5, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.id
+
+class Message(models.Model):
+    content = models.CharField(max_length=200)
+    create_time = models.DateTimeField(auto_now=True)
+    deadline = models.DateTimeField(max_length=30, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.content
+
+class Goods_P(models.Model):
+    item_name = models.CharField(max_length=30)
+    create_time = models.DateTimeField(auto_now_add=True)
+    area = models.ForeignKey(Block, null=True, blank=True)
+    icon = models.CharField(max_length=100, blank=True, null=True)
+    sort_id = models.IntegerField(max_length=10, blank=True, null=True)
+    advertisement = models.CharField(max_length=100, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.item_name
+
+class Goods_O(models.Model)
+    item_name = models.CharField(max_length=50)
+    create_time = models.DateTimeField(auto_now_add=True)
+    parent_item = models.ForeignKey(Goods_P)
+    icon = models.CharField(max_length=100, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.item_name
+
+class GoodsItem(models.Model):
+    title = models.CharField(max_length=40)
+    content = models.CharField(max_length=300)
+    origin_price = models.FloatField(max_length=10, null=True, blank=True)
+    real_price = models.FloatField(max_length=10)
+    repair_relation = models.ForeignKey(HomeItem, null=True, blank=True)
+    picture = models.CharField(max_length=100, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.title
+
+class Feedback(models.Model):
+    phone = models.CharField(max_length=15)
+    content = models.CharField(max_length=500)
+    create_time = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.phone

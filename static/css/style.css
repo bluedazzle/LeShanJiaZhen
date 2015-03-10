@@ -99,7 +99,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 	margin: 1em -2em
 }   
 .banner{
-	background:url(/img/index/banner.png) no-repeat 0px 0px;
+	/*background:url(/img/index/banner.png) no-repeat 0px 0px;*/
 	background-size:cover;
 	min-height:600px;
 	-webkit-background-size: cover;
