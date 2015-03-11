@@ -60,6 +60,7 @@ class AssociatorManager(BaseUserManager):
 class Block(models.Model):
     area_id = models.IntegerField(max_length=3)
     baidu_id = models.CharField(max_length=10, blank=True, null=True)
+    city_num = models.CharField(max_length=10, unique=True)
     area_name = models.CharField(max_length=10)
     area_tel = models.CharField(max_length=20)
     area_address = models.CharField(max_length=100, null=True)
@@ -67,8 +68,6 @@ class Block(models.Model):
     # area_admin = models.ForeignKey(HomeAdmin, null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
-    lat = models.FloatField(null=True)
-    lng = models.FloatField(null=True)
 
     def __unicode__(self):
         return self.area_name
@@ -142,10 +141,11 @@ class Appointment(models.Model):
 
 class HomeItem_P(models.Model):
     item_name = models.CharField(max_length=10)
+    type = models.IntegerField(max_length=2)
     create_time = models.DateTimeField(auto_now_add=True)
     area = models.ForeignKey(Block, null=True, blank=True)
     icon = models.CharField(max_length=100, blank=True, null=True)
-    sort_id = models.IntegerField(max_length=10,blank=True,null=True)
+    sort_id = models.IntegerField(max_length=10, blank=True, null=True)
 
     def __unicode__(self):
         return self.item_name
@@ -164,7 +164,7 @@ class HomeItem(models.Model):
     content = models.CharField(max_length=500)
     create_time = models.DateTimeField(auto_now_add=True)
     parent_item = models.ForeignKey(HomeItem_P, null=True, blank=True)
-    sort_id = models.IntegerField(max_length=20,blank=True,null=True)
+    sort_id = models.IntegerField(max_length=20, blank=True, null=True)
 
     def __unicode__(self):
         return self.title
@@ -208,26 +208,11 @@ class Application(models.Model):
     def __unicode__(self):
         return unicode(self.id)
 
-class Coupon(models.Model):
-    cou_id = models.CharField(max_length=13, unique=True)
-    num = models.IntegerField(max_length=3)
-    if_use = models.BooleanField(default=False)
-    type = models.IntegerField(max_length=2)
-    have = models.ForeignKey(Associator, null=True, blank=True)
-    create_time = models.DateTimeField(auto_now=True)
-    deadline = models.DateTimeField(max_length=30)
-
-    def __unicode__(self):
-        return self.cou_id
-
-
-
 class Associator(AbstractBaseUser):
     username = models.CharField(max_length=15)
     nick = models.CharField(max_length=30, null=True, blank=True)
     sex = models.IntegerField(max_length=1, null=True, blank=True)
     birthday = models.DateTimeField(max_length=30, null=True, blank=True)
-    password = models.CharField(max_length=50)
     address = models.CharField(max_length=200, null=True, blank=True)
     invite_code = models.CharField(max_length=6, null=True, blank=True)
     device_code = models.CharField(max_length=128, null=True, blank=True)
@@ -254,6 +239,21 @@ class Associator(AbstractBaseUser):
             return True
         return False
 
+    class Meta:
+        app_label = 'HomeApi'
+
+class Coupon(models.Model):
+    cou_id = models.CharField(max_length=13, unique=True)
+    num = models.IntegerField(max_length=3)
+    if_use = models.BooleanField(default=False)
+    type = models.IntegerField(max_length=2)
+    have = models.ForeignKey(Associator, null=True, blank=True, related_name='coupons')
+    create_time = models.DateTimeField(auto_now=True)
+    deadline = models.DateTimeField(max_length=30)
+
+    def __unicode__(self):
+        return self.cou_id
+
 class CouponControl(models.Model):
     game_money_low = models.FloatField(max_length=5, null=True, blank=True)
     game_money_high = models.FloatField(max_length=5, null=True, blank=True)
@@ -277,6 +277,7 @@ class Message(models.Model):
     content = models.CharField(max_length=200)
     create_time = models.DateTimeField(auto_now=True)
     deadline = models.DateTimeField(max_length=30, null=True, blank=True)
+    own = models.ForeignKey(Associator, related_name='messages')
 
     def __unicode__(self):
         return self.content
@@ -284,7 +285,7 @@ class Message(models.Model):
 class Goods_P(models.Model):
     item_name = models.CharField(max_length=30)
     create_time = models.DateTimeField(auto_now_add=True)
-    area = models.ForeignKey(Block, null=True, blank=True)
+    area = models.ForeignKey(Block, related_name='goodsp')
     icon = models.CharField(max_length=100, blank=True, null=True)
     sort_id = models.IntegerField(max_length=10, blank=True, null=True)
     advertisement = models.CharField(max_length=100, null=True, blank=True)
@@ -292,10 +293,10 @@ class Goods_P(models.Model):
     def __unicode__(self):
         return self.item_name
 
-class Goods_O(models.Model)
+class Goods_O(models.Model):
     item_name = models.CharField(max_length=50)
     create_time = models.DateTimeField(auto_now_add=True)
-    parent_item = models.ForeignKey(Goods_P)
+    parent_item = models.ForeignKey(Goods_P, related_name='goodso')
     icon = models.CharField(max_length=100, blank=True, null=True)
 
     def __unicode__(self):
@@ -306,7 +307,7 @@ class GoodsItem(models.Model):
     content = models.CharField(max_length=300)
     origin_price = models.FloatField(max_length=10, null=True, blank=True)
     real_price = models.FloatField(max_length=10)
-    repair_relation = models.ForeignKey(HomeItem, null=True, blank=True)
+    repair_price = models.FloatField(max_length=10, null=True, blank=True)
     picture = models.CharField(max_length=100, null=True, blank=True)
 
     def __unicode__(self):
@@ -319,3 +320,8 @@ class Feedback(models.Model):
 
     def __unicode__(self):
         return self.phone
+
+class Verify(models.Model):
+    phone = models.CharField(max_length=15)
+    verify = models.CharField(max_length=10)
+    create_time = models.DateTimeField(auto_now_add=True)

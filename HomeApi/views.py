@@ -300,3 +300,6 @@ def getnearest(request):
             return HttpResponse(json.dumps({'status': 2, 'body': None}))
         return HttpResponse(json.dumps({'status': 1, 'body': {'area_id': nearest_id}}))
 
+
+@csrf_exempt
+def ger_verify(req):
