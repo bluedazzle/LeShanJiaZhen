@@ -18,6 +18,8 @@ import time
 import os
 from PIL import Image
 BASE = os.path.dirname(os.path.dirname(__file__))
+base_url = 'localhost:8000'
+# base_url = 'http://115.29.138.80'
 
 
 def login_in(request):
@@ -826,7 +828,7 @@ def edit_program_p_detail(request):
             file_full_path = BASE + '/static/img/program_icons/' + file_name
             Image.open(icon_file).save(file_full_path)
             item_p = HomeItem_P.objects.get(id=i_id)
-            item_p.icon = 'http://115.29.138.80'+'/img/program_icons/'+file_name
+            item_p.icon = base_url+'/img/program_icons/'+file_name
             item_p.save()
 
         return HttpResponseRedirect('program_manage')
@@ -872,58 +874,123 @@ def goods_manage(request):
         if goods_p and not goods_o:
             Goods_p = Goods_P.objects.filter(id=goods_p)
             if Goods_p.count() == 0:
-                return render_to_response('admin_area/goods_manage/goods_manage.html',
-                                          {'goods_ps': goods_ps},
-                                          content_type=RequestContext(request))
+                return HttpResponseRedirect('goods_manage')
 
-            goods_os = Goods_O.objects.order_by('sort_id').filter(parent_item=Goods_p)
+            goods_os = Goods_O.objects.order_by('sort_id').filter(parent_item=Goods_p[0])
             return render_to_response('admin_area/goods_manage/goods_manage_two.html',
-                                      {'goods_os': goods_os},
-                                      content_type=RequestContext(request))
+                                      {'goods_os': goods_os,
+                                       'goods_p': Goods_p[0]},
+                                      context_instance=RequestContext(request))
         if goods_p and goods_o:
             Goods_o = Goods_O.objects.filter(id=goods_o)
             if Goods_o.count() == 0:
                 return render_to_response('admin_area/goods_manage/goods_manage.html',
                                           {'goods_ps': goods_ps},
-                                          content_type=RequestContext(request))
+                                          context_instance=RequestContext(request))
 
             goods = GoodsItem.objects.order_by('sort_id').filter(parent_item=Goods_o)
             return render_to_response('admin_area/goods_manage/goods_manage_three.html',
                                       {'goods': goods},
-                                      content_type=RequestContext(request))
+                                      context_instance=RequestContext(request))
 
         return render_to_response('admin_area/goods_manage/goods_manage.html',
                                   {'goods_ps': goods_ps},
-                                  content_type=RequestContext(request))
+                                  context_instance=RequestContext(request))
 
 
-def add_goods_p(request):
+def edit_goods_p(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
+        goods_p_id = request.GET.get('item_id')
+        if goods_p_id:
+            goods_p = Goods_P.objects.filter(id=goods_p_id)
+            if goods_p.count() != 0:
+                return render_to_response('admin_area/goods_manage/edit_goods_p.html',
+                                          {'item_p': goods_p[0]},
+                                          context_instance=RequestContext(request))
+
         return render_to_response('admin_area/goods_manage/edit_goods_p.html',
-                                  content_type=RequestContext(request))
+                                  context_instance=RequestContext(request))
+    if request.method == 'POST':
+        context = {}
+        context.update(csrf(request))
+        goods_p_id = request.POST.get('item_p_id')
+        ad_file = request.FILES.get('ad_file')
+        goods_p_name = request.POST.get('item_name')
+        sort_id = request.POST.get('sort_id')
+        user = HomeAdmin.objects.get(username=request.session['username'], type=1)
+        i_id = 1
+        goods_p_have = Goods_P.objects.filter(sort_id=sort_id, area=user.area)
+
+        if goods_p_id:
+            goods_p = Goods_P.objects.get(id=goods_p_id)
+            if goods_p.sort_id != int(sort_id):
+                if goods_p_have.count() > 0:
+                    return render_to_response('admin_area/goods_manage/edit_goods_p.html',
+                                              {'sort_id_have': 'T',
+                                               'item_p': goods_p},
+                                              context_instance=RequestContext(request))
+            goods_p.item_name = goods_p_name
+            goods_p.sort_id = sort_id
+            goods_p.save()
+            i_id = goods_p.id
+        else:
+            new_goods_p = Goods_P()
+            new_goods_p.item_name = goods_p_name
+            new_goods_p.area = user.area
+            new_goods_p.sort_id = sort_id
+            if goods_p_have.count() > 0:
+                return render_to_response('admin_area/goods_manage/edit_goods_p.html',
+                                          {'sort_id_have': 'T',
+                                           'item_p': new_goods_p}, context_instance=RequestContext(request))
+            new_goods_p.save()
+            i_id = new_goods_p.id
+        if ad_file != None:
+            print "OK"
+            file_name = str(int(time.time())) + '.png'
+            file_full_path = BASE + '/static/img/goods_p_ads/' + file_name
+            Image.open(ad_file).save(file_full_path)
+            item_p = HomeItem_P.objects.get(id=i_id)
+            item_p.icon = base_url+'/img/goods_p_ads/'+file_name
+            item_p.save()
+
+        return HttpResponseRedirect('goods_manage')
+
+
+def delete_goods(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        item_p_id = request.GET.get('item_p_id')
+        item_o_id = request.GET.get('item_o_id')
+        item_id = request.GET.get('item_id')
+        if item_p_id:
+            goods_p = Goods_P.objects.filter(id=item_p_id)
+            if goods_p.count() != 0:
+                goods_p[0].delete()
+                return HttpResponseRedirect('goods_manage')
 
 
 def coupon_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return render_to_response('admin_area/coupon_manage.html', content_type=RequestContext(request))
+        return render_to_response('admin_area/coupon_manage.html', context_instance=RequestContext(request))
 
 
 def game_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return render_to_response('admin_area/game_manage.html', content_type=RequestContext(request))
+        return render_to_response('admin_area/game_manage.html', context_instance=RequestContext(request))
 
 
 def vip_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return render_to_response('admin_area/vip_manage.html', content_type=RequestContext(request))
+        return render_to_response('admin_area/vip_manage.html', context_instance=RequestContext(request))
 
 
 def index(req):
