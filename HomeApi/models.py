@@ -288,7 +288,6 @@ class Goods_P(models.Model):
     item_name = models.CharField(max_length=30)
     create_time = models.DateTimeField(auto_now_add=True)
     area = models.ForeignKey(Block, related_name='goodsp')
-    icon = models.CharField(max_length=100, blank=True, null=True)
     sort_id = models.IntegerField(max_length=10, blank=True, null=True)
     advertisement = models.CharField(max_length=100, null=True, blank=True)
 
