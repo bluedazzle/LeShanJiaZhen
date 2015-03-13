@@ -1,0 +1,57 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+<script xmlns="http://www.w3.org/1999/html">
+        $('#page_title').text('商品管理');
+        $('#message_manage').addClass('active');
+        $('#goods_manage').addClass('active')
+</script>
+<div class="col-md-12 col-lg-12">
+    <table class="table">
+           <thead>
+             <tr>
+                 <ol class="breadcrumb">
+                     <li><a href="goods_manage">商品分类</a></li>
+                     <li class="active">二级分类</li>
+                 </ol>
+                 <script>
+                     $('#delete_p').click(function(){
+                         var r = confirm("您确定要删除该分类并且同时删除所有子项目？");
+                         if (r){
+                             window.location.href = "delete_program_p?item_id={{ item_p.id }}"
+                         }
+                     })
+                 </script>
+             </tr>
+           </thead>
+           <tbody>
+              <tr style="background-color: #1abc9c; color: #ffffff">
+                  <th>排序ID</th>
+                  <th>分类名称</th>
+                  <th style="max-width: 150px">说明</th>
+                  <th style="max-width: 60px;padding-right:0">操作
+                  </th>
+              </tr>
+              <tr>
+                  <td>01</td>
+                  <td>
+                      <a href="goods_manage?goods_p=1&goods_o=1">冷热水龙头</a>
+                  </td>
+                  <td style="max-width: 150px">冷热水切换</td>
+                  <td style="max-width: 60px;padding-right:0">
+                     <a role="button" href="edit_program_detail?item_p_id={{ item_p.id }}&item_id={{ item.id }}" class="btn btn-sm btn-default">修改</a>
+                     <button class="btn btn-sm btn-danger" onclick="delete_item_detail('{{ item.id }}', '{{ item.parent_item.id }}')">删除</button>
+                  </td>
+              </tr>
+           </tbody>
+           <script>
+               function delete_item_detail(item_id, item_p_id){
+                   r = confirm("确定删除该项目?");
+                   if(r == true){
+                       window.location.href = "delete_program_detail?item_id="+item_id+"&item_p_id="+item_p_id;
+                   }
+               }
+           </script>
+  </table>
+
+</div>
+{% endblock %}

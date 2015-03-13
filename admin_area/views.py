@@ -862,5 +862,40 @@ def push_message(request):
             return HttpResponse(json.dumps('F'))
 
 
+def goods_manage(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        goods_p = request.GET.get('goods_p')
+        goods_o = request.GET.get('goods_o')
+        if goods_p and not goods_o:
+            return render_to_response('admin_area/goods_manage_two.html', content_type=RequestContext(request))
+        if goods_p and goods_o:
+            return render_to_response('admin_area/goods_manage_three.html', content_type=RequestContext(request))
+        return render_to_response('admin_area/goods_manage.html', content_type=RequestContext(request))
+
+
+def coupon_manage(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return render_to_response('admin_area/coupon_manage.html', content_type=RequestContext(request))
+
+
+def game_manage(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return render_to_response('admin_area/game_manage.html', content_type=RequestContext(request))
+
+
+def vip_manage(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return render_to_response('admin_area/vip_manage.html', content_type=RequestContext(request))
+
+
 def index(req):
     return  render_to_response('index.html')
+

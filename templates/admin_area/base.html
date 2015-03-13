@@ -16,11 +16,10 @@
 <audio  controls="controls" id="music" src="/js/567.wav" loop="true" style="display:none;">
         Your browser does not support the audio element.
     </audio>
-<ul class="demo-sidebar nav nav-pills nav-stacked col-md-2 col-lg-2" style="border-right:2px solid rgba(255,255,255,0.14);max-width: 193px">
+<ul class="demo-sidebar nav nav-pills nav-stacked col-md-2 col-lg-2" style="border-right:2px solid rgba(255,255,255,0.14);max-width: 193px;">
       <li style="padding-top: 1%;background-color: #2980b9;height: 53px;color: #ffffff;">
-          <p style="font-size: 20px;">
-              <span class="glyphicon glyphicon-user" style="margin-right: 3%"></span>
-              预约管理系统
+          <p style="font-size: 20px;text-align: center">
+              后台管理系统
           </p>
       </li>
       <li style="margin-top:2%;color: #16a085">
@@ -39,13 +38,13 @@
       <li id="new">
           <a href="operate_new">
               <span class="glyphicon glyphicon-earphone" style="margin-right: 3%"></span>
-              未受理预约<span class="badge" id="appoint_new_count" style="margin-left: 10px;"></span>
+              未受理订单<span class="badge" id="appoint_new_count" style="margin-left: 10px;"></span>
           </a>
       </li>
       <li id="get">
           <a href="operate_get">
               <span class="glyphicon glyphicon-folder-close" style="margin-right: 3%"></span>
-              已接受预约
+              已接受订单
           </a>
       </li>
       <li id="finish">
@@ -57,55 +56,72 @@
       <li id="cancel">
           <a href="operate_cancel">
               <span class="glyphicon glyphicon-trash" style="margin-right: 3%"></span>
-              取消的预约
+              取消的订单
           </a>
       </li>
       <li id="find_appointment">
           <a href="find_appointment">
               <span class="glyphicon glyphicon-search" style="margin-right: 3%"></span>
-              查询预约
+              查询订单
           </a>
       </li>
       <li id="message_manage">
           <a>
               <span class="glyphicon glyphicon-th-list" style="margin-right: 3%"></span>
              信息管理
-              <span id="menu-down" class="glyphicon glyphicon-chevron-down" style="margin-left: 10%"></span>
-              <span id="menu-up" class="glyphicon glyphicon-chevron-up" style="display: none;margin-left: 10%"></span>
+              <span id="menu-down" class="glyphicon glyphicon-chevron-right" style="margin-left: 10%"></span
           </a>
-          <ul class="nav" id="programs" style="display: none;line-height: 0.9;padding-left: 10%">
-              <li>
+          <ul class="demo-sidebar nav nav-pills nav-stacked hide" id="programs" style="height: 350px;line-height: 0.9;margin-top:200px;margin-left: 192px;width:160px;border: 1px #ffffff solid">
+              <li id="user_mes">
                   <a href="user_mes">
                       <span class="glyphicon glyphicon-cog"></span>
                       个人信息
                   </a>
               </li>
-              <li>
+              <li id="program_manage">
                   <a href="program_manage">
-                      <span class="glyphicon glyphicon-edit"></span>
+                      <span class="glyphicon glyphicon-wrench"></span>
                       项目管理
                   </a>
               </li>
-              <li>
+              <li id="goods_manage">
+                  <a href="goods_manage">
+                      <span class="glyphicon glyphicon-shopping-cart"></span>
+                      商品管理
+                  </a>
+              </li>
+              <li id="advertisement_manage">
                   <a href="advertisement_manage">
                       <span class="glyphicon glyphicon-bullhorn"></span>
                       广告管理
                   </a>
               </li>
-              <li>
+              <li id="push_message">
                   <a href="push_message">
                       <span class="glyphicon glyphicon-comment"></span>
                       消息推送
                   </a>
               </li>
+              <li id="coupon_manage">
+                  <a href="coupon_manage">
+                      <span class="glyphicon glyphicon-euro"></span>
+                      维修基金管理
+                  </a>
+              </li>
+              <li id="game_manage">
+                  <a href="game_manage">
+                      <span class="glyphicon glyphicon-phone"></span>
+                      游戏管理
+                  </a>
+              </li>
+              <li id="vip_manage">
+                  <a href="vip_manage">
+                      <span class="glyphicon glyphicon-user"></span>
+                      会员管理
+                  </a>
+              </li>
           </ul>
       </li>
-{#      <li id="user_mes">#}
-{#          <a href="user_mes">#}
-{#              <span class="glyphicon glyphicon-cog" style="margin-right: 3%"></span>#}
-{#              个人信息#}
-{#          </a>#}
-{#      </li>#}
       <li>
           <a href="login_in">
               <span class="glyphicon glyphicon-off" style="margin-right: 3%"></span>
@@ -114,11 +130,11 @@
       </li>
 </ul>
 <script>
-    $('#message_manage').click(function(){
-        $('#programs').toggle('normal');
-        $('#menu-down').toggle('fast');
-        $('#menu-up').toggle('fast');
-
+    $('#message_manage').mouseover(function(){
+        $('#programs').removeClass('hide');
+    });
+    $('#message_manage').mouseleave(function(){
+        $('#programs').addClass('hide');
     });
 </script>
 <nav class="navbar navbar-default" role="navigation" style="margin-bottom: 0;background-color: #3498db;border-radius: 0">
