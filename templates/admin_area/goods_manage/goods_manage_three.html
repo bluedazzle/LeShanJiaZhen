@@ -10,7 +10,9 @@
            <thead>
              <tr>
                  <ol class="breadcrumb">
-                     <li class="active">商品分类</li>
+                     <li><a href="">商品分类</a></li>
+                     <li><a href="?goods_p=1">二级分类</a></li>
+                     <li class="active">三级分类</li>
                  </ol>
                  <script>
                      $('#delete_p').click(function(){
@@ -25,7 +27,8 @@
            <tbody>
               <tr style="background-color: #1abc9c; color: #ffffff">
                   <th>排序ID</th>
-                  <th>分类名称</th>
+                  <th>商品名称</th>
+                  <th>品牌</th>
                   <th style="max-width: 150px">说明</th>
                   <th style="max-width: 60px;padding-right:0">操作
                   </th>
@@ -33,12 +36,13 @@
               <tr>
                   <td>01</td>
                   <td>
-                      <a href="goods_manage?goods_p=1">水龙头</a>
+                      洁利来不锈钢单冷水龙头
                   </td>
-                  <td style="max-width: 150px">水龙头专卖</td>
+                  <td>洁利来</td>
+                  <td style="max-width: 150px">冷热水切换</td>
                   <td style="max-width: 60px;padding-right:0">
-                     <a role="button" href="edit_program_detail?item_p_id={{ item_p.id }}&item_id={{ item.id }}" class="btn btn-sm btn-default">修改</a>
-                     <button class="btn btn-sm btn-danger" onclick="delete_item_detail('{{ item.id }}', '{{ item.parent_item.id }}')">删除</button>
+                     <a role="button" href="" class="btn btn-sm btn-default">修改</a>
+                     <button class="btn btn-sm btn-danger" onclick="">删除</button>
                   </td>
               </tr>
            </tbody>
@@ -46,7 +50,7 @@
                function delete_item_detail(item_id, item_p_id){
                    r = confirm("确定删除该项目?");
                    if(r == true){
-                       window.location.href = "delete_program_detail?item_id="+item_id+"&item_p_id="+item_p_id;
+                       window.location.href = "";
                    }
                }
            </script>

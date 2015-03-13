@@ -658,14 +658,14 @@ def program_manage(request):
         user = HomeAdmin.objects.get(username=request.session['username'])
         programs = HomeItem_P.objects.order_by('sort_id').filter(area=user.area)
         if not item_p_id:
-            return render_to_response('admin_area/program_manage.html', {'programs': programs})
+            return render_to_response('admin_area/program_manage/program_manage.html', {'programs': programs})
         else:
             item_p = HomeItem_P.objects.filter(id=item_p_id)
             if item_p.count() == 0:
-                return render_to_response('admin_area/program_manage.html', {'programs': programs})
+                return render_to_response('admin_area/program_manage/program_manage.html', {'programs': programs})
             else:
                 item_details = HomeItem.objects.order_by('sort_id').filter(parent_item=item_p)
-                return render_to_response('admin_area/program_manage.html', {'programs': programs,
+                return render_to_response('admin_area/program_manage/program_manage.html', {'programs': programs,
                                                                              'item_details': item_details,
                                                                              'item_p': item_p[0],
                                                                              'flag0': 'T'})
@@ -726,11 +726,11 @@ def edit_program_detail(request):
         item_id = request.GET.get('item_id')
         item_p = HomeItem_P.objects.get(id=item_p_id)
         if not item_id:
-            return render_to_response('admin_area/edit_program_detail.html',
+            return render_to_response('admin_area/program_manage/edit_program_detail.html',
                                       {'item_p': item_p},
                                       context_instance=RequestContext(request))
         item = HomeItem.objects.get(id=item_id)
-        return render_to_response('admin_area/edit_program_detail.html',
+        return render_to_response('admin_area/program_manage/edit_program_detail.html',
                                   {'item_p': item_p,
                                    'item': item},
                                   context_instance=RequestContext(request))
@@ -781,10 +781,10 @@ def edit_program_p_detail(request):
         item_id = request.GET.get('item_id')
         if item_id:
             item_p = HomeItem_P.objects.get(id=item_id)
-            return render_to_response('admin_area/edit_program_p_detail.html',
+            return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
                                       {'item_p': item_p},
                                       context_instance=RequestContext(request))
-        return render_to_response('admin_area/edit_program_p_detail.html',
+        return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
                                   context_instance=RequestContext(request))
     if request.method == 'POST':
         context = {}
@@ -801,7 +801,7 @@ def edit_program_p_detail(request):
             item_p = HomeItem_P.objects.get(id=item_p_id)
             if item_p.sort_id != int(item_sort_id):
                 if item_p_have.count() > 0:
-                    return render_to_response('admin_area/edit_program_p_detail.html',
+                    return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
                                               {'sort_id_have': 'T',
                                               'item_p': item_p},
                                               context_instance=RequestContext(request))
@@ -815,7 +815,7 @@ def edit_program_p_detail(request):
             new_item_p.area = user.area
             new_item_p.sort_id = item_sort_id
             if item_p_have.count() > 0:
-                return render_to_response('admin_area/edit_program_p_detail.html',
+                return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
                                           {'sort_id_have': 'T',
                                            'item_p': new_item_p}, context_instance=RequestContext(request))
             new_item_p.save()
@@ -868,11 +868,41 @@ def goods_manage(request):
     if request.method == 'GET':
         goods_p = request.GET.get('goods_p')
         goods_o = request.GET.get('goods_o')
+        goods_ps = Goods_P.objects.order_by('sort_id').all()
         if goods_p and not goods_o:
-            return render_to_response('admin_area/goods_manage_two.html', content_type=RequestContext(request))
+            Goods_p = Goods_P.objects.filter(id=goods_p)
+            if Goods_p.count() == 0:
+                return render_to_response('admin_area/goods_manage/goods_manage.html',
+                                          {'goods_ps': goods_ps},
+                                          content_type=RequestContext(request))
+
+            goods_os = Goods_O.objects.order_by('sort_id').filter(parent_item=Goods_p)
+            return render_to_response('admin_area/goods_manage/goods_manage_two.html',
+                                      {'goods_os': goods_os},
+                                      content_type=RequestContext(request))
         if goods_p and goods_o:
-            return render_to_response('admin_area/goods_manage_three.html', content_type=RequestContext(request))
-        return render_to_response('admin_area/goods_manage.html', content_type=RequestContext(request))
+            Goods_o = Goods_O.objects.filter(id=goods_o)
+            if Goods_o.count() == 0:
+                return render_to_response('admin_area/goods_manage/goods_manage.html',
+                                          {'goods_ps': goods_ps},
+                                          content_type=RequestContext(request))
+
+            goods = GoodsItem.objects.order_by('sort_id').filter(parent_item=Goods_o)
+            return render_to_response('admin_area/goods_manage/goods_manage_three.html',
+                                      {'goods': goods},
+                                      content_type=RequestContext(request))
+
+        return render_to_response('admin_area/goods_manage/goods_manage.html',
+                                  {'goods_ps': goods_ps},
+                                  content_type=RequestContext(request))
+
+
+def add_goods_p(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return render_to_response('admin_area/goods_manage/edit_goods_p.html',
+                                  content_type=RequestContext(request))
 
 
 def coupon_manage(request):
@@ -897,5 +927,5 @@ def vip_manage(request):
 
 
 def index(req):
-    return  render_to_response('index.html')
+    return render_to_response('index.html')
 
