@@ -154,6 +154,7 @@ class HomeItem_O(models.Model):
     item_name = models.CharField(max_length=50)
     create_time = models.DateTimeField(auto_now_add=True)
     parent_item = models.ForeignKey(HomeItem_P)
+    sort_id = models.IntegerField(max_length=10, blank=True, null=True)
 
     def __unicode__(self):
         return self.item_name
@@ -248,7 +249,7 @@ class Coupon(models.Model):
     num = models.IntegerField(max_length=3)
     if_use = models.BooleanField(default=False)
     type = models.IntegerField(max_length=2)
-    have = models.ForeignKey(Associator, null=True, blank=True, related_name='coupons')
+    own = models.ForeignKey(Associator, null=True, blank=True, related_name='coupons')
     create_time = models.DateTimeField(auto_now=True)
     deadline = models.DateTimeField(max_length=30)
 
@@ -298,6 +299,9 @@ class Goods_O(models.Model):
     item_name = models.CharField(max_length=50)
     create_time = models.DateTimeField(auto_now_add=True)
     parent_item = models.ForeignKey(Goods_P, related_name='goodso')
+    sort_id = models.IntegerField(max_length=10, blank=True, null=True)
+    goods_advertisment = models.CharField(max_length=100, null=True, blank=True)
+    have_advertisment = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.item_name
@@ -313,6 +317,7 @@ class GoodsItem(models.Model):
     real_price = models.FloatField(max_length=10)
     repair_price = models.FloatField(max_length=10, null=True, blank=True)
     picture = models.CharField(max_length=100, null=True, blank=True)
+    recommand = models.IntegerField(max_length=10, null=True, blank=True, default=0)
     parent_item = models.ForeignKey(Goods_O, related_name='goodsitems')
 
     def __unicode__(self):

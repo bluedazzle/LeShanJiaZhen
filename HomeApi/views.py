@@ -36,6 +36,7 @@ def verify_reg(req):
     else:
         return Http404
 
+
 def register(req):
     body={}
     if req.method=='POST':
@@ -104,18 +105,55 @@ def get_messages(req):
 
 def add_message(req):
     body={}
-    if req.method='POST':
+    if req.method = 'POST':
         jsonres = simplejson.loads(req.body)
         token = jsonres['private_token']
         username = jsonres['username']
         content = jsonres['content']
-
+        deadline = jsonres['deadline']
+        deadline = string_to_datetime(deadline)
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
             newmessage = Message(content=content, own=curuser)
             newmessage.create_time = datetime.datetime.now()
+            newmessage.deadline = deadline
+            newmessage.save()
+            body['msg'] = 'message add success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            return HttpResponse(encodejson(13, body), content_type='application/json')
 
 
+def get_coupon(req):
+    body={}
+    if req.method = 'POST':
+        jsonres = simplejson.loads(req.body)
+        token = jsonres['private_token']
+        username = jsonres['username']
+        if if_legal(username, token):
+            curuser = Associator.objects.get(username=username)
+            coupon_list = Coupon.objects.filter(own=curuser)
+            body['coupons'] = coupon_list
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            return HttpResponse(encodejson(13, body), content_type='application/json')
+    else:
+        return Http404
+
+def add_feedback(req):
+    body={}
+    if req.method = 'POST':
+        jsonres = simplejson.loads(req.body)
+        phone = jsonres['username']
+        content = jsonres['content']
+        newfeedback = Feedback(phone=phone, content=content)
+        newfeedback.save()
+        body['msg'] = 'feedback add success'
+        return HttpResponse(encodejson(1, body), content_type='application/json')
+    else:
+        return Http404
+
+def
 
 def if_legal(username, private_token):
     ass = Associator.objects.filter(username=username, prive_token=private_token)
