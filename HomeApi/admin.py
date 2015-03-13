@@ -25,4 +25,5 @@ admin.site.register(Goods_P)
 admin.site.register(Goods_O)
 admin.site.register(GoodsItem)
 admin.site.register(Feedback)
+admin.site.register(AppControl)
 

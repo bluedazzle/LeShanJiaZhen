@@ -2,6 +2,8 @@
 from HomeApi.models import *
 from HomeApi.method import *
 from django.http import HttpResponse,Http404,JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 import simplejson
 import datetime
 from PIL import Image
@@ -292,7 +294,9 @@ def getnearest(request):
             return HttpResponse(json.dumps({'status': 2, 'body': None}))
         return HttpResponse(json.dumps({'status': 1, 'body': {'area_id': nearest_id}}))
 
+import copy
 
+@csrf_exempt
 def send_reg_verify(req):
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
@@ -308,9 +312,11 @@ def send_reg_verify(req):
     else:
         return Http404
 
+
+@csrf_exempt
 def verify_reg(req):
     body={}
-    if req.method== 'POST':
+    if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         phone = jsonres['phone']
         verify_code = jsonres['verify_code']
@@ -325,14 +331,14 @@ def verify_reg(req):
         return Http404
 
 
+@csrf_exempt
 def register(req):
     body={}
-    if req.method=='POST':
+    if req.method =='POST':
         jsonres = simplejson.loads(req.body)
         username = jsonres['username']
         passwd = jsonres['password']
         address = jsonres['address']
-        nick = jsonres['nick']
         sex = jsonres['sex']
         birthday = jsonres['birthday']
         ishave = Associator.objects.filter(username=username)
@@ -342,18 +348,20 @@ def register(req):
         birthday_datetime = string_to_datetime(birthday)
         passwd = hashlib.md5(passwd).hexdigest()
         token = createtoken()
-        newass = Associator(username=username, password=passwd, birthday=birthday_datetime, address=address, sex=sex, nick=nick)
-        newass.invite_code = create_invite_code()
+        newass = Associator(username=username, password=passwd, birthday=birthday_datetime, address=address, sex=sex)
+        invite_code = create_invite_code()
+        newass.invite_code = invite_code
         newass.private_token = token
         newass.save()
         body['msg'] = 'register success'
         body['phone'] = username
         body['private_token'] = token
+        body['invite_code'] = invite_code
         return HttpResponse(encodejson(1,body), content_type='application/json')
     else:
         return Http404
 
-
+@csrf_exempt
 def change_password(req):
     body={}
     if req.method == 'POST':
@@ -376,10 +384,10 @@ def change_password(req):
             body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
 
-
+@csrf_exempt
 def login(req):
     body={}
-    if req.method='POST':
+    if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         username = jsonres['username']
         passwd = jsonres['password']
@@ -392,9 +400,11 @@ def login(req):
             if user.check_password(passwd):
                 newtoken = createtoken()
                 user.private_token = newtoken
+                user.save()
                 body['private_token'] = newtoken
                 body['msg'] = 'login success'
                 body['username'] = username
+                body['invite_code'] = user.invite_code
                 return HttpResponse(encodejson(1, body), content_type='application/json')
             else:
                 body['msg'] = 'password is not right'
@@ -402,10 +412,10 @@ def login(req):
     else:
         return Http404
 
-
+@csrf_exempt
 def logout(req):
     body={}
-    if req.method='POST':
+    if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         username = jsonres['username']
         token = jsonres['private_token']
@@ -421,11 +431,16 @@ def logout(req):
     else:
         return Http404
 
+@csrf_exempt
 def forget_password(req):
     body = {}
-    if req.method='POST':
+    if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         phone = jsonres['phone']
+        user_list = Associator.objects.filter(username=phone)
+        if user_list.count() == 0:
+            body['msg'] = 'account does not exist, please sign up'
+            return HttpResponse(encodejson(7, body), content_type='application/json')
         res = createverfiycode(phone)
         jres = simplejson.loads(res)
         if jres['success'] is True:
@@ -442,14 +457,15 @@ def forget_password(req):
     else:
         return Http404
 
-
+@csrf_exempt
 def reset_password(req):
     body={}
-    if req.method='POST':
+    if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         verify = jsonres['verify_code']
         phone = jsonres['phone']
         newpassword = jsonres['new_password']
+        print verify
         verify_list = Verify.objects.filter(verify=verify, phone=phone)
         if verify_list.count() > 0:
             user_list = Associator.objects.filter(username=phone)
@@ -474,30 +490,31 @@ def reset_password(req):
     else:
         return Http404
 
-
-
+@csrf_exempt
 def get_android_version(req):
     body={}
     android = AppControl.objects.all()[0]
-    if android.android_version is None:
+    if android.android_version == '':
         body['msg'] = 'no available version info'
         return HttpResponse(encodejson(7, body), content_type='application/json')
     else:
         body['android_version'] = android.android_version
-        body['update_time'] = android.android_update_time
+        body['update_time'] = str(timezone.localtime(android.android_update_time))
         return HttpResponse(encodejson(1, body), content_type='application/json')
 
+@csrf_exempt
 def get_ios_version(req):
     body={}
     ios = AppControl.objects.all()[0]
-    if ios.ios_version is None:
+    if ios.ios_version == '':
         body['msg'] = 'no available version info'
         return HttpResponse(encodejson(7, body), content_type='application/json')
     else:
         body['ios_version'] = ios.ios_version
-        body['update_time'] = ios.ios_update_time
+        body['update_time'] = str(timezone.localtime(ios.ios_update_time))
         return HttpResponse(encodejson(1, body), content_type='application/json')
 
+@csrf_exempt
 def get_messages(req):
     body={}
     if req.method == 'POST':
@@ -507,16 +524,25 @@ def get_messages(req):
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
             message_list = Message.objects.filter(own=curuser)
-            body['messages'] = message_list
+            messages = []
+            for itm in message_list:
+                message = {}
+                message['content'] = itm.content
+                message['create_time'] = str(timezone.localtime(itm.create_time))
+                message['deadline'] = str(timezone.localtime(itm.deadline))
+                messages.append(copy.copy(message))
+            body['messages'] = messages
             return HttpResponse(encodejson(1, body), content_type='application/json')
         else:
+            body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
     else:
         return Http404
 
+@csrf_exempt
 def add_message(req):
     body={}
-    if req.method = 'POST':
+    if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         token = jsonres['private_token']
         username = jsonres['username']
@@ -532,30 +558,44 @@ def add_message(req):
             body['msg'] = 'message add success'
             return HttpResponse(encodejson(1, body), content_type='application/json')
         else:
+            body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
 
-
+@csrf_exempt
 def get_coupon(req):
     body={}
-    if req.method = 'POST':
+    if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         token = jsonres['private_token']
         username = jsonres['username']
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
             coupon_list = Coupon.objects.filter(own=curuser)
-            body['coupons'] = coupon_list
+            coupons = []
+            for itm in coupon_list:
+                coupon = {}
+                coupon['cou_id'] = itm.cou_id
+                coupon['value'] = itm.value
+                coupon['if_use'] = itm.if_use
+                coupon['type'] = itm.type
+                coupon['create_time'] = str(timezone.localtime(itm.create_time))
+                coupon['owned_time'] = str(timezone.localtime(itm.owned_time))
+                coupon['deadline'] = str(timezone.localtime(itm.deadline))
+                coupons.append(copy.copy(coupon))
+            body['coupons'] = coupons
             return HttpResponse(encodejson(1, body), content_type='application/json')
         else:
+            body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
     else:
         return Http404
 
+@csrf_exempt
 def add_feedback(req):
     body={}
-    if req.method = 'POST':
+    if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
-        phone = jsonres['username']
+        phone = jsonres['phone']
         content = jsonres['content']
         newfeedback = Feedback(phone=phone, content=content)
         newfeedback.save()
@@ -564,8 +604,130 @@ def add_feedback(req):
     else:
         return Http404
 
+@csrf_exempt
+def city_search(req):
+    body={}
+    if req.method == 'POST':
+        jsonres = simplejson.loads(req.body)
+        city_num = jsonres['city_num']
+        city_list = Block.objects.filter(city_num=city_num)
+        if city_list.count() > 0:
+            city = city_list[0]
+            scity={}
+            scity['city_num'] = city.city_num
+            scity['city_name'] = city.area_name
+            scity['city_tel'] = city.area_tel
+            scity['city_address'] = city.area_address
+            scity['city_info'] = city.area_info
+            body['city'] = scity
+            body['match'] = True
+            body['msg'] = 'get city success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            match_code = search_neighber(city_num)
+            city = Block.objects.all()[match_code]
+            scity={}
+            scity['city_num'] = city.city_num
+            scity['city_name'] = city.area_name
+            scity['city_tel'] = city.area_tel
+            scity['city_address'] = city.area_address
+            scity['city_info'] = city.area_info
+            body['city'] = scity
+            body['match'] = False
+            body['msg'] = 'match resemble city success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+    else:
+        return Http404
+
+@csrf_exempt
+def change_info(req):
+    body={}
+    birthdayd = None
+    if req.method == 'POST':
+        jsonres = simplejson.loads(req.body)
+        username = jsonres['username']
+        token = jsonres['private_token']
+        sex = jsonres['sex']
+        address = jsonres['address']
+        birthday = jsonres['birthday']
+        if birthday != '':
+            birthdayd = string_to_datetime(birthday)
+        if if_legal(username, token):
+            curuser = Associator.objects.get(username=username)
+            curuser.sex = sex
+            curuser.address = address
+            curuser.birthday = birthdayd
+            curuser.save()
+            body['msg'] = 'change info success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            body['msg'] = 'login first before other action'
+            return HttpResponse(encodejson(13, body), content_type='application/json')
+    else:
+        return Http404
+
+
+@csrf_exempt
+def get_invite_coupon(req):
+    body={}
+    if req.method == 'POST':
+        resjson = simplejson.loads(req.body)
+        token = resjson['private_token']
+        username = resjson['username']
+        invite_code = resjson['invite_code']
+        if if_legal(username, token):
+            curuser = Associator.objects.get(username=username)
+            if invite_code == curuser.invite_code:
+                body['msg'] = 'you can not exchange your own invite code'
+                return HttpResponse(encodejson(14, body), content_type='application/json')
+            else:
+                invite = Associator.objects.filter(invite_code=invite_code)
+                if invite.count() > 0:
+                    exchanged_list = str(curuser.invite_str).split(',')
+                    if invite_code in exchanged_list:
+                        body['msg'] = 'you have exchanged this invite code'
+                        return HttpResponse(encodejson(6, body), content_type='application/json')
+                    else:
+                        if create_new_coupon(5, 1, curuser):
+                            if curuser.invite_str == '' or curuser.invite_str is None:
+                                curuser.invite_str = invite_code
+                            else:
+                                invite_str = curuser.invite_str
+                                invite_str = invite_str + ',' + invite_code
+                                curuser.invite_str = invite_str
+                            curuser.save()
+                            body['msg'] = 'invite code exchange success'
+                            return HttpResponse(encodejson(1, body), content_type='application/json')
+                        else:
+                            body['msg'] = 'invite code exchange failed'
+                            return HttpResponse(encodejson(2, body), content_type='application/json')
+                else:
+                    body['msg'] = 'no invite code info'
+                    return HttpResponse(encodejson(7, body), content_type='application/json')
+        else:
+            body['msg'] = 'login first before other action'
+            return HttpResponse(encodejson(13, body), content_type='application/json')
+    else:
+        return Http404
+
+
+def create_new_coupon(value, ctype, own, expire=365):
+    have_count = Coupon.objects.filter(type=ctype).count()
+    odate = datetime.date.today()
+    odate = str(odate).replace('-', '')
+    newcou_id = '%s%i%05i' % (odate, ctype, have_count+1)
+    owntime = datetime.datetime.now()
+    expire_day = datetime.timedelta(expire)
+    deadline = owntime + expire_day
+    newcoupon = Coupon(cou_id=newcou_id, value=value, type=ctype, own=own, owned_time=owntime, deadline=deadline)
+    newcoupon.save()
+    return True
+
+
 def if_legal(username, private_token):
-    ass = Associator.objects.filter(username=username, prive_token=private_token)
+    print username
+    print private_token
+    ass = Associator.objects.filter(username=username, private_token=private_token)
     if ass.count()>0:
         return True
     else:
@@ -600,3 +762,21 @@ def string_to_datetime(timestring, timeformat='%Y-%m-%d'):
 
 def create_invite_code(count=6):
     return string.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBA1234567890', count)).replace(" ", "")
+
+
+def search_neighber(city_num):
+    city_list = Block.objects.all()
+    for i in range(5, 0, -1):
+        num_list = []
+        for itm in city_list:
+            num_list.append(itm.city_num[0:i])
+        def match(city):
+            if city == city_num[0:i]:
+                return True
+            else:
+                return False
+        res = map(match, num_list)
+        if True in res:
+            return res.index(True)
+    return 0
+

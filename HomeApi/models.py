@@ -58,8 +58,6 @@ class AssociatorManager(BaseUserManager):
 
 
 class Block(models.Model):
-    area_id = models.IntegerField(max_length=3)
-    baidu_id = models.CharField(max_length=10, blank=True, null=True)
     city_num = models.CharField(max_length=10, unique=True)
     area_name = models.CharField(max_length=10)
     area_tel = models.CharField(max_length=20)
@@ -211,7 +209,6 @@ class Application(models.Model):
 
 class Associator(AbstractBaseUser):
     username = models.CharField(max_length=15, unique=True)
-    nick = models.CharField(max_length=30, null=True, blank=True)
     sex = models.IntegerField(max_length=1, null=True, blank=True)
     birthday = models.DateTimeField(max_length=30, null=True, blank=True)
     address = models.CharField(max_length=200, null=True, blank=True)
@@ -219,6 +216,7 @@ class Associator(AbstractBaseUser):
     device_code = models.CharField(max_length=128, null=True, blank=True)
     private_token = models.CharField(max_length=32, null=True, blank=True)
     reg_time = models.DateTimeField(auto_now_add=True)
+    invite_str = models.CharField(max_length=1000, null=True, blank=True)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['username']
@@ -245,12 +243,14 @@ class Associator(AbstractBaseUser):
         app_label = 'HomeApi'
 
 class Coupon(models.Model):
-    cou_id = models.CharField(max_length=13, unique=True)
-    num = models.IntegerField(max_length=3)
+    cou_id = models.CharField(max_length=14, unique=True)
+    value = models.IntegerField(max_length=3)
     if_use = models.BooleanField(default=False)
     type = models.IntegerField(max_length=2)
+    game_sign = models.CharField(max_length=6, null=True, blank=True)
     own = models.ForeignKey(Associator, null=True, blank=True, related_name='coupons')
     create_time = models.DateTimeField(auto_now=True)
+    owned_time = models.DateTimeField(max_length=30, null=True, blank=True)
     deadline = models.DateTimeField(max_length=30)
 
     def __unicode__(self):
@@ -262,6 +262,7 @@ class CouponControl(models.Model):
     game_start_time = models.DateTimeField(max_length=30, null=True, blank=True)
     game_end_time = models.DateTimeField(max_length=30, null=True, blank=True)
     game_coupon_num = models.IntegerField(max_length=10, null=True, blank=True)
+    game_sign = models.CharField(max_length=6, null=True, blank=True)
     game_active = models.BooleanField(default=False)
 
     online_money_low = models.FloatField(max_length=5, null=True, blank=True)
@@ -342,5 +343,5 @@ class AppControl(models.Model):
     ios_update_time = models.DateTimeField(max_length=30, null=True, blank=True)
 
     def __unicode__(self):
-        return self.id
+        return str(self.id)
 
