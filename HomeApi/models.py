@@ -203,20 +203,21 @@ class Application(models.Model):
     old_area_id = models.IntegerField()
     new_area_id = models.IntegerField()
     apply_user = models.ForeignKey(HomeAdmin)
-    apply_time = models.DateTimeField(auto_now=True)
+    apply_time = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return unicode(self.id)
 
 class Associator(AbstractBaseUser):
-    username = models.CharField(max_length=15)
+    username = models.CharField(max_length=15, unique=True)
     nick = models.CharField(max_length=30, null=True, blank=True)
     sex = models.IntegerField(max_length=1, null=True, blank=True)
     birthday = models.DateTimeField(max_length=30, null=True, blank=True)
     address = models.CharField(max_length=200, null=True, blank=True)
     invite_code = models.CharField(max_length=6, null=True, blank=True)
     device_code = models.CharField(max_length=128, null=True, blank=True)
-    reg_time = models.DateTimeField(auto_now=True)
+    private_token = models.CharField(max_length=32, null=True, blank=True)
+    reg_time = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['username']
@@ -275,7 +276,7 @@ class CouponControl(models.Model):
 
 class Message(models.Model):
     content = models.CharField(max_length=200)
-    create_time = models.DateTimeField(auto_now=True)
+    create_time = models.DateTimeField(auto_now_add=True)
     deadline = models.DateTimeField(max_length=30, null=True, blank=True)
     own = models.ForeignKey(Associator, related_name='messages')
 
@@ -297,18 +298,22 @@ class Goods_O(models.Model):
     item_name = models.CharField(max_length=50)
     create_time = models.DateTimeField(auto_now_add=True)
     parent_item = models.ForeignKey(Goods_P, related_name='goodso')
-    icon = models.CharField(max_length=100, blank=True, null=True)
 
     def __unicode__(self):
         return self.item_name
 
 class GoodsItem(models.Model):
     title = models.CharField(max_length=40)
-    content = models.CharField(max_length=300)
+    brand = models.CharField(max_length=15, null=True, blank=True)
+    material = models.CharField(max_length=15, null=True, blank=True)
+    made_by = models.CharField(max_length=15, null=True, blank=True)
+    made_in = models.CharField(max_length=20, null=True, blank=True)
+    content = models.CharField(max_length=100, null=True, blank=True)
     origin_price = models.FloatField(max_length=10, null=True, blank=True)
     real_price = models.FloatField(max_length=10)
     repair_price = models.FloatField(max_length=10, null=True, blank=True)
     picture = models.CharField(max_length=100, null=True, blank=True)
+    parent_item = models.ForeignKey(Goods_O, related_name='goodsitems')
 
     def __unicode__(self):
         return self.title
@@ -325,3 +330,13 @@ class Verify(models.Model):
     phone = models.CharField(max_length=15)
     verify = models.CharField(max_length=10)
     create_time = models.DateTimeField(auto_now_add=True)
+
+class AppControl(models.Model):
+    android_version = models.CharField(max_length=10, null=True, blank=True)
+    ios_version = models.CharField(max_length=10, null=True, blank=True)
+    android_update_time = models.DateTimeField(max_length=30, null=True, blank=True)
+    ios_update_time = models.DateTimeField(max_length=30, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.id
+

@@ -4,7 +4,7 @@ from admin_area.views import *
 import admin_all.urls
 import admin_area.urls
 import settings
-from HomeApi.views import *
+from HomeApi.views_old import *
 
 urlpatterns = patterns('',
     # Examples:
