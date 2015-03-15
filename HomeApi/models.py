@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 import hashlib
@@ -312,10 +313,12 @@ class GoodsItem(models.Model):
     made_by = models.CharField(max_length=15, null=True, blank=True)
     made_in = models.CharField(max_length=20, null=True, blank=True)
     content = models.CharField(max_length=100, null=True, blank=True)
+    plus = models.CharField(max_length=200, null=True, blank=True)
     origin_price = models.FloatField(max_length=10, null=True, blank=True)
     real_price = models.FloatField(max_length=10)
     repair_price = models.FloatField(max_length=10, null=True, blank=True)
     picture = models.CharField(max_length=100, null=True, blank=True)
+    #推荐权重
     recommand = models.IntegerField(max_length=10, null=True, blank=True, default=0)
     parent_item = models.ForeignKey(Goods_O, related_name='goodsitems')
 
