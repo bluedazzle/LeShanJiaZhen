@@ -55,6 +55,14 @@ li>a{
     color: #ffffff;
     border-radius: 0;
 }
+
+.message_active,
+.message_active>a{
+    color: #ffffff;
+    background-color: #1abc9c;
+    border-radius: 0;
+}
+
 .nav>li.active{
     background-color: #3498db;
     color: #ffffff;

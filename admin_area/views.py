@@ -888,9 +888,11 @@ def goods_manage(request):
                                           {'goods_ps': goods_ps},
                                           context_instance=RequestContext(request))
 
-            goods = GoodsItem.objects.order_by('sort_id').filter(parent_item=Goods_o)
+            goods = GoodsItem.objects.order_by('sort_id').filter(parent_item=Goods_o[0])
             return render_to_response('admin_area/goods_manage/goods_manage_three.html',
-                                      {'goods': goods},
+                                      {'goods': goods,
+                                       'goods_p': Goods_o[0].parent_item,
+                                       'goods_o': Goods_o[0]},
                                       context_instance=RequestContext(request))
 
         return render_to_response('admin_area/goods_manage/goods_manage.html',
@@ -951,11 +953,68 @@ def edit_goods_p(request):
             file_name = str(int(time.time())) + '.png'
             file_full_path = BASE + '/static/img/goods_p_ads/' + file_name
             Image.open(ad_file).save(file_full_path)
-            item_p = HomeItem_P.objects.get(id=i_id)
-            item_p.icon = base_url+'/img/goods_p_ads/'+file_name
+            item_p = Goods_P.objects.get(id=i_id)
+            item_p.advertisement = base_url+'/img/goods_p_ads/'+file_name
             item_p.save()
 
         return HttpResponseRedirect('goods_manage')
+
+
+def edit_goods_o(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        goods_o_id = request.GET.get('item_id')
+        goods_p_id = request.GET.get('item_p_id')
+        goods_p = Goods_P.objects.get(id=goods_p_id)
+        if not goods_p:
+            return Http404
+        if goods_o_id:
+            goods_o = Goods_O.objects.filter(id=goods_o_id)
+            if goods_o.count() != 0:
+                return render_to_response('admin_area/goods_manage/edit_goods_o.html',
+                                          {'item_o': goods_o[0],
+                                           'item_p': goods_p},
+                                          context_instance=RequestContext(request))
+
+        return render_to_response('admin_area/goods_manage/edit_goods_o.html',
+                                  {'item_p': goods_p},
+                                  context_instance=RequestContext(request))
+    if request.method == 'POST':
+        context = {}
+        context.update(csrf(request))
+        goods_p_id = request.POST.get('item_p_id')
+        goods_o_id = request.POST.get('item_o_id')
+        goods_o_name = request.POST.get('item_name')
+        sort_id = request.POST.get('sort_id')
+        goods_p = Goods_P.objects.get(id=goods_p_id)
+        goods_o_have = Goods_O.objects.filter(sort_id=sort_id, parent_item=goods_p)
+
+        if goods_o_id:
+            goods_o = Goods_P.objects.get(id=goods_p_id)
+            if goods_o.sort_id != int(sort_id):
+                if goods_o_have.count() > 0:
+                    return render_to_response('admin_area/goods_manage/edit_goods_o.html',
+                                              {'sort_id_have': 'T',
+                                               'item_o': goods_o,
+                                               'item_p': goods_p},
+                                              context_instance=RequestContext(request))
+            goods_o.item_name = goods_o_name
+            goods_o.sort_id = sort_id
+            goods_o.save()
+        else:
+            new_goods_o = Goods_O()
+            new_goods_o.item_name = goods_o_name
+            new_goods_o.parent_item = goods_p
+            new_goods_o.sort_id = sort_id
+            if goods_o_have.count() > 0:
+                return render_to_response('admin_area/goods_manage/edit_goods_o.html',
+                                          {'sort_id_have': 'T',
+                                           'item_o': new_goods_o,
+                                           'item_p': goods_p}, context_instance=RequestContext(request))
+            new_goods_o.save()
+
+        return HttpResponseRedirect('goods_manage?goods_p=' + str(goods_p.id))
 
 
 def delete_goods(request):
@@ -970,6 +1029,13 @@ def delete_goods(request):
             if goods_p.count() != 0:
                 goods_p[0].delete()
                 return HttpResponseRedirect('goods_manage')
+
+        if item_o_id:
+            goods_o = Goods_O.objects.filter(id=item_o_id)
+            if goods_o.count() != 0:
+                p_id = goods_o[0].parent_item.id
+                goods_o[0].delete()
+                return HttpResponseRedirect('goods_manage?goods_p=' + str(p_id))
 
 
 def coupon_manage(request):

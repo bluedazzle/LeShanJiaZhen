@@ -291,6 +291,7 @@ class Goods_P(models.Model):
     area = models.ForeignKey(Block, related_name='goodsp')
     sort_id = models.IntegerField(max_length=10, blank=True, null=True)
     advertisement = models.CharField(max_length=100, null=True, blank=True)
+    have_advertisment = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.item_name
@@ -300,8 +301,6 @@ class Goods_O(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     parent_item = models.ForeignKey(Goods_P, related_name='goodso')
     sort_id = models.IntegerField(max_length=10, blank=True, null=True)
-    goods_advertisment = models.CharField(max_length=100, null=True, blank=True)
-    have_advertisment = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.item_name

@@ -10,9 +10,9 @@
            <thead>
              <tr>
                  <ol class="breadcrumb">
-                     <li><a href="">商品分类</a></li>
-                     <li><a href="?goods_p=1">二级分类</a></li>
-                     <li class="active">三级分类</li>
+                     <li><a href="goods_manage">商品分类</a></li>
+                     <li><a href="goods_manage?goods_p={{ goods_p.id }}">{{ goods_p.item_name }}</a></li>
+                     <li class="active">{{ goods_o.item_name }}</li>
                  </ol>
                  <script>
                      $('#delete_p').click(function(){
@@ -55,6 +55,8 @@
                }
            </script>
   </table>
+  <a role="button" href="edit_goods?item_o_id={{ goods_o.id }}" class="btn btn-lg btn-primary" style="float: right;margin-right: 3%">添加商品</a>
+
 
 </div>
 {% endblock %}

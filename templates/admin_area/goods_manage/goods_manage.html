@@ -29,9 +29,13 @@
                       <a href="?goods_p={{ item.id }}">{{ item.item_name }}（点击查看）</a>
                   </td>
                   {% if item.advertisement %}
-                      <td style="color: #1abc9c">有</td>
+                      <td style="color: #1abc9c">
+                          <span class="glyphicon glyphicon-ok"></span>
+                      </td>
                   {% else %}
-                      <td style="color: red">无</td>
+                      <td style="color: red">
+                          <span class="glyphicon glyphicon-remove"></span>
+                      </td>
                   {% endif %}
                   <td style="max-width: 60px;padding-right:0">
                      <a role="button" href="edit_goods_p?item_id={{ item.id }}" class="btn btn-sm btn-default">修改</a>

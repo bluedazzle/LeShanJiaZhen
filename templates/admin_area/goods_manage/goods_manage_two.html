@@ -10,7 +10,7 @@
            <thead>
              <tr>
                  <ol class="breadcrumb">
-                     <li><a href="">商品分类</a></li>
+                     <li><a href="goods_manage">商品分类</a></li>
                      <li class="active">{{ goods_p.item_name }}</li>
                  </ol>
                  <script>
@@ -27,31 +27,32 @@
               <tr style="background-color: #1abc9c; color: #ffffff">
                   <th>排序ID</th>
                   <th>分类名称</th>
-                  <th style="max-width: 150px">说明</th>
                   <th style="max-width: 60px;padding-right:0">操作
                   </th>
               </tr>
+                {% for item in goods_os %}
               <tr>
-                  <td>01</td>
+                  <td>{{ item.sort_id }}</td>
                   <td>
-                      <a href="?goods_p=1&goods_o=1">冷热水龙头</a>
+                      <a href="?goods_p=1&goods_o=1">{{ item.item_name }}</a>
                   </td>
-                  <td style="max-width: 150px">冷热水切换</td>
                   <td style="max-width: 60px;padding-right:0">
-                     <a role="button" href="edit_program_detail?item_p_id={{ item_p.id }}&item_id={{ item.id }}" class="btn btn-sm btn-default">修改</a>
-                     <button class="btn btn-sm btn-danger" onclick="delete_item_detail('{{ item.id }}', '{{ item.parent_item.id }}')">删除</button>
+                     <a role="button" href="edit_goods_o?item_id={{ item.id }}&item_p_id={{ goods_p.id }}" class="btn btn-sm btn-default">修改</a>
+                     <button class="btn btn-sm btn-danger" onclick="delete_goods_o('{{ item.id }}', '{{ item.parent_item.id }}')">删除</button>
                   </td>
               </tr>
+                {% endfor %}
            </tbody>
            <script>
-               function delete_item_detail(item_id, item_p_id){
+               function delete_goods_o(item_id){
                    r = confirm("确定删除该项目?");
                    if(r == true){
-                       window.location.href = "delete_program_detail?item_id="+item_id+"&item_p_id="+item_p_id;
+                       window.location.href = "delete_goods?item_o_id="+item_id;
                    }
                }
            </script>
   </table>
+  <a role="button" href="edit_goods_o?item_p_id={{ goods_p.id }}" class="btn btn-lg btn-primary" style="float: right;margin-right: 3%">添加分类</a>
 
 </div>
 {% endblock %}

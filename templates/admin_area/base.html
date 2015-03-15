@@ -68,10 +68,10 @@
       <li id="message_manage">
           <a>
               <span class="glyphicon glyphicon-th-list" style="margin-right: 3%"></span>
-             信息管理
-              <span id="menu-down" class="glyphicon glyphicon-chevron-right" style="margin-left: 10%"></span
+              <span>信息管理</span>
+              <span id="menu-down" class="glyphicon glyphicon-chevron-right" style="margin-left: 10%"></span>
           </a>
-          <ul class="demo-sidebar nav nav-pills nav-stacked hide" id="programs" style="height: 350px;line-height: 0.9;margin-top:200px;margin-left: 192px;width:160px;border: 1px #ffffff solid">
+          <ul class="demo-sidebar nav nav-pills nav-stacked hide" id="programs" style="height: 350px;line-height: 0.9;margin-top:200px;margin-left: 192px;width:160px;border: 1px #ffffff solid;padding-top: 20px;">
               <li id="user_mes">
                   <a href="user_mes">
                       <span class="glyphicon glyphicon-cog"></span>
@@ -132,9 +132,11 @@
 <script>
     $('#message_manage').mouseover(function(){
         $('#programs').removeClass('hide');
+        $('#message_manage').addClass('message_active')
     });
     $('#message_manage').mouseleave(function(){
         $('#programs').addClass('hide');
+        $('#message_manage').removeClass('message_active')
     });
 </script>
 <nav class="navbar navbar-default" role="navigation" style="margin-bottom: 0;background-color: #3498db;border-radius: 0">
