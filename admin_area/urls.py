@@ -48,5 +48,6 @@ urlpatterns = patterns('',
     url('^delete_advertisement$', delete_advertisement),
     url('^edit_goods_p$', edit_goods_p),
     url('^edit_goods_o$', edit_goods_o),
+    url('^edit_goods$', edit_goods),
     url('^delete_goods$', delete_goods),
 )

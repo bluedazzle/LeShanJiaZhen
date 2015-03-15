@@ -309,6 +309,7 @@ class Goods_O(models.Model):
 class GoodsItem(models.Model):
     title = models.CharField(max_length=40)
     brand = models.CharField(max_length=15, null=True, blank=True)
+    sort_id = models.IntegerField(max_length=10, blank=True, null=True)
     material = models.CharField(max_length=15, null=True, blank=True)
     made_by = models.CharField(max_length=15, null=True, blank=True)
     made_in = models.CharField(max_length=20, null=True, blank=True)

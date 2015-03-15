@@ -1017,6 +1017,34 @@ def edit_goods_o(request):
         return HttpResponseRedirect('goods_manage?goods_p=' + str(goods_p.id))
 
 
+def edit_goods(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        goods_id = request.GET.get('goods_id')
+        goods_o_id = request.GET.get('goods_o_id')
+        if not goods_o_id:
+            return Http404
+        goods_o = Goods_O.objects.filter(id=goods_o_id)
+        if goods_o.count() == 0:
+            return Http404
+
+        if goods_id:
+            goods = GoodsItem.objects.filter(id=goods_id)
+            if goods.count() == 0:
+                return Http404
+
+            return render_to_response('admin_area/goods_manage/edit_goods.html',
+                                      {'goods': goods[0],
+                                       'goods_o': goods_o[0]},
+                                      context_instance=RequestContext(request))
+        else:
+            return render_to_response('admin_area/goods_manage/edit_goods.html',
+                                      {'goods_o': goods_o[0]},
+                                      context_instance=RequestContext(request))
+
+
+
 def delete_goods(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
