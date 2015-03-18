@@ -18,7 +18,7 @@ import time
 import os
 from PIL import Image
 BASE = os.path.dirname(os.path.dirname(__file__))
-base_url = 'localhost:8000'
+base_url = 'http://localhost:8000'
 # base_url = 'http://115.29.138.80'
 
 
@@ -1003,6 +1003,11 @@ def edit_goods_o(request):
             goods_o.sort_id = sort_id
             goods_o.save()
         else:
+            if goods_o_have.count() > 0:
+                    return render_to_response('admin_area/goods_manage/edit_goods_o.html',
+                                              {'sort_id_have': 'T',
+                                               'item_p': goods_p},
+                                              context_instance=RequestContext(request))
             new_goods_o = Goods_O()
             new_goods_o.item_name = goods_o_name
             new_goods_o.parent_item = goods_p
@@ -1033,15 +1038,134 @@ def edit_goods(request):
             goods = GoodsItem.objects.filter(id=goods_id)
             if goods.count() == 0:
                 return Http404
-
+            re_content = {'goods': goods[0],
+                          'goods_o': goods_o[0]}
+            if goods[0].origin_price != goods[0].real_price:
+                preferential_price = goods[0].real_price
+                re_content = {'goods': goods[0],
+                              'goods_o': goods_o[0],
+                              'preferential_price': preferential_price}
             return render_to_response('admin_area/goods_manage/edit_goods.html',
-                                      {'goods': goods[0],
-                                       'goods_o': goods_o[0]},
+                                      re_content,
                                       context_instance=RequestContext(request))
         else:
             return render_to_response('admin_area/goods_manage/edit_goods.html',
                                       {'goods_o': goods_o[0]},
                                       context_instance=RequestContext(request))
+
+    if request.method == 'POST':
+        goods_o_id = request.POST.get('goods_o_id')
+        goods_id = request.POST.get('goods_id')
+        title = request.POST.get('item_name')
+        sort_id = request.POST.get('sort_id')
+        recommand = request.POST.get('recommand')
+        brand = request.POST.get('brand')
+        material = request.POST.get('material')
+        origin_price = request.POST.get('origin_price')
+        preferential_price = request.POST.get('preferential_price')
+        made_by = request.POST.get('made_by')
+        made_in = request.POST.get('made_in')
+        content = request.POST.get('content')
+        plus = request.POST.get('plus')
+        goods_pic = request.FILES.get('goods_pic')
+        i_id = 1
+        if title and sort_id and brand and material and origin_price and made_by and made_in and content:
+            pass
+        else:
+            return Http404
+        try:
+            goods_o = Goods_O.objects.filter(id=goods_o_id)
+            if goods_o.count() == 0:
+                return Http404
+            goods_have = GoodsItem.objects.filter(parent_item=goods_o[0], sort_id=sort_id)
+        except:
+            Http404
+        if goods_id:
+            goods = GoodsItem.objects.get(id=goods_id)
+            if not goods:
+                return Http404
+            if goods.sort_id != int(sort_id):
+                if goods_have.count() > 0:
+                    if goods.origin_price == goods.real_price:
+                        return render_to_response('admin_area/goods_manage/edit_goods.html',
+                                                  {'sort_id_have': 'T',
+                                                   'goods_o': goods_o[0],
+                                                   'goods': goods},
+                                                  context_instance=RequestContext(request))
+                    else:
+                        return render_to_response('admin_area/goods_manage/edit_goods.html',
+                                                  {'sort_id_have': 'T',
+                                                   'goods_o': goods_o[0],
+                                                   'goods': goods,
+                                                   'preferential': goods.real_price},
+                                                  context_instance=RequestContext(request))
+            goods.title = title
+            goods.sort_id = sort_id
+            goods.material = material
+            goods.brand = brand
+            goods.origin_price = origin_price
+            goods.made_by = made_by
+            goods.made_in = made_in
+            goods.content = content
+
+            if recommand:
+                goods.recommand = recommand
+            if preferential_price:
+                print "OK"
+                goods.real_price = preferential_price
+            if plus:
+                goods.plus = plus
+
+            goods.save()
+            i_id = goods_id
+
+        else:
+            new_goods = GoodsItem()
+            new_goods.title = title
+            new_goods.sort_id = sort_id
+            new_goods.material = material
+            new_goods.brand = brand
+            new_goods.origin_price = origin_price
+            new_goods.real_price = origin_price
+            new_goods.made_by = made_by
+            new_goods.made_in = made_in
+            new_goods.content = content
+            if recommand:
+                new_goods.recommand = recommand
+            if preferential_price:
+                new_goods.real_price = preferential_price
+            if plus:
+                new_goods.plus = plus
+            new_goods.parent_item = goods_o[0]
+            if goods_have.count() > 0:
+                return render_to_response('admin_area/goods_manage/edit_goods.html',
+                                          {'sort_id_have': 'T',
+                                           'goods_o': goods_o[0],
+                                           'goods': new_goods},
+                                          context_instance=RequestContext(request))
+            new_goods.save()
+            i_id = new_goods.id
+        if goods_pic != None:
+            goods_now = GoodsItem.objects.get(id=i_id)
+            file_name = str(i_id) + '.png'
+            file_full_path = BASE + '/static/img/goods_pics/' + file_name
+            if goods_now.picture:
+                os.remove(BASE + '/static/img/goods_pics/'+file_name)
+
+            Image.open(goods_pic).save(file_full_path)
+            goods_now.picture = base_url+'/img/goods_pics/'+file_name
+            goods_now.save()
+
+        goods_p_id = goods_o[0].parent_item.id
+        goods_o_id = goods_o[0].id
+        return HttpResponseRedirect('/area_admin/goods_manage?goods_p=' + str(goods_p_id) + '&goods_o=' + str(goods_o_id))
+
+
+
+
+
+
+
 
 
 

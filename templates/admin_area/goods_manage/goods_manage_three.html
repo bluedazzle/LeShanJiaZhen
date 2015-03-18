@@ -27,26 +27,36 @@
            <tbody>
               <tr style="background-color: #1abc9c; color: #ffffff">
                   <th>排序ID</th>
+                  <th>推荐权重</th>
                   <th>商品名称</th>
                   <th>品牌</th>
+                  <th style="max-width:100px">生厂商</th>
+                  <th>产地</th>
+                  <th>价格</th>
                   <th style="max-width: 150px">说明</th>
                   <th style="max-width: 100px">备注</th>
                   <th style="max-width: 80px;padding-right:0">操作
                   </th>
               </tr>
+              {% for item in goods %}
               <tr>
-                  <td>01</td>
+                  <td>{{ item.sort_id }}</td>
+                  <td>{{ item.recommand }}</td>
                   <td>
-                      洁利来不锈钢单冷水龙头
+                      {{ item.title }}
                   </td>
-                  <td>洁利来</td>
-                  <td style="max-width: 150px">冷热水切换</td>
-                  <td style="max-width: 100px">阀芯：金属；阀芯：金属；阀芯：金属</td>
+                  <td>{{ item.brand }}</td>
+                  <td>{{ item.made_by }}</td>
+                  <td>{{ item.made_in }}</td>
+                  <td>{{ item.real_price }}</td>
+                  <td style="max-width: 150px">{{ item.content }}</td>
+                  <td style="max-width: 100px">{{ item.plus }}</td>
                   <td style="max-width: 80px;padding-right:0">
-                     <a role="button" href="" class="btn btn-sm btn-default">修改</a>
+                     <a role="button" href="edit_goods?goods_id={{ item.id }}&goods_o_id={{ goods_o.id }}" class="btn btn-sm btn-default">修改</a>
                      <button class="btn btn-sm btn-danger" onclick="">删除</button>
                   </td>
               </tr>
+              {% endfor %}
            </tbody>
            <script>
                function delete_item_detail(item_id, item_p_id){

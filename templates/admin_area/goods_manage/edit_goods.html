@@ -10,29 +10,61 @@
        <div class="col-lg-4 col-md-4 text-right">
             <h6>商品名称:</h6>
             <h6 style="margin-top: 9%">排序ID:</h6>
-            <h6 style="margin-top: 9%">(可选)广告图片:</h6>
+            <h6 style="margin-top: 9%">推荐权重(可选):</h6>
+            <h6 style="margin-top: 9%">品牌:</h6>
+            <h6 style="margin-top: 9%">材质:</h6>
+            <h6 style="margin-top: 9%">原价:</h6>
+            <h6 style="margin-top: 9%">折扣价（可选）:</h6>
+            <h6 style="margin-top: 9%">制造商:</h6>
+            <h6 style="margin-top: 9%">商品产地:</h6>
+            <h6 style="margin-top: 9%">说明:</h6>
+            <h6 style="margin-top: 34%">附加属性（可选）:</h6>
+            <h6 style="margin-top: 34%">商品图片:</h6>
         </div>
        <div class="col-lg-6 col-md-6" style="padding-top: 0.5%;padding-left: 0">
-          <form action="edit_goods_p" method="post" id="p_mes" enctype="multipart/form-data">
+          <form action="edit_goods" method="post" id="p_mes" enctype="multipart/form-data">
               {% csrf_token %}
-              {% if goods_o.id %}
-            <input style="display: none" type="text" name="goods_o_id" value="{{ goods_o.id }}">
+              {% if goods.id %}
+            <input style="display: none" type="text" name="goods_id" value="{{ goods.id }}">
               {% endif %}
+            <input style="display: none" type="text" name="goods_o_id" value="{{ goods_o.id }}">
             <input type="text" class="form-control" id="item_name" name='item_name'
-                   placeholder="请输入分类名称" style="width: 300px;margin-top: 0.5%" value="{{ goods.item_name }}">
+                   placeholder="请输入分类名称" style="width: 300px;margin-top: 0.5%" value="{{ goods.title }}">
             <input type="text" class="form-control" id="sort_id" name='sort_id'
                    placeholder="请输入排序ID" style="width: 300px;margin-top: 3%" value="{{ goods.sort_id }}"
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
-            <input type="file" name="ad_file" id="file0" multiple="multiple" style="margin-top:5%;line-height: 1;font-size: 16px;"/><br>
+            <input type="text" class="form-control" id="recommand" name='recommand'
+                   placeholder="请输入推荐权重" style="width: 300px;margin-top: 3.5%" value="{{ goods.recommand }}"
+                    onkeyup="this.value=this.value.replace(/\D/g,'')">
+            <input type="text" class="form-control" id="brand" name='brand'
+                   placeholder="请输入商品品牌" style="width: 300px;margin-top: 3.5%" value="{{ goods.brand }}">
+            <input type="text" class="form-control" id="material" name='material'
+                   placeholder="请输入商品材质" style="width: 300px;margin-top: 3.5%" value="{{ goods.material }}">
+            <input type="text" class="form-control" id="origin_price" name='origin_price'
+                   placeholder="请输入商品原价" style="width: 300px;margin-top: 3.5%" value="{{ goods.origin_price }}"
+                    onkeyup="onlyNumber(this)" onblur="onlyNumber(this)">
+            <input type="text" class="form-control" id="preferential_price" name='preferential_price'
+                   placeholder="请输入商品折扣价" style="width: 300px;margin-top: 3.5%" value="{{ preferential_price }}"
+                    onkeyup="onlyNumber(this)" onblur="onlyNumber(this)" >
+            <input type="text" class="form-control" id="made_by" name='made_by'
+                   placeholder="请输入制造商" style="width: 300px;margin-top: 3.5%" value="{{ goods.made_by }}">
+            <input type="text" class="form-control" id="made_in" name='made_in'
+                   placeholder="请输入产地" style="width: 300px;margin-top: 3.5%" value="{{ goods.made_in }}">
+            <textarea class="form-control" id="content" name='content'
+                   placeholder="请输入附加说明" style="width: 300px;height:150px;margin-top: 3.5%">{{ goods.content }}</textarea>
+            <textarea class="form-control" id="plus" name='plus'
+                   placeholder="请输入附加属性,属性间用分号隔开，如“阀芯：金属；排量：200ml”" style="width: 300px;height:150px;margin-top: 3.5%">{{ goods.plus }}</textarea>
+            <input type="file" name="goods_pic" id="file0" multiple="multiple" style="margin-top:5%;line-height: 1;font-size: 16px;"/><br>
             <p>请上传400*200的PNG图片</p>
-              {% if item_p %}
-                {% if item_p.icon %}
-                   <img style="width: 500px;height: 200px;" src="{{ item_p.icon }}" id="img0" >
-                {% else %}
-                   <img style="width: 500px;height: 200px;" src="" id="img0" >
-                {% endif %}
+              {% if goods %}
+                  <img style="width: 500px;height: 200px;" src="{{ goods.picture }}" id="img0" >
               {% else %}
                  <img style="width: 500px;height: 200px;" src="" id="img0" >
+                 <script>
+                  $(document).ready(function(){
+                      $('#submit').addClass('disabled');
+                  })
+                  </script>
               {% endif %}
             <p style="color: red" id="warning"></p>
           </form>
@@ -40,7 +72,7 @@
 
     <div class="col-lg-12 col-md-12" style="margin-top: 2%">
         <button id="submit" class="btn btn-success btn-lg" style="margin-left: 36%">提交</button>
-        <a href="goods_manage" role="button" class="btn btn-default btn-lg" style="margin-left: 5%">取消</a>
+        <a href="goods_manage?goods_p={{ goods_o.parent_item.id }}&goods_o={{ goods_o.id }}" role="button" class="btn btn-default btn-lg" style="margin-left: 5%">取消</a>
     </div>
     <script>
         {% if sort_id_have %}
@@ -65,12 +97,12 @@
                 $('#warning').text('图像格式不正确，请上传PNG图片');
                 return false
             }
-            if(height==64&&width==64){
+            if(height==200&&width==400){
                 $('#submit').removeClass('disabled')
             }
             else{
                 $('#submit').addClass('disabled');
-                $('#warning').text('图片像素不正确，请使用64 x 64像素的图片')
+                $('#warning').text('图片像素不正确，请使用400 x 200像素的图片')
             }
         })
 	}
@@ -88,13 +120,29 @@ function getObjectURL(file) {
 	return url ;
 }
         $('#submit').click(function(){
-            if($('#item_name').val()&&$('#sort_id').val()){
+            if($('#item_name').val()&&$('#sort_id').val()&&$('#brand').val()
+            &&$('#material')&&$('#origin_price')&&$('#made_by')&&$('#made_in')
+            &&$('#content')){
                 $('#p_mes').submit();
             }
             else{
                 alert("请完善信息！！")
             }
-        })
+        });
+    function onlyNumber(obj){
+
+      //得到第一个字符是否为负号
+      var t = obj.value.charAt(0);
+      //先把非数字的都替换掉，除了数字和.
+      obj.value = obj.value.replace(/[^\d\.]/g,'');
+       //必须保证第一个为数字而不是.
+       obj.value = obj.value.replace(/^\./g,'');
+       //保证只有出现一个.而没有多个.
+       obj.value = obj.value.replace(/\.{2,}/g,'.');
+       //保证.只出现一次，而不能出现两次以上
+       obj.value = obj.value.replace('.','$#$').replace(/\./g,'').replace('$#$','.');
+
+}
     </script>
  </div>
 </div>
