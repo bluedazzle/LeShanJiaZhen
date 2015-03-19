@@ -1,0 +1,93 @@
+{% extends 'admin_all/base.html' %}
+{% block define %}
+    <script>
+    $('#page_title').text('修改管理员权限');
+    $('#manage_admin').addClass('active');
+    </script>
+<div class="col-lg-12 col-md-12 panel panel-default" style="margin-top: 5%;padding-left: 7%">
+ <div class="panel-body">
+       <div class="col-lg-5 col-md-5 text-right">
+            <h6>管理员名称:</h6>
+            <h6 style="margin-top: 6%">管理地区:</h6>
+            <h6 style="margin-top: 6%">联系电话:</h6>
+            <h6 style="margin-top: 6%">游戏管理权限:</h6>
+            <h6 style="margin-top: 6%">会员查看权限:</h6>
+            <h6 style="margin-top: 6%">维修基金管理权限:</h6>
+            <h6 style="margin-top: 6%">消息推送权限:</h6>
+        </div>
+       <div class="col-lg-6 col-md-6" style="padding-left: 0">
+          <form action="edit_admin" method="post" id="p_mes" enctype="multipart/form-data">
+              {% csrf_token %}
+            <input style="display: none" type="text" name="admin_id" value="{{ admin.id }}">
+            <h6>{{ admin.nick }}</h6>
+            <h6 style="margin-top: 5%">{{ admin.area }}</h6>
+            <h6 style="margin-top: 5%">{{ admin.username }}</h6>
+            <label style="margin-top: 3%" class="checkbox" for="checkbox1">
+                  <input type="checkbox" name="manage_game" value={{ admin.manage_game }} id="checkbox1"
+                         {% if admin.manage_game %}
+                         checked="checked"
+                         {% endif %}
+                         data-toggle="checkbox" class="custom-checkbox">
+                  <span class="icons">
+                      <span class="icon-unchecked"></span>
+                      <span class="icon-checked"></span>
+                  </span>
+            </label>
+            <label style="margin-top: 3.3%" class="checkbox" for="checkbox2">
+                  <input type="checkbox" name="manage_check_vip" value={{ admin.manage_check_vip }} id="checkbox2"
+                         {% if admin.manage_check_vip %}
+                         checked="checked"
+                         {% endif %}
+                         data-toggle="checkbox" class="custom-checkbox">
+                  <span class="icons">
+                      <span class="icon-unchecked"></span>
+                      <span class="icon-checked"></span>
+                  </span>
+            </label>
+            <label style="margin-top: 3.3%" class="checkbox" for="checkbox3">
+                  <input type="checkbox" name="manage_coupon" value={{ admin.manage_coupon }} id="checkbox3"
+                         {% if admin.manage_coupon %}
+                         checked="checked"
+                         {% endif %}
+                         data-toggle="checkbox" class="custom-checkbox">
+                  <span class="icons">
+                      <span class="icon-unchecked"></span>
+                      <span class="icon-checked"></span>
+                  </span>
+            </label>
+            <label style="margin-top: 3.3%" class="checkbox" for="checkbox4">
+                  <input type="checkbox" name="manage_send_message" value={{ admin.manage_send_message }} id="checkbox4"
+                        {% if admin.manage_send_message %}
+                         checked="checked"
+                        {% endif %}
+                         data-toggle="checkbox" class="custom-checkbox">
+                  <span class="icons">
+                      <span class="icon-unchecked"></span>
+                      <span class="icon-checked"></span>
+                  </span>
+            </label>
+            <script>
+                $('input').click(function(){
+                    if($(this).val() == 'True'){
+                        $(this).val('False')
+                    }
+                    else{
+                        $(this).val('True')
+                    }
+                })
+            </script>
+          </form>
+       </div>
+
+    <div class="col-lg-12 col-md-12" style="margin-top: 2%">
+        <button id="submit" class="btn btn-success btn-lg" style="margin-left: 36%">提交</button>
+        <a href="manage_admin" role="button" class="btn btn-default btn-lg" style="margin-left: 5%">取消</a>
+    </div>
+    <script>
+        $('#submit').click(function(){
+            $('#p_mes').submit();
+        })
+    </script>
+ </div>
+</div>
+{% endblock %}

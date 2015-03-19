@@ -149,9 +149,66 @@ def manage_admin(request):
                                   context_instance=RequestContext(request))
 
 
+def edit_admin(request):
+    if not request.session.get('a_username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        area_admin_id = request.GET.get('admin_id')
+        area_admin = HomeAdmin.objects.filter(id=area_admin_id, type=1)
+        if area_admin.count() == 0:
+            return HttpResponseRedirect('manage_admin')
+
+        return render_to_response('admin_all/edit_admin.html',
+                                  {'admin': area_admin[0]},
+                                  context_instance=RequestContext(request))
+    if request.method == 'POST':
+        context = {}
+        context.update(csrf(request))
+        area_admin_id = request.POST.get('admin_id')
+        manage_game = request.POST.get('manage_game')
+        manage_check_vip = request.POST.get('manage_check_vip')
+        manage_send_message = request.POST.get('manage_send_message')
+        manage_coupon = request.POST.get('manage_coupon')
+        area_admin = HomeAdmin.objects.get(id=area_admin_id)
+        if not area_admin:
+            return HttpResponseRedirect('manage_admin')
+
+        if manage_game == 'True':
+            area_admin.manage_game = True
+        else:
+            area_admin.manage_game = False
+
+        if manage_check_vip == 'True':
+            area_admin.manage_check_vip = True
+        else:
+            area_admin.manage_check_vip = False
+
+        if manage_send_message == 'True':
+            area_admin.manage_send_message = True
+        else:
+            area_admin.manage_send_message = False
+
+        if manage_coupon == 'True':
+            area_admin.manage_coupon = True
+        else:
+            area_admin.manage_coupon = False
+
+        area_admin.save()
+        return HttpResponseRedirect('manage_admin')
+
 def delete_admin(request):
     if not request.session.get('a_username'):
         return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        area_admin_id = request.GET.get('admin_id')
+        area_admin = HomeAdmin.objects.get(id=area_admin_id, type=1)
+        try:
+            area_admin.delete()
+
+        except:
+            pass
+        return HttpResponseRedirect('manage_admin')
+
 
     if request.method == 'POST':
         context = {}

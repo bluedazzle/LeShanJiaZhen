@@ -79,6 +79,10 @@ class HomeAdmin(AbstractBaseUser):
     reg_time = models.DateTimeField(auto_now_add=True)
     type = models.IntegerField(max_length=2, default=1)
     verify = models.BooleanField(default=False)
+    manage_game = models.BooleanField(default=False)
+    manage_check_vip = models.BooleanField(default=False)
+    manage_coupon = models.BooleanField(default=False)
+    manage_send_message = models.BooleanField(default=False)
     work_num = models.CharField(max_length=50, null=True, blank=True)
     area = models.ForeignKey(Block, null=True, blank=True)
 

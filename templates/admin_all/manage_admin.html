@@ -12,45 +12,45 @@
              <tr>
                  <h6 style="padding-bottom: 1%">
                  地区管理员列表
-                     <button id="delete" class="btn btn-default" style="float: right;margin-left: 2%;margin-right: 1%">删除</button>
+{#                     <button id="delete" class="btn btn-default" style="float: right;margin-left: 2%;margin-right: 1%">删除</button>#}
                  </h6>
-                 <script>
-                       $('#delete').click(function(){
-                           var s = 1;
-                           if( s == 2 {% for item in items %}|| $('#checkbox{{ item.id }}').val() == '1'{% endfor %}){
-                               var r = confirm("确定删除所选择的管理员吗？");
-                               if(r == true){
-                                    var admins = "";
-                                   {% for item in items %}
-                                       if($('#checkbox{{ item.id }}').val() == '1'){
-                                           admins = admins + ','+ '{{ item.username }}' + ','
-                                       }
-                                   {% endfor %}
-                                   var message = {'admins': admins,
-                                                  'csrfmiddlewaretoken': getCookie('csrftoken')};
-                                        $.ajax({
-                                            type: 'POST',
-                                            url: 'delete_admin',
-                                            data: message,
-                                            success: function (data) {
-                                                if (data == 'T') {
-                                                    alert("删除成功");
-                                                    window.location.href = "manage_admin"
-                                                }
-                                                else {
-                                                    alert("删除失败！")
-                                                }
-                                            },
-                                            dataType: 'json'
-                                        });
-
-                               }
-                           }
-                           else{
-                               alert("请选择管理员")
-                           }
-                       })
-                 </script>
+{#                 <script>#}
+{#                       $('#delete').click(function(){#}
+{#                           var s = 1;#}
+{#                           if( s == 2 {% for item in items %}|| $('#checkbox{{ item.id }}').val() == '1'{% endfor %}){#}
+{#                               var r = confirm("确定删除所选择的管理员吗？");#}
+{#                               if(r == true){#}
+{#                                    var admins = "";#}
+{#                                   {% for item in items %}#}
+{#                                       if($('#checkbox{{ item.id }}').val() == '1'){#}
+{#                                           admins = admins + ','+ '{{ item.username }}' + ','#}
+{#                                       }#}
+{#                                   {% endfor %}#}
+{#                                   var message = {'admins': admins,#}
+{#                                                  'csrfmiddlewaretoken': getCookie('csrftoken')};#}
+{#                                        $.ajax({#}
+{#                                            type: 'POST',#}
+{#                                            url: 'delete_admin',#}
+{#                                            data: message,#}
+{#                                            success: function (data) {#}
+{#                                                if (data == 'T') {#}
+{#                                                    alert("删除成功");#}
+{#                                                    window.location.href = "manage_admin"#}
+{#                                                }#}
+{#                                                else {#}
+{#                                                    alert("删除失败！")#}
+{#                                                }#}
+{#                                            },#}
+{#                                            dataType: 'json'#}
+{#                                        });#}
+{##}
+{#                               }#}
+{#                           }#}
+{#                           else{#}
+{#                               alert("请选择管理员")#}
+{#                           }#}
+{#                       })#}
+{#                 </script>#}
              </tr>
            </thead>
            <tbody>
@@ -59,27 +59,32 @@
                   <th>姓名</th>
                   <th>电话</th>
                   <th>工号</th>
-                  <th style="max-width: 20px">
-                        <input type="checkbox" value="0" id="checkbox_all">
-                      <script>
-                          $('#checkbox_all').click(function(){
-                              if($(this).val() == '0'){
-                                  $(this).val('1');
-                                  {% for item in items %}
-                                      $('#checkbox{{ item.id }}').val('1');
-                                      document.getElementById('checkbox{{ item.id }}').checked = true;
-                                  {% endfor %}
-                              }
-                              else{
-                                  $(this).val('0');
-                                  {% for item in items %}
-                                      $('#checkbox{{ item.id }}').val('0');
-                                      document.getElementById('checkbox{{ item.id }}').checked = false;
-                                  {% endfor %}
-                              }
-                          })
-                      </script>
-                  </th>
+                  <th>游戏管理权限</th>
+                  <th>会员查看权限</th>
+                  <th>维修基金查询权限</th>
+                  <th>消息推送权限</th>
+                  <th>操作</th>
+{#                  <th style="max-width: 20px">#}
+{#                        <input type="checkbox" value="0" id="checkbox_all">#}
+{#                      <script>#}
+{#                          $('#checkbox_all').click(function(){#}
+{#                              if($(this).val() == '0'){#}
+{#                                  $(this).val('1');#}
+{#                                  {% for item in items %}#}
+{#                                      $('#checkbox{{ item.id }}').val('1');#}
+{#                                      document.getElementById('checkbox{{ item.id }}').checked = true;#}
+{#                                  {% endfor %}#}
+{#                              }#}
+{#                              else{#}
+{#                                  $(this).val('0');#}
+{#                                  {% for item in items %}#}
+{#                                      $('#checkbox{{ item.id }}').val('0');#}
+{#                                      document.getElementById('checkbox{{ item.id }}').checked = false;#}
+{#                                  {% endfor %}#}
+{#                              }#}
+{#                          })#}
+{#                      </script>#}
+{#                  </th>#}
               </tr>
               {% for item in items %}
               <tr>
@@ -87,22 +92,63 @@
                   <td>{{ item.nick }}</td>
                   <td>{{ item.username }}</td>
                   <td>{{ item.work_num }}</td>
-                  <td style="max-width: 20px">
-                     <input type="checkbox" value="0" name='checkbox' id="checkbox{{ item.id }}">
+                  <td>
+                      {% if item.manage_game %}
+                          <span class="glyphicon glyphicon-ok" style="color: #1abc9c"></span>
+                      {% else %}
+                          <span class="glyphicon glyphicon-remove" style="color: red"></span>
+                      {% endif %}
                   </td>
-                  <script>
-                     $('#checkbox{{ item.id }}').click(function(){
-                         if($(this).val() == '0'){
-                             $(this).val('1');
-                         }
-                         else{
-                             $(this).val('0')
-                         }
-                     })
-                  </script>
+                  <td>
+                      {% if item.manage_check_vip %}
+                          <span class="glyphicon glyphicon-ok" style="color: #1abc9c"></span>
+                      {% else %}
+                          <span class="glyphicon glyphicon-remove" style="color: red"></span>
+                      {% endif %}
+                  </td>
+                  <td>
+                      {% if item.manage_coupon %}
+                          <span class="glyphicon glyphicon-ok" style="color: #1abc9c"></span>
+                      {% else %}
+                          <span class="glyphicon glyphicon-remove" style="color: red"></span>
+                      {% endif %}
+                  </td>
+                  <td>
+                      {% if item.manage_send_message %}
+                          <span class="glyphicon glyphicon-ok" style="color: #1abc9c"></span>
+                      {% else %}
+                          <span class="glyphicon glyphicon-remove" style="color: red"></span>
+                      {% endif %}
+                  </td>
+                  <td>
+                      <a href="edit_admin?admin_id={{ item.id }}" role="button" class="btn btn-success btn-sm">修改</a>
+                      <a role="button" class="btn btn-danger btn-sm" onclick="delete_admin({{ item.id }})">删除</a>
+                  </td>
+{#                  <td style="max-width: 20px">#}
+{#                     <input type="checkbox" value="0" name='checkbox' id="checkbox{{ item.id }}">#}
+{#                  </td>#}
+{#                  <script>#}
+{#                     $('#checkbox{{ item.id }}').click(function(){#}
+{#                         if($(this).val() == '0'){#}
+{#                             $(this).val('1');#}
+{#                         }#}
+{#                         else{#}
+{#                             $(this).val('0')#}
+{#                         }#}
+{#                     })#}
+{#                  </script>#}
               </tr>
               {% endfor %}
            </tbody>
+       <script>
+           function delete_admin(admin_id){
+               var r;
+               r = confirm('您确定要删除该管理员？')
+               if (r){
+                   window.location.href = 'delete_admin?admin_id=' + admin_id
+               }
+           }
+       </script>
        </table>
     </div>
 {% endblock %}
