@@ -711,6 +711,34 @@ def get_invite_coupon(req):
         return Http404
 
 
+@csrf_exempt
+def get_goods_p_item(req):
+    body={}
+    if req.method == 'POST':
+        resjson = simplejson.loads(req.body)
+        city_num = resjson['city_number']
+        block_list = Block.objects.filter(city_num=city_num)
+        if block_list.count() > 0:
+            block = block_list[0]
+            goods_p_list = Goods_P.objects.filter(area=block)
+            goodslist = []
+            for itm in goods_p_list:
+                goodsp={}
+                goodsp['item_name'] = itm.item_name
+                goodsp['have_advertisment'] = itm.have_advertisment
+                goodsp['advertisment'] = itm.advertisement
+                goodslist.append(copy.copy(goodsp))
+            body['goods_item'] = goodslist
+            body['msg'] = 'goods_p get success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            body['msg'] = 'invalid city number'
+            return HttpResponse(encodejson(7, body), content_type='application/json')
+    else:
+        return Http404
+
+
+
 def create_new_coupon(value, ctype, own, expire=365):
     have_count = Coupon.objects.filter(type=ctype).count()
     odate = datetime.date.today()
@@ -722,6 +750,7 @@ def create_new_coupon(value, ctype, own, expire=365):
     newcoupon = Coupon(cou_id=newcou_id, value=value, type=ctype, own=own, owned_time=owntime, deadline=deadline)
     newcoupon.save()
     return True
+
 
 
 def if_legal(username, private_token):
