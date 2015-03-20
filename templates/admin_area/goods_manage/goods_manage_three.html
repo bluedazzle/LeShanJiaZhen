@@ -48,7 +48,15 @@
                   <td>{{ item.brand }}</td>
                   <td>{{ item.made_by }}</td>
                   <td>{{ item.made_in }}</td>
-                  <td>{{ item.real_price }}</td>
+                  <td>
+                      {% if item.origin_price == item.real_price %}
+                      {{ item.real_price }}元
+                      {% else %}
+                      {{ item.real_price }}元
+                      <br/>
+                      (原价：{{ item.origin_price }}元)
+                      {% endif %}
+                  </td>
                   <td style="max-width: 150px">{{ item.content }}</td>
                   <td style="max-width: 100px">{{ item.plus }}</td>
                   <td style="max-width: 80px;padding-right:0">

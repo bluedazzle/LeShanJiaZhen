@@ -950,13 +950,35 @@ def edit_goods_p(request):
             i_id = new_goods_p.id
         if ad_file != None:
             print "OK"
-            file_name = str(int(time.time())) + '.png'
-            file_full_path = BASE + '/static/img/goods_p_ads/' + file_name
-            Image.open(ad_file).save(file_full_path)
             item_p = Goods_P.objects.get(id=i_id)
+            file_name = str(i_id) + '.png'
+            file_full_path = BASE + '/static/img/goods_p_ads/' + file_name
+            if item_p.advertisement:
+                os.remove(file_full_path)
+            Image.open(ad_file).save(file_full_path)
+            item_p.have_advertisement = True
             item_p.advertisement = base_url+'/img/goods_p_ads/'+file_name
             item_p.save()
 
+        return HttpResponseRedirect('goods_manage')
+
+
+def delete_goods_p_ad(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+
+    if request.method == 'GET':
+        goods_p_id = request.GET.get('item_p')
+        goods_p = Goods_P.objects.get(id=goods_p_id)
+        try:
+            file_name = str(goods_p.id) + '.png'
+            file_full_path = BASE + '/static/img/goods_p_ads/' + file_name
+            os.remove(file_full_path)
+            goods_p.advertisement = ''
+            goods_p.have_advertisement = False
+            goods_p.save()
+        except:
+            pass
         return HttpResponseRedirect('goods_manage')
 
 

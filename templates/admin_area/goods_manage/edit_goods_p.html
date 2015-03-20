@@ -26,8 +26,8 @@
             <input type="file" name="ad_file" id="file0" multiple="multiple" style="margin-top:5%;line-height: 1;font-size: 16px;"/><br>
             <p>请上传400*200的PNG图片</p>
               {% if item_p %}
-                {% if item_p.icon %}
-                   <img style="width: 500px;height: 200px;" src="{{ item_p.icon }}" id="img0" >
+                {% if item_p.advertisement %}
+                   <img style="width: 500px;height: 200px;" src="{{ item_p.advertisement }}" id="img0" >
                 {% else %}
                    <img style="width: 500px;height: 200px;" src="" id="img0" >
                 {% endif %}
@@ -35,6 +35,9 @@
                  <img style="width: 500px;height: 200px;" src="" id="img0" >
               {% endif %}
             <p style="color: red" id="warning"></p>
+          {% if item_p.advertisement %}
+            <a href="delete_goods_p_ad?item_p={{ item_p.id }}">（点击这里删除广告）</a>
+          {% endif %}
           </form>
        </div>
 
@@ -65,12 +68,12 @@
                 $('#warning').text('图像格式不正确，请上传PNG图片');
                 return false
             }
-            if(height==64&&width==64){
+            if(height==200&&width==400){
                 $('#submit').removeClass('disabled')
             }
             else{
                 $('#submit').addClass('disabled');
-                $('#warning').text('图片像素不正确，请使用64 x 64像素的图片')
+                $('#warning').text('图片像素不正确，请使用400 x 200像素的图片')
             }
         })
 	}

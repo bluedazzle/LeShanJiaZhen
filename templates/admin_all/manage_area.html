@@ -18,6 +18,7 @@
            <tbody>
               <tr style="background-color: #1abc9c; color: #ffffff">
                   <th>地区</th>
+                  <th>地区编码</th>
                   <th>联系电话</th>
                   <th>地址</th>
                   <th></th>
@@ -25,6 +26,7 @@
               {% for area in areas %}
               <tr>
                   <td>{{ area.area_name }}</td>
+                  <td>{{ area.city_num }}</td>
                   <td>{{ area.area_tel }}</td>
                   <td>{{ area.area_address }}</td>
                   <td style="max-width: 60px;padding-right:0">

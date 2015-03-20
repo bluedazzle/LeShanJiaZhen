@@ -3,7 +3,8 @@
     <script>
       $(document).ready(function(){
           $('#page_title').text('个人信息');
-          $('#user_mes').addClass('active')
+          $('#user_mes').addClass('active');
+          $('#message_manage').addClass('active');
       })
     </script>
     <div class="col-md-12 col-lg-12" style="padding-left: 5%;padding-right: 10%;padding-top: 2%">
@@ -15,12 +16,28 @@
               手机号：<br/>
               管理地区：<br/>
               工号：<br/>
+              拥有权限：<br/>
           </div>
           <div class="col-md-6 col-lg-6 text-left">
               {{ user.nick }}<br/>
               {{ user.username }}<br/>
               {{ user.area }}<br/>
               {{ user.work_num }}<br/>
+              {% if user.manage_game %}
+                游戏管理<br/>
+              {% endif %}
+              {% if user.manage_send_message %}
+                消息推送<br/>
+              {% endif %}
+              {% if user.manage_coupon %}
+                维修基金管理<br/>
+              {% endif %}
+              {% if user.manage_check_vip %}
+                会员管理<br/>
+              {% endif %}
+              {% if not user.manage_game and not user.manage_send_message and not user.manage_coupon and not user.manage_check_vip%}
+                无<br/>
+              {% endif %}
           </div>
          </div>
      </div>
