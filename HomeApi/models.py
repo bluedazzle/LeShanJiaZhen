@@ -343,6 +343,9 @@ class Verify(models.Model):
     verify = models.CharField(max_length=10)
     create_time = models.DateTimeField(auto_now_add=True)
 
+    def __unicode__(self):
+        return self.phone
+
 class AppControl(models.Model):
     android_version = models.CharField(max_length=10, null=True, blank=True)
     ios_version = models.CharField(max_length=10, null=True, blank=True)

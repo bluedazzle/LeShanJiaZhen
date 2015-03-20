@@ -19,4 +19,5 @@ urlpatterns = patterns('',
     url(r'^consumer/change_info$', views.change_info),
     url(r'^consumer/get_invite_coupon$', views.get_invite_coupon),
     url(r'^consumer/get_goods_item$', views.get_goods_p_item),
+    url(r'^consumer/get_goods_detail$', views.get_goods),
     )
