@@ -28,8 +28,7 @@
 ##**注册**
 #####注册流程
 1、先向consumer/send_reg_verify请求发送验证码验证手机
-2、向consumer/verify_reg_code验证收到的验证码
-3、请求consumer/register注册成功或失败
+2、请求consumer/register注册成功或失败
 
 #####顾客注册
 ######步骤一：
@@ -48,36 +47,21 @@ POST /consumer/send_reg_verify
 or
 {"status":2,"body":null}
 ```
+
 ######步骤二：
-```
-POST /consumer/verify_reg_code
-```
-###**Parameters**
-* phone(_Required_|string)-用户名，必须为手机号
-* verify_code(_Required_|string)-验证码
-###**Request**
-```
-{"phone":"18215606355","verify_code":"123456"}
-```
-###**Return**
-```
-{"status": 1, "body": {"msg": "success"}}
-or
-{"status": 7, "body": {"msg": "verify failed"}}
-```
-######步骤三：
 ```
 POST /consumer/register
 ```
 ###**Parameters**
 * username(_Required_|string)-用户名，必须为手机号
 * password(_Required_|string)-密码
+* verify_code(_Required_|string)-验证码
 * address(_Optional_|string)-用户地址
 * sex(_Optional_|integer)-用户性别 1男 2女 3保密
 * birthday(_Optional_|string)-生日 字符格式 1999-01-01
 ###**Request**
 ```
-{"username":"18215606355","password":"123456","address":"kb258","sex":1,"birthday":"1999-01-01"}
+{"username":"18215606355","password":"123456","verify_code":"123456","address":"kb258","sex":1,"birthday":"1999-01-01"}
 ```
 ###**Return**
 ```
@@ -126,3 +110,24 @@ POST /consumer/get_goods_item
 or
 {"status": 7, "body": {"msg": "invalid city number"}}
 ```
+
+##**商品**
+
+#####获取商品详细
+```
+POST /consumer/get_goods_detail
+```
+###**Parameters**
+* pid(_Required_|string)-父商品id
+###**Request**
+```
+{"pid":"5"}
+```
+###**Return**
+```
+{"status": 1, "body": {"msg": "goods detail get success", "goods": [{"item_name": "\u7acb\u5f0f\u51b0\u7bb1\u7ef4\u4fee", "s_item_list": [{"picture": "c:/ss/ss.jpg", "title": "\u561f\u561f", "repair_price": 2.0, "made_by": "\u7684", "material": "\u7684", "made_in": "\u5f53\u65f6", "real_price": 10.0, "plus": "\u53d1", "sid": 5, "content": "\u65b9\u6cd5", "origin_price": 10.0, "brand": "\u7684"}], "oid": 3}, {"item_name": "\u51b0\u67dc\u7ef4\u4fee", "s_item_list": [], "oid": 4}], "pid": 2}}
+or
+{"status": 7, "body": {"msg": "invalid id"}}
+```
+
+
