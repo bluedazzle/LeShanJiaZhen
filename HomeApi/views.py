@@ -29,7 +29,7 @@ def send_reg_verify(req):
         else:
             return HttpResponse(encodejson(2, {}), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 
 @csrf_exempt
@@ -64,7 +64,7 @@ def register(req):
         body['invite_code'] = invite_code
         return HttpResponse(encodejson(1,body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 @csrf_exempt
 def change_password(req):
@@ -115,7 +115,7 @@ def login(req):
                 body['msg'] = 'password is not right'
                 return HttpResponse(encodejson(4, body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 @csrf_exempt
 def logout(req):
@@ -134,7 +134,7 @@ def logout(req):
             body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 @csrf_exempt
 def forget_password(req):
@@ -160,7 +160,7 @@ def forget_password(req):
             body['test'] = jres
             return HttpResponse(encodejson(2, body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 @csrf_exempt
 def reset_password(req):
@@ -193,7 +193,7 @@ def reset_password(req):
             body['msg'] = 'verify code does not exist'
             return HttpResponse(encodejson(12, body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 @csrf_exempt
 def get_android_version(req):
@@ -242,7 +242,7 @@ def get_messages(req):
             body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 @csrf_exempt
 def add_message(req):
@@ -293,7 +293,7 @@ def get_coupon(req):
             body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 @csrf_exempt
 def add_feedback(req):
@@ -307,7 +307,7 @@ def add_feedback(req):
         body['msg'] = 'feedback add success'
         return HttpResponse(encodejson(1, body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 @csrf_exempt
 def city_search(req):
@@ -342,7 +342,7 @@ def city_search(req):
             body['msg'] = 'match resemble city success'
             return HttpResponse(encodejson(1, body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 @csrf_exempt
 def change_info(req):
@@ -369,7 +369,7 @@ def change_info(req):
             body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 
 @csrf_exempt
@@ -413,7 +413,7 @@ def get_invite_coupon(req):
             body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 
 @csrf_exempt
@@ -441,7 +441,7 @@ def get_goods_p_item(req):
             body['msg'] = 'invalid city number'
             return HttpResponse(encodejson(7, body), content_type='application/json')
     else:
-        return Http404
+        raise Http404
 
 @csrf_exempt
 def get_goods(req):
