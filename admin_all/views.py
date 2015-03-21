@@ -17,6 +17,40 @@ import datetime
 
 # Create your views here.
 
+cities = [{'city_num': 510100, 'area_name': '四川省成都市'},
+          {'city_num': 510181, 'area_name': '四川省都江堰市'},
+          {'city_num': 510182, 'area_name': '四川省彭州市'},
+          {'city_num': 510183, 'area_name': '四川省邛崃市'},
+          {'city_num': 510184, 'area_name': '四川省崇州市'},
+          {'city_num': 510300, 'area_name': '四川省自贡市'},
+          {'city_num': 510400, 'area_name': '四川省攀枝花市'},
+          {'city_num': 510500, 'area_name': '四川省泸州市'},
+          {'city_num': 510600, 'area_name': '四川省德阳市'},
+          {'city_num': 510681, 'area_name': '四川省广汉市'},
+          {'city_num': 510682, 'area_name': '四川省什邡市'},
+          {'city_num': 510683, 'area_name': '四川省绵竹市'},
+          {'city_num': 510700, 'area_name': '四川省绵阳市'},
+          {'city_num': 510800, 'area_name': '四川省广元市'},
+          {'city_num': 510900, 'area_name': '四川省遂宁市'},
+          {'city_num': 511000, 'area_name': '四川省内江市'},
+          {'city_num': 511100, 'area_name': '四川省乐山市'},
+          {'city_num': 511181, 'area_name': '四川省峨眉山市'},
+          {'city_num': 511300, 'area_name': '四川省南充市'},
+          {'city_num': 511381, 'area_name': '四川省阆中市'},
+          {'city_num': 511500, 'area_name': '四川省宜宾市'},
+          {'city_num': 511600, 'area_name': '四川省广安市'},
+          {'city_num': 511681, 'area_name': '四川省华蓥市'},
+          {'city_num': 513001, 'area_name': '四川省达川市'},
+          {'city_num': 513002, 'area_name': '四川省万源市'},
+          {'city_num': 513101, 'area_name': '四川省雅安市'},
+          {'city_num': 513401, 'area_name': '四川省西昌市'},
+          {'city_num': 513701, 'area_name': '四川省巴中市'},
+          {'city_num': 513901, 'area_name': '四川省资阳市'},
+          {'city_num': 513902, 'area_name': '四川省简阳市'},
+          {'city_num': 513200, 'area_name': '四川省阿坝藏族羌族自治州'},
+          {'city_num': 513300, 'area_name': '四川省甘孜藏族自治州'},
+          {'city_num': 513400, 'area_name': '四川省凉山彝族自治州'}]
+
 
 def login_in(request):
     if request.method == 'GET':
@@ -196,6 +230,7 @@ def edit_admin(request):
         area_admin.save()
         return HttpResponseRedirect('manage_admin')
 
+
 def delete_admin(request):
     if not request.session.get('a_username'):
         return HttpResponseRedirect('login_in')
@@ -363,41 +398,38 @@ def edit_area(request):
     if request.method == 'GET':
         area_id = request.GET.get('area_id')
         if not area_id:
-            return render_to_response('admin_all/edit_area_detail.html')
+            return render_to_response('admin_all/edit_area_detail.html',
+                                      {'areas': cities})
         else:
             area = Block.objects.get(id=area_id)
-            return render_to_response('admin_all/edit_area_detail.html', {'item': area})
+            return render_to_response('admin_all/edit_area_detail.html', {'area': area})
     if request.method == 'POST':
         area_id = request.POST.get('area_id')
-        area_name = request.POST.get('area_name')
+        area_num = request.POST.get('area_num')
         area_tel = request.POST.get('area_tel')
         area_address = request.POST.get('address')
-        area_have = Block.objects.filter(area_name=area_name)
+        area_have = Block.objects.filter(city_num=area_num)
         if area_have.count() > 0:
-            return HttpResponse(json.dumps('F'), content_type="application/json")
+            if not area_id:
+                return HttpResponse(json.dumps('F'), content_type="application/json")
 
-        lat = "43.32515"
-        lng = "100.33242"
         if not area_id:
             new_area = Block()
             print "OK"
-            new_area.area_id = -1
-            new_area.area_name = area_name
+            new_area.city_num = area_num
+            for item in cities:
+                if item['city_num'] == int(area_num):
+                    new_area.area_name = item['area_name']
+                    break
+
             new_area.area_tel = area_tel
             new_area.area_address = area_address
-            new_area.lat = lat
-            new_area.lng = lng
-            new_area.save()
-            new_area.area_id = new_area.id
             new_area.save()
             return HttpResponse(json.dumps('T'), content_type="application/json")
         else:
             area = Block.objects.get(id=area_id)
-            area.area_name = area_name
             area.area_tel = area_tel
             area.area_address = area_address
-            area.lat = lat
-            area.lng = lng
             area.save()
             return HttpResponse(json.dumps('T'), content_type="application/json")
 

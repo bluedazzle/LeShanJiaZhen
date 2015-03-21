@@ -29,6 +29,7 @@ def send_reg_verify(req):
         else:
             return HttpResponse(encodejson(2, {}), content_type='application/json')
     else:
+
         raise Http404
 
 
@@ -442,6 +443,79 @@ def get_goods_p_item(req):
             return HttpResponse(encodejson(7, body), content_type='application/json')
     else:
         raise Http404
+
+@csrf_exempt
+def get_goods(req):
+    body={}
+    if req.method == 'POST':
+        resjson = simplejson.loads(req.body)
+        goods_id = resjson['pid']
+        goods_id_list = Goods_P.objects.filter(id=goods_id)
+        if goods_id_list.count() > 0:
+            goodpitem = goods_id_list[0]
+            goods_o_list = Goods_O.objects.filter(parent_item=goodpitem)
+            goodslist = []
+            for itm in goods_o_list:
+                oitem= {}
+                itemlist = GoodsItem.objects.filter(parent_item=itm)
+                s_itemlist = []
+                for item in itemlist:
+                    sitem = {}
+                    sitem['title'] = item.title
+                    sitem['sid'] = item.id
+                    sitem['material'] = item.material
+                    sitem['made_by'] = item.made_by
+                    sitem['made_in'] = item.made_in
+                    sitem['content'] = item.content
+                    sitem['origin_price'] = item.origin_price
+                    sitem['real_price'] = item.real_price
+                    sitem['repair_price'] = item.repair_price
+                    sitem['picture'] = item.picture
+                    sitem['brand'] = item.brand
+                    sitem['plus'] = item.plus
+                    s_itemlist.append(copy.copy(sitem))
+                oitem['item_name'] = itm.item_name
+                oitem['oid'] = itm.id
+                oitem['s_item_list'] = s_itemlist
+                goodslist.append(copy.copy(oitem))
+            body['goods'] = goodslist
+            body['pid'] = goodpitem.id
+            body['msg'] = 'goods detail get success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            body['msg'] = 'invalid goods pid'
+            return HttpResponse(encodejson(7, body), content_type='application/json')
+    else:
+        raise Http404
+
+
+
+@csrf_exempt
+def get_goods_p_item(req):
+    body={}
+    if req.method == 'POST':
+        resjson = simplejson.loads(req.body)
+        city_num = resjson['city_number']
+        block_list = Block.objects.filter(city_num=city_num)
+        if block_list.count() > 0:
+            block = block_list[0]
+            goods_p_list = Goods_P.objects.filter(area=block)
+            goodslist = []
+            for itm in goods_p_list:
+                goodsp={}
+                goodsp['item_name'] = itm.item_name
+                goodsp['pid'] = itm.id
+                goodsp['have_advertisment'] = itm.have_advertisment
+                goodsp['advertisment'] = itm.advertisement
+                goodslist.append(copy.copy(goodsp))
+            body['goods_item'] = goodslist
+            body['msg'] = 'goods_p get success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            body['msg'] = 'invalid city number'
+            return HttpResponse(encodejson(7, body), content_type='application/json')
+    else:
+        return Http404
 
 @csrf_exempt
 def get_goods(req):

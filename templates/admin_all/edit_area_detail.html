@@ -8,16 +8,28 @@
        <div class="col-lg-4 col-md-4 text-right">
             <h6>地区名称:</h6>
             <h6 style="margin-top: 9%">联系电话:</h6>
-            <h6 style="margin-top: 9%">地址:</h6>
+            <h6 style="margin-top: 9%">详细地址:</h6>
         </div>
        <div class="col-lg-6 col-md-6" style="padding-top: 0.5%;padding-left: 0">
-            <input type="text" class="form-control" id="area_name" name='area_name'
-                   placeholder="请输入地区名称" style="width: 300px;margin-top: 0.5%" value="{{ item.area_name }}">
+            <div class="input-group" style="margin-top: 0.5%">
+          <select id="area" name="area" class="form-control select select-primary select-block mbl" style="width: 300px;">
+              {% if area %}
+              <option value="{{ area.city_num }}">{{ area.area_name }}</option>
+              {% else %}
+                  {% for item in areas %}
+              <option value="{{ item.city_num }}">{{ item.area_name }}</option>
+                  {% endfor %}
+              {% endif %}
+          </select>
+            <script>
+                $("#area").select2({dropdownCssClass: 'dropdown-inverse'});
+            </script>
+          </div>
             <input type="text" class="form-control" id="area_tel" name='area_tel'
-                   placeholder="请输入联系电话" style="width: 300px;margin-top: 2.5%" value="{{ item.area_tel }}"
+                   placeholder="请输入联系电话" style="width: 300px;margin-top: 3.5%" value="{{ area.area_tel }}"
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
             <textarea class="form-control" id="address" name='address'
-                   placeholder="请输入地址" style="width: 300px;margin-top: 2.5%">{{ item.area_address }}</textarea>
+                   placeholder="请输入地址" style="width: 300px;margin-top: 3.5%">{{ area.area_address }}</textarea>
        </div>
     <div class="col-lg-12 col-md-12" style="margin-top: 2%">
         <button id="submit" class="btn btn-success btn-lg" style="margin-left: 36%">提交</button>
@@ -25,17 +37,17 @@
     </div>
     <script>
         $('#submit').click(function(){
-            if($('#area_name').val() && $('#area_tel').val() && $('#address').val()){
-                {% if not item %}
-                var message = {'area_name': $('#area_name').val(),
+            if($('#area').val() && $('#area_tel').val() && $('#address').val()){
+                {% if not area %}
+                var message = {'area_num': $('#area').val(),
                                'area_tel': $('#area_tel').val(),
                                'address': $('#address').val(),
                                'csrfmiddlewaretoken': getCookie('csrftoken')};
                 {% else %}
-                 var message = {'area_name': $('#area_name').val(),
+                 var message = {'area_num': $('#area').val(),
                                'area_tel': $('#area_tel').val(),
                                'address': $('#address').val(),
-                               'area_id': {{ item.id }},
+                               'area_id': {{ area.id }},
                                'csrfmiddlewaretoken': getCookie('csrftoken')};
                 {% endif %}
                 $.ajax({
@@ -48,7 +60,7 @@
                             window.location.href = "manage_area"
                         }
                         else {
-                            alert("提交失败！")
+                            alert("地区已存在，请重新选择")
                         }
                     },
                     dataType: 'json'
