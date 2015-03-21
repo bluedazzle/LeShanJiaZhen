@@ -338,7 +338,7 @@ class AppControl(models.Model):
 
 class Appointment(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
-    order_id = models.CharField(max_length=100, null=True)
+    order_id = models.CharField(max_length=100)
     remark = models.CharField(max_length=100, blank=True, null=True)
     status = models.IntegerField(max_length=2)
     photo1 = models.CharField(max_length=100, blank=True, null=True)
@@ -366,7 +366,7 @@ class Appointment(models.Model):
     rb6 = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return self.content
+        return self.order_id
 
 
 
