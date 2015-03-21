@@ -1088,6 +1088,7 @@ def edit_goods(request):
         made_by = request.POST.get('made_by')
         made_in = request.POST.get('made_in')
         content = request.POST.get('content')
+        repair_price = request.POST.get('repair_price')
         plus = request.POST.get('plus')
         goods_pic = request.FILES.get('goods_pic')
         i_id = 1
@@ -1129,14 +1130,22 @@ def edit_goods(request):
             goods.made_by = made_by
             goods.made_in = made_in
             goods.content = content
-
+            goods.repair_price = repair_price
+            if repair_price:
+                goods.repair_price = repair_price
+            else:
+                goods.repair_price = 0.0
             if recommand:
                 goods.recommand = recommand
+            else:
+                goods.recommand = 0
             if preferential_price:
                 print "OK"
                 goods.real_price = preferential_price
             if plus:
                 goods.plus = plus
+            else:
+                goods.plus = ''
 
             goods.save()
             i_id = goods_id
@@ -1152,8 +1161,14 @@ def edit_goods(request):
             new_goods.made_by = made_by
             new_goods.made_in = made_in
             new_goods.content = content
+            if repair_price:
+                new_goods.repair_price = repair_price
+            else:
+                new_goods.repair_price = 0.0
             if recommand:
                 new_goods.recommand = recommand
+            else:
+                new_goods.recommand = 0
             if preferential_price:
                 new_goods.real_price = preferential_price
             if plus:

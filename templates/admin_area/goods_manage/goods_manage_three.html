@@ -33,8 +33,9 @@
                   <th style="max-width:100px">生厂商</th>
                   <th>产地</th>
                   <th>价格</th>
+                  <th>安装费</th>
                   <th style="max-width: 150px">说明</th>
-                  <th style="max-width: 100px">备注</th>
+                  <th style="max-width: 100px">附加属性</th>
                   <th style="max-width: 80px;padding-right:0">操作
                   </th>
               </tr>
@@ -57,6 +58,7 @@
                       (原价：{{ item.origin_price }}元)
                       {% endif %}
                   </td>
+                  <td>{{ item.repair_price }}元</td>
                   <td style="max-width: 150px">{{ item.content }}</td>
                   <td style="max-width: 100px">{{ item.plus }}</td>
                   <td style="max-width: 80px;padding-right:0">
