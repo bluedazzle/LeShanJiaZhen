@@ -120,37 +120,7 @@ class Consumer(models.Model):
     def __unicode__(self):
         return self.phone
 
-class Appointment(models.Model):
-    create_time = models.DateTimeField(auto_now_add=True)
-    order_id = models.CharField(max_length=100, null=True)
-    remark = models.CharField(max_length=100, blank=True, null=True)
-    status = models.IntegerField(max_length=2)
-    photo1 = models.CharField(max_length=100, blank=True, null=True)
-    photo2 = models.CharField(max_length=100, blank=True, null=True)
-    photo3 = models.CharField(max_length=100, blank=True, null=True)
-    photo4 = models.CharField(max_length=100, blank=True, null=True)
-    address = models.CharField(max_length=100, default='')
-    name = models.CharField(max_length=10, default='')
-    area = models.ForeignKey(Block)
-    process_by = models.ForeignKey(HomeAdmin, blank=True, null=True)
-    consumer = models.ForeignKey(Consumer, null=True, blank=True)
-    associator = models.ForeignKey(Associator, null=True, blank=True)
-    service_person = models.CharField(max_length=20, blank=True, null=True)
-    service_time = models.CharField(max_length=50, blank=True, null=True)
-    order_type = models.IntegerField(max_length=4)
 
-    if_appraise = models.BooleanField(default=False)
-    comment ＝ models.CharField(max_length=200, null=True, blank=True)
-    rate = models.IntegerField(max_length=2, null=True, blank=True)
-    rb1 = models.BooleanField(default=False)
-    rb2 = models.BooleanField(default=False)
-    rb3 = models.BooleanField(default=False)
-    rb4 = models.BooleanField(default=False)
-    rb5 = models.BooleanField(default=False)
-    rb6 = models.BooleanField(default=False)
-
-    def __unicode__(self):
-        return self.content
 
 class HomeItem_P(models.Model):
     item_name = models.CharField(max_length=10)
@@ -366,6 +336,41 @@ class AppControl(models.Model):
         return str(self.id)
 
 
+class Appointment(models.Model):
+    create_time = models.DateTimeField(auto_now_add=True)
+    order_id = models.CharField(max_length=100, null=True)
+    remark = models.CharField(max_length=100, blank=True, null=True)
+    status = models.IntegerField(max_length=2)
+    photo1 = models.CharField(max_length=100, blank=True, null=True)
+    photo2 = models.CharField(max_length=100, blank=True, null=True)
+    photo3 = models.CharField(max_length=100, blank=True, null=True)
+    photo4 = models.CharField(max_length=100, blank=True, null=True)
+    address = models.CharField(max_length=100, default='')
+    name = models.CharField(max_length=10, default='')
+    area = models.ForeignKey(Block)
+    process_by = models.ForeignKey(HomeAdmin, blank=True, null=True)
+    consumer = models.ForeignKey(Consumer, null=True, blank=True)
+    associator = models.ForeignKey(Associator, null=True, blank=True)
+    service_person = models.CharField(max_length=20, blank=True, null=True)
+    service_time = models.CharField(max_length=50, blank=True, null=True)
+    order_type = models.IntegerField(max_length=4)
+
+    if_appraise = models.BooleanField(default=False)
+    comment = models.CharField(max_length=200, null=True, blank=True)
+    rate = models.IntegerField(max_length=2, null=True, blank=True)
+    rb1 = models.BooleanField(default=False)
+    rb2 = models.BooleanField(default=False)
+    rb3 = models.BooleanField(default=False)
+    rb4 = models.BooleanField(default=False)
+    rb5 = models.BooleanField(default=False)
+    rb6 = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.content
+
+
+
+
 class OrderGoods(models.Model):
     title = models.CharField(max_length=40)
     brand = models.CharField(max_length=15, null=True, blank=True)
@@ -381,7 +386,7 @@ class OrderGoods(models.Model):
     picture = models.CharField(max_length=100, null=True, blank=True)
     #推荐权重
     recommand = models.IntegerField(max_length=10, null=True, blank=True, default=0)
-    parent_item = models.ForeignKey(Goods_O, related_name='goodsitems')
+    parent_item = models.ForeignKey(Goods_O, related_name='ordergoodsitems')
     belong = models.ForeignKey(Appointment, related_name='ordergoods')
 
     def __unicode__(self):
