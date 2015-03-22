@@ -338,7 +338,7 @@ class AppControl(models.Model):
 
 class Appointment(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
-    order_id = models.CharField(max_length=100)
+    order_id = models.CharField(max_length=100, unique=True)
     remark = models.CharField(max_length=100, blank=True, null=True)
     status = models.IntegerField(max_length=2)
     photo1 = models.CharField(max_length=100, blank=True, null=True)
@@ -354,6 +354,7 @@ class Appointment(models.Model):
     service_person = models.CharField(max_length=20, blank=True, null=True)
     service_time = models.CharField(max_length=50, blank=True, null=True)
     order_type = models.IntegerField(max_length=4)
+    valid = models.BooleanField(default=True)
 
     if_appraise = models.BooleanField(default=False)
     comment = models.CharField(max_length=200, null=True, blank=True)
@@ -374,7 +375,6 @@ class Appointment(models.Model):
 class OrderGoods(models.Model):
     title = models.CharField(max_length=40)
     brand = models.CharField(max_length=15, null=True, blank=True)
-    sort_id = models.IntegerField(max_length=10, blank=True, null=True)
     material = models.CharField(max_length=15, null=True, blank=True)
     made_by = models.CharField(max_length=15, null=True, blank=True)
     made_in = models.CharField(max_length=20, null=True, blank=True)
@@ -383,14 +383,15 @@ class OrderGoods(models.Model):
     origin_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     real_price = models.DecimalField(max_digits=10, decimal_places=2)
     repair_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    use_repair = models.BooleanField(default=True)
     picture = models.CharField(max_length=100, null=True, blank=True)
     #推荐权重
-    recommand = models.IntegerField(max_length=10, null=True, blank=True, default=0)
-    parent_item = models.ForeignKey(Goods_O, related_name='ordergoodsitems')
+    origin_item = models.ForeignKey(GoodsItem, related_name='actgoods')
     belong = models.ForeignKey(Appointment, related_name='ordergoods')
 
     def __unicode__(self):
         return self.title
+
 
 
 class OrderHomeItem(models.Model):
@@ -398,9 +399,25 @@ class OrderHomeItem(models.Model):
     price = models.CharField(max_length=10, blank=True, null=True)
     content = models.CharField(max_length=500)
     create_time = models.DateTimeField(auto_now_add=True)
-    parent_item = models.ForeignKey(HomeItem_P, null=True, blank=True)
-    sort_id = models.IntegerField(max_length=20, blank=True, null=True)
     belong = models.ForeignKey(Appointment, related_name='orderhomeitems')
+    origin_item = models.ForeignKey(HomeItem, related_name='actitems')
 
     def __unicode__(self):
         return self.title
+
+
+class OnlineCharge(models.Model):
+    pingpp_charge_id = models.CharField(max_length=64)
+    order_id = models.CharField(max_length=20, unique=True)
+    channel_id = models.CharField(max_length=64, null=True, blank=True)
+    paid = models.BooleanField(default=False)
+    refund_url = models.CharField(max_length=200, null=True, blank=True)
+    price = models.IntegerField(max_length=10)
+    time_expire = models.DateTimeField(max_length=30, null=True, blank=True)
+    pingpp_create_time = models.DateTimeField(max_length=30)
+    create_time = models.DateTimeField(auto_now_add=True)
+    order_with = models.OneToOneField(Appointment, related_name='chargeinfo')
+    own = models.ForeignKey(Associator, related_name='charges')
+
+    def __unicode__(self):
+        return self.order_id

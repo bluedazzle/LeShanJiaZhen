@@ -21,4 +21,5 @@ urlpatterns = patterns('',
     url(r'^consumer/get_goods_item$', views.get_goods_p_item),
     url(r'^consumer/get_goods_sec_item$', views.get_goods_o_item),
     url(r'^consumer/get_goods_detail$', views.get_goods_detail),
+    url(r'^consumer/create_online_pay_order$', views.create_online_pay_order),
     )

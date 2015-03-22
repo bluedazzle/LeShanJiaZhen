@@ -14,6 +14,7 @@
 |11|验证码为空|
 |12|验证码错误|
 |13|非法操作|
+|20|金额不正确|
 
 ##**订单状态码对照表**
 |status|状态|
@@ -460,4 +461,51 @@ POST /consumer/get_goods_detail
 }
 or
 {"status": 7, "body": {"msg": "invalid id"}}
+```
+
+##**订单**
+
+#####生产在线支付订单
+```
+POST /consumer/get_goods_detail
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* private_token(_Required_|string)-token
+* address(_Required_|string)-用户地址
+* city_number(_Required_|string)-城市统一编码
+* submit_price(_Required_|float)-提交总价
+* goods_items(_Required_|array)-商品列表
+* ###sid(_Required_|string)-商品id
+* ###use_repair(_Required_|bool)-是否需要安装
+* home_items(_Required_|string)-维修服务列表
+* ###hid(_Required_|string)-服务id
+
+###**Request**
+```
+{"username":"18215606355","private_token":"JKGVDnCIH7Ec+OuWPvNeRQtT4dwjoB0U","address":"kb258","city_number":"511000","submit_price":"35.0","goods_items":[{"sid":"1","use_repair":true},{"sid":"2","use_repair":false}],"home_items":[{"hid":"1"}]}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "server create order success, but not sure ping++ create success",
+        "charge_detail": null
+    }
+}
+or
+{
+    "status": 20,
+    "body": {
+        "msg": "submit price wrong"
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid city_number"
+    }
+}
 ```
