@@ -8,6 +8,7 @@ import simplejson
 import datetime
 from PIL import Image
 from HomeApi.HomeAdminManager import *
+from HomeApi.OnlinePay import *
 from HomeApi.location_process import *
 import copy
 
@@ -517,8 +518,40 @@ def get_goods_p_item(req):
     else:
         return Http404
 
+
+
 @csrf_exempt
-def get_goods(req):
+def get_goods_detail(req):
+    body={}
+    if req.method == 'POST':
+        resjson = simplejson.loads(req.body)
+        sid = resjson['sid']
+        goods_list = GoodsItem.objects.filter(id=sid)
+        if goods_list.count() > 0:
+            goods = goods_list[0]
+            body['title'] = goods.title
+            body['sid'] = goods.id
+            body['material'] = goods.material
+            body['made_by'] = goods.made_by
+            body['made_in'] = goods.made_in
+            body['content'] = goods.content
+            body['origin_price'] = goods.origin_price
+            body['real_price'] = goods.real_price
+            body['repair_price'] = goods.repair_price
+            body['picture'] = goods.picture
+            body['brand'] = goods.brand
+            body['plus'] = goods.plus
+            body['msg'] = 'goods detail get success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            body['msg'] = 'invalid sid'
+            return HttpResponse(encodejson(7, body), content_type='application/json')
+    else:
+        raise Http404
+
+
+@csrf_exempt
+def get_goods_o_item(req):
     body={}
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
@@ -536,16 +569,16 @@ def get_goods(req):
                     sitem = {}
                     sitem['title'] = item.title
                     sitem['sid'] = item.id
-                    sitem['material'] = item.material
-                    sitem['made_by'] = item.made_by
-                    sitem['made_in'] = item.made_in
-                    sitem['content'] = item.content
-                    sitem['origin_price'] = item.origin_price
-                    sitem['real_price'] = item.real_price
-                    sitem['repair_price'] = item.repair_price
+                    # sitem['material'] = item.material
+                    # sitem['made_by'] = item.made_by
+                    # sitem['made_in'] = item.made_in
+                    # sitem['content'] = item.content
+                    # sitem['origin_price'] = item.origin_price
+                    # sitem['real_price'] = item.real_price
+                    # sitem['repair_price'] = item.repair_price
                     sitem['picture'] = item.picture
-                    sitem['brand'] = item.brand
-                    sitem['plus'] = item.plus
+                    # sitem['brand'] = item.brand
+                    # sitem['plus'] = item.plus
                     s_itemlist.append(copy.copy(sitem))
                 oitem['item_name'] = itm.item_name
                 oitem['oid'] = itm.id
@@ -553,13 +586,105 @@ def get_goods(req):
                 goodslist.append(copy.copy(oitem))
             body['goods'] = goodslist
             body['pid'] = goodpitem.id
-            body['msg'] = 'goods detail get success'
+            body['msg'] = 'goods item_o get success'
             return HttpResponse(encodejson(1, body), content_type='application/json')
         else:
             body['msg'] = 'invalid goods pid'
             return HttpResponse(encodejson(7, body), content_type='application/json')
     else:
         raise Http404
+
+
+@csrf_exempt
+def create_online_pay_order(req):
+    body={}
+    if req.method == 'POST':
+        resjson = simplejson.loads(req.body)
+        username = resjson['username']
+        token = resjson['private_token']
+        if if_legal(username, token):
+            curuser = Associator.objects.get(username=username)
+            address = resjson['address']
+            city_num = resjson['city_number']
+            block_list = Block.objects.filter(city_num=city_num)
+            if not block_list.exists():
+                body['msg'] = 'invalid city_number'
+                return HttpResponse(encodejson(7, body), content_type='application/json')
+            block = block_list[0]
+            newid = create_order_id()
+            newappoint = Appointment(order_id=newid, status=1, address=address, area=block, associator=curuser, order_type=1)
+            newappoint.save()
+            goodslist = resjson['goods_items']
+            submit_price = float(resjson['submit_price'])
+            price_sure = 0.0
+            for item in goodslist:
+                sid = item['sid']
+                userepair = item['use_repair']
+                goodsitems = GoodsItem.objects.filter(id=sid)
+                if not goodsitems.exists():
+                    body['msg'] = 'goods id:' + str(sid) + 'invalid'
+                    newappoint.valid = False
+                    newappoint.save()
+                    return HttpResponse(encodejson(7, body), content_type='application/json')
+                goods = goodsitems[0]
+                price_sure += float(goods.real_price)
+                if userepair:
+                    price_sure += float(goods.repair_price)
+                newordergoods = OrderGoods(title=goods.title,
+                                           brand=goods.brand,
+                                           material=goods.material,
+                                           made_by=goods.made_by,
+                                           made_in=goods.made_in,
+                                           content=goods.content,
+                                           origin_price=goods.origin_price,
+                                           real_price=goods.real_price,
+                                           repair_price=goods.repair_price,
+                                           use_repair=userepair,
+                                           picture=goods.picture,
+                                           origin_item=goods,
+                                           belong=newappoint)
+                newordergoods.save()
+            if submit_price != price_sure:
+                body['msg'] = 'submit price wrong'
+                return HttpResponse(encodejson(20, body), content_type='application/json')
+            home_item_list = resjson['home_items']
+            for item in home_item_list:
+                hid = item['hid']
+                home_list = HomeItem.objects.filter(id=hid)
+                if not home_list.exists():
+                    body['msg'] = 'home item id:' + str(hid) + 'invalid'
+                    return HttpResponse(encodejson(7, body), content_type='application/json')
+                homeit = home_list[0]
+                new_order_item = OrderHomeItem(title=homeit.title,
+                                               price=homeit.price,
+                                               content=homeit.content,
+                                               belong=newappoint,
+                                               origin_item=homeit)
+                new_order_item.save()
+            res = create_new_charge()
+            body['msg'] = 'server create order success, but not sure ping++ create success'
+            body['charge_detail'] = res
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            body['msg'] = 'login first before other action'
+            return HttpResponse(encodejson(13, body), content_type='application/json')
+    else:
+        raise Http404
+
+
+
+
+def create_order_id(pay=True):
+    odate = datetime.date.today()
+    todaynum = int(Appointment.objects.filter(create_time__gte=odate).count()) + 1
+    odate = str(odate).replace('-', '')
+    paystr = '00'
+    if pay:
+        paystr = '01'
+    ordernum = '%s%s%08i' % (odate, paystr, todaynum)
+    print ordernum
+    return ordernum
+
 
 
 
