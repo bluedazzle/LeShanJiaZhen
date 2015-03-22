@@ -1198,14 +1198,6 @@ def edit_goods(request):
         return HttpResponseRedirect('/area_admin/goods_manage?goods_p=' + str(goods_p_id) + '&goods_o=' + str(goods_o_id))
 
 
-
-
-
-
-
-
-
-
 def delete_goods(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')

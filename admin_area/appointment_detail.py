@@ -9,8 +9,30 @@ sys.setdefaultencoding('utf-8')
 def send_get_message(appointments):
     apikey = 'e1ebef39f28c86fdb57808eb45ab713a'
     for appointment in appointments:
-        content = "#order_num#=" + appointment.appointment_id
-        res = tpl_send_sms(apikey, '669219', content, appointment.consumer.phone)
+        content = "#order_num#=" + appointment.order_id
+        if appointment.associator:
+            res = tpl_send_sms(apikey, '669219', content, appointment.associator.username)
+        elif appointment.consumer:
+            res = tpl_send_sms(apikey, '669219', content, appointment.consumer.phone)
+        else:
+            return False
+        jsres = simplejson.loads(res)
+        msg = jsres['code']
+        print jsres
+        print msg
+    return True
+
+
+def send_cancel_message(appointments):
+    apikey = 'e1ebef39f28c86fdb57808eb45ab713a'
+    for appointment in appointments:
+        content = "#order_num#=" + appointment.order_id
+        if appointment.associator:
+            res = tpl_send_sms(apikey, '719533', content, appointment.associator.username)
+        elif appointment.consumer:
+            res = tpl_send_sms(apikey, '719533', content, appointment.consumer.phone)
+        else:
+            return False
         jsres = simplejson.loads(res)
         msg = jsres['code']
         print jsres
@@ -22,13 +44,16 @@ def get_appointment(request):
     if request.method == 'GET':
         if request.session.get('username'):
             id = request.GET.get('id')
-            user = HomeAdmin.objects.get(username=request.session['username'])
-            appointment = Appointment.objects.get(id=id, status=1)
-            appointment.status = 2
-            appointment.process_by = user
-            appointment.save()
-            appointments = [appointment]
-            if send_get_message(appointments):
+            try:
+                user = HomeAdmin.objects.get(username=request.session['username'])
+                appointment = Appointment.objects.get(id=id, status=1)
+                appointment.status = 2
+                appointment.process_by = user
+                appointment.save()
+                appointments = [appointment]
+                if send_get_message(appointments):
+                    return HttpResponseRedirect('operate_new')
+            except:
                 return HttpResponseRedirect('operate_new')
         else:
             return HttpResponseRedirect('login_in')
@@ -40,12 +65,17 @@ def get_appointment_all(request):
             username = request.session['username']
             user = HomeAdmin.objects.get(username=username)
             appointments = Appointment.objects.filter(area=user.area, status=1)
+            if appointments.count() == 0:
+                return HttpResponseRedirect('operate_new')
             for item in appointments:
                 item.status = 2
                 item.process_by = user
                 item.save()
-            if send_get_message(appointments):
-                return HttpResponseRedirect('operate_new')
+            try:
+                send_get_message(appointments)
+            except:
+                pass
+            return HttpResponseRedirect('operate_new')
         else:
             return HttpResponseRedirect('login_in')
 
@@ -55,10 +85,15 @@ def cancel_appointment_n(request):
         if request.session.get('username'):
             id = request.GET.get('id')
             user = HomeAdmin.objects.get(username=request.session['username'])
-            appointment = Appointment.objects.get(id=id, status=1)
-            appointment.status = 4
-            appointment.process_by = user
-            appointment.save()
+            try:
+                appointment = Appointment.objects.get(id=id, status=1)
+                appointment.status = 4
+                appointment.process_by = user
+                appointment.save()
+                appointments = [appointment]
+                send_cancel_message(appointments)
+            except:
+                return HttpResponseRedirect('operate_new')
             return HttpResponseRedirect('operate_new')
         else:
             return HttpResponseRedirect('login_in')
@@ -70,10 +105,17 @@ def cancel_appointment_all_n(request):
             username = request.session['username']
             user = HomeAdmin.objects.get(username=username)
             appointments = Appointment.objects.filter(area=user.area, status=1)
+            if appointments.count() == 0:
+                return HttpResponseRedirect('operate_new')
+
             for item in appointments:
                 item.status = 4
                 item.area = user.area
                 item.save()
+            try:
+                send_cancel_message(appointments)
+            except:
+                pass
             return HttpResponseRedirect('operate_new')
         else:
             return HttpResponseRedirect('login_in')
@@ -84,10 +126,14 @@ def cancel_appointment_g(request):
         if request.session.get('username'):
             id = request.GET.get('id')
             user = HomeAdmin.objects.get(username=request.session['username'])
-            appointment = Appointment.objects.get(id=id, status=2)
-            appointment.status = 4
-            appointment.process_by = user
-            appointment.save()
+            try:
+                appointment = Appointment.objects.get(id=id, status=2)
+                appointment.status = 4
+                appointment.process_by = user
+                appointment.save()
+                send_cancel_message([appointment])
+            except:
+                pass
             return HttpResponseRedirect('operate_get')
 
 
@@ -97,10 +143,18 @@ def cancel_appointment_all_g(request):
             username = request.session['username']
             user = HomeAdmin.objects.get(username=username)
             appointments = Appointment.objects.filter(area=user.area, status=2)
+            if appointments.count() == 0:
+                return HttpResponseRedirect('operate_get')
+
             for item in appointments:
                 item.status = 4
                 item.process_by = user
                 item.save()
+
+            try:
+                send_cancel_message(appointments)
+            except:
+                pass
             return HttpResponseRedirect('operate_get')
         else:
             return HttpResponseRedirect('login_in')
@@ -111,11 +165,17 @@ def finish_appointment(request):
         if request.session.get('username'):
             user = HomeAdmin.objects.get(username=request.session['username'])
             id = request.GET.get('id')
-            appointment = Appointment.objects.get(id=id, status=2)
-            appointment.status = 3
-            appointment.process_by = user
-            appointment.save()
+            try:
+                appointment = Appointment.objects.get(id=id, status=2)
+                appointment.status = 3
+                appointment.process_by = user
+                appointment.save()
+            except:
+                pass
             return HttpResponseRedirect('operate_get')
+        else:
+            return HttpResponseRedirect('login_in')
+
 
 def appointment_add_info(request):
     if request.method == 'GET':
@@ -129,6 +189,8 @@ def appointment_add_info(request):
             appointment.service_time = s_time
             appointment.save()
             return HttpResponseRedirect('operate_get')
+        else:
+            return HttpResponseRedirect('login_in')
 
 
 def finish_appointment_all(request):
@@ -137,11 +199,16 @@ def finish_appointment_all(request):
             username = request.session['username']
             user = HomeAdmin.objects.get(username=username)
             appointments = Appointment.objects.get(area=user.area, status=2)
+            if appointments.count() == 0:
+                return HttpResponseRedirect('operate_get')
+
             for item in appointments:
                 item.status = 3
                 item.process_by = user
                 item.save()
             return HttpResponseRedirect('operate_get')
+        else:
+            return HttpResponseRedirect('login_in')
 
 
 def out_appointment(request):
