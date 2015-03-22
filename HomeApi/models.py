@@ -386,7 +386,7 @@ class OrderGoods(models.Model):
     use_repair = models.BooleanField(default=True)
     picture = models.CharField(max_length=100, null=True, blank=True)
     #推荐权重
-    origin_item = models.ForeignKey(GoodsItem, related_name='actgoods')
+    origin_item = models.ForeignKey(GoodsItem, related_name='actgoods', blank=True, null=True)
     belong = models.ForeignKey(Appointment, related_name='ordergoods')
 
     def __unicode__(self):
@@ -400,7 +400,7 @@ class OrderHomeItem(models.Model):
     content = models.CharField(max_length=500)
     create_time = models.DateTimeField(auto_now_add=True)
     belong = models.ForeignKey(Appointment, related_name='orderhomeitems')
-    origin_item = models.ForeignKey(HomeItem, related_name='actitems')
+    origin_item = models.ForeignKey(HomeItem, related_name='actitems', blank=True, null=True)
 
     def __unicode__(self):
         return self.title
