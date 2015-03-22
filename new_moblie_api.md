@@ -56,12 +56,9 @@ POST /consumer/register
 * username(_Required_|string)-用户名，必须为手机号
 * password(_Required_|string)-密码
 * verify_code(_Required_|string)-验证码
-* address(_Optional_|string)-用户地址
-* sex(_Optional_|integer)-用户性别 1男 2女 3保密
-* birthday(_Optional_|string)-生日 字符格式 1999-01-01
 ###**Request**
 ```
-{"username":"18215606355","password":"123456","verify_code":"123456","address":"kb258","sex":1,"birthday":"1999-01-01"}
+{"username":"18215606355","password":"123456","verify_code":"123456"}
 ```
 ###**Return**
 ```
@@ -92,9 +89,250 @@ or
 {"status":2,"body":null}
 ```
 
+
+##**登陆**
+
+#####顾客登陆
+```
+POST /consumer/login
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* password(_Required_|string)-用户密码
+###**Request**
+```
+{"username":"18215606355","password":"123456"}
+```
+###**Return**
+```
+{"status": 1, "body": {"msg": "login success", "username": "18215606355", "private_token": "ztVrCqRAOSP3GQI=vWx5hHDokBsNcT1J"}}
+or
+{"status": 4, "body": {"msg": "password is not right"}}
+```
+
+
+##**登出**
+
+#####顾客注销
+```
+POST /consumer/logout
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* private_token(_Required_|string)-用户token
+###**Request**
+```
+{"username":"18215606355","private_token":"123456"}
+```
+###**Return**
+```
+{"status": 1, "body": {"msg": "log out success"}}
+or
+{"status": 13, "body": {"msg": "login first before other action"}}
+```
+
+##**忘记密码**
+
+#####顾客忘记密码
+#####忘记密码流程：
+1、/consumer/forget_password请求验证码
+2、/consumer/reset_password重置密码
+######步骤一：
+
+```
+POST /consumer/forget_password
+```
+###**Parameters**
+* phone(_Required_|string)-用户手机号
+###**Request**
+```
+{"phone":"18215606355"}
+```
+###**Return**
+```
+{"status": 1, "body": {"test": {"verify_code": "601532", "success": true}, "msg": "verify code send success"}}
+or
+{"status": 7, "body": {"msg": "account does not exist, please sign up"}}
+```
+
+######步骤二：
+
+```
+POST /consumer/reset_password
+```
+###**Parameters**
+* phone(_Required_|string)-用户手机号
+* verify_code(required_|string)-验证码
+* new_password(required_|string)-新密码
+###**Request**
+```
+{"phone":"18215606355","verify_code":"123456","new_password":"123456"}
+```
+###**Return**
+```
+{"status": 1, "body": {"username": "18215606355", "msg": "reset password success", "private_token": "AIgJd=zWNsiZcPayqLjfk20Ox6Bb57Dt"}}
+or
+{"status": 12, "body": {"msg": "verify code does not exist"}}
+```
+
+##**获取安卓版本号**
+
+#####获取最新安卓版本号
+```
+GET /consumer/get_android_version
+```
+
+###**Return**
+```
+{"status": 1, "body": {"update_time": "2015-03-13 19:47:06+08:00", "android_version": "2.1.6"}}
+or
+{"status": 7, "body": {"msg": "no available version info"}}
+```
+
+##**获取苹果版本号**
+
+#####获取最新苹果版本号
+```
+GET /consumer/get_ios_version
+```
+
+###**Return**
+```
+{"status": 1, "body": {"update_time": "2015-03-13 19:47:06+08:00", "ios_version": "2.1.6"}}
+or
+{"status": 7, "body": {"msg": "no available version info"}}
+```
+
+##**获取消息**
+
+#####顾客获取消息中心消息
+```
+POST /consumer/get_messages
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* private_token(_Required_|string)-用户token
+###**Request**
+```
+{"username":"18215606355","private_token":"123456"}
+```
+###**Return**
+```
+{"status": 1, "body": {"messages": [{"content": "djdjdjd", "create_time": "2015-03-13 19:55:20.679150+08:00", "deadline": "2015-03-13 19:55:17+08:00"}, {"content": "\u5316\u971c\u5b9a\u65f6\u5668\uff08100L\u5185\uff09", "create_time": "2015-03-13 19:55:07.647434+08:00", "deadline": "2015-03-13 19:54:59+08:00"}]}}
+or
+{"status": 13, "body": {"msg": "login first before other action"}}
+```
+
+##**获取优惠券**
+
+#####顾客获取优惠券
+```
+POST /consumer/get_coupons
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* private_token(_Required_|string)-用户token
+###**Request**
+```
+{"username":"18215606355","private_token":"123456"}
+```
+###**Return**
+```
+{"status": 1, "body": {"coupons": [{"owned_time": "2015-03-13 20:14:22+08:00", "create_time": "2015-03-13 20:14:25.308127+08:00", "cou_id": "20102102", "deadline": "2015-03-13 20:06:30+08:00", "type": 1, "value": 5, "if_use": false}, {"owned_time": "2015-03-13 20:14:14+08:00", "create_time": "2015-03-13 20:14:16.314338+08:00", "cou_id": "20102101", "deadline": "2015-03-13 20:06:51+08:00", "type": 2, "value": 13, "if_use": false}, {"owned_time": "2015-03-13 20:14:08+08:00", "create_time": "2015-03-13 20:14:09.464093+08:00", "cou_id": "20102105", "deadline": "2015-03-13 20:07:06+08:00", "type": 1, "value": 5, "if_use": true}]}}
+or
+{"status": 13, "body": {"msg": "login first before other action"}}
+```
+
+##**获取优惠券**
+
+#####顾客获取优惠券
+```
+POST /consumer/new_feedback
+```
+###**Parameters**
+* phone(_Required_|string)-用户手机号
+* content(_Required_|string)-反馈内容
+###**Request**
+```
+{"phone":"18215606355","content":"test"}
+```
+###**Return**
+```
+{"status": 1, "body": {"msg": "feedback add success"}}
+```
+
+##**定位当前城市**
+
+#####顾客定位当前所在城市
+```
+POST /consumer/city_search
+```
+###**Parameters**
+* city_num(_Required_|string)-城市统一编码
+###**Request**
+```
+{"city_num":"513012"}
+```
+###**Return**
+```
+{"status": 1, "body": {"msg": "get city success", "city": {"city_num": "511100", "city_name": "\u56db\u5ddd\u7701\u4e50\u5c71\u5e02", "city_address": "\u56db\u5ddd\u7701\u4e50\u5c71\u5e02\u4e00\u5768\u7fd4\u522b\u5885", "city_info": "\u56db\u5ddd\u7701\u4e50\u5c71\u5e02\u4e00\u5768\u7fd4\u522b\u5885", "city_tel": "61830000"}, "match": true}}
+or
+{"status": 1, "body": {"msg": "match resemble city success", "city": {"city_num": "511100", "city_name": "\u56db\u5ddd\u7701\u4e50\u5c71\u5e02", "city_address": "\u56db\u5ddd\u7701\u4e50\u5c71\u5e02\u4e00\u5768\u7fd4\u522b\u5885", "city_info": "\u56db\u5ddd\u7701\u4e50\u5c71\u5e02\u4e00\u5768\u7fd4\u522b\u5885", "city_tel": "61830000"}, "match": false}}
+```
+
+##**更改个人信息**
+
+#####顾客更改个人信息
+```
+POST /consumer/change_info
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* private_token(_Required_|string)-token
+* address(_Optional_|string)-用户地址
+* sex(_Optional_|integer)-用户性别 1男 2女 3保密
+* birthday(_Optional_|string)-生日 字符格式 1999-01-01
+###**Request**
+```
+{"username":"18215606355","private_token":"asdfasdfasqwe56","address":"kb258","sex":1,"birthday":"1999-01-01"}
+```
+###**Return**
+```
+{"status": 1, "body": {"msg": "change info success"}}
+or
+{"status": 13, "body": {"msg": "login first before other action"}}
+```
+
+
+##**兑换邀请码优惠券**
+
+#####顾客兑换邀请码优惠券
+```
+POST /consumer/get_invite_coupon
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* private_token(_Required_|string)-token
+* invite_code(_Required|string)-邀请码
+###**Request**
+```
+{"username":"18215606355","private_token":"asdfasdfasqwe56","invite_code":"123455"}
+```
+###**Return**
+```
+{"status": 1, "body": {"msg": "invite code exchange success"}}
+or
+{"status": 6, "body": {"msg": "you have exchanged this invite code"}}
+or
+{"status": 7, "body": {"msg": "no invite code info"}}
+or
+{"status": 14, "body": {"msg": "you can not exchange your own invite code"}}
+```
+
+
 ##**商品**
 
-#####获取商品列表
+#####获取一级商品列表
 ```
 POST /consumer/get_goods_item
 ```
@@ -106,10 +344,87 @@ POST /consumer/get_goods_item
 ```
 ###**Return**
 ```
-{"status": 1, "body": {"msg": "goods_p get success", "goods_item": [{"item_name": "\u51b0\u7bb1\u7ef4\u4fee", "have_advertisment": false, "advertisment": ""}, {"item_name": "\u6c34\u7ef4\u4fee", "have_advertisment": false, "advertisment": ""}]}}
+
+    "status": 1,
+    "body": {
+        "msg": "goods_p get success",
+        "goods_item": [
+            {
+                "item_name": "冰箱维修",
+                "have_advertisment": false,
+                "pid": 2,
+                "advertisment": ""
+            },
+            {
+                "item_name": "水维修",
+                "have_advertisment": false,
+                "pid": 1,
+                "advertisment": ""
+            }
+        ]
+    }
+}
 or
 {"status": 7, "body": {"msg": "invalid city number"}}
 ```
+
+#####获取二级商品列表
+```
+POST /consumer/get_goods_sec_item
+```
+###**Parameters**
+* pid(_Required_|string)-一级商品id
+###**Request**
+```
+{"pid":"5"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "goods item_o get success",
+        "goods": [
+            {
+                "item_name": "水管维修",
+                "s_item_list": [
+                    {
+                        "picture": "",
+                        "title": "屁股水管维修",
+                        "sid": 1
+                    },
+                    {
+                        "picture": "",
+                        "title": "生育水管维修",
+                        "sid": 2
+                    }
+                ],
+                "oid": 1
+            },
+            {
+                "item_name": "水龙头维修",
+                "s_item_list": [
+                    {
+                        "picture": "",
+                        "title": "小米水龙头",
+                        "sid": 3
+                    },
+                    {
+                        "picture": "",
+                        "title": "魅族水龙头",
+                        "sid": 4
+                    }
+                ],
+                "oid": 2
+            }
+        ],
+        "pid": 1
+    }
+}
+or
+{"status": 7, "body": {"msg": "invalid city number"}}
+```
+
 
 ##**商品**
 
@@ -118,16 +433,31 @@ or
 POST /consumer/get_goods_detail
 ```
 ###**Parameters**
-* pid(_Required_|string)-父商品id
+* sid(_Required_|string)-商品id
 ###**Request**
 ```
-{"pid":"5"}
+{"sid":"5"}
 ```
 ###**Return**
 ```
-{"status": 1, "body": {"msg": "goods detail get success", "goods": [{"item_name": "\u7acb\u5f0f\u51b0\u7bb1\u7ef4\u4fee", "s_item_list": [{"picture": "c:/ss/ss.jpg", "title": "\u561f\u561f", "repair_price": 2.0, "made_by": "\u7684", "material": "\u7684", "made_in": "\u5f53\u65f6", "real_price": 10.0, "plus": "\u53d1", "sid": 5, "content": "\u65b9\u6cd5", "origin_price": 10.0, "brand": "\u7684"}], "oid": 3}, {"item_name": "\u51b0\u67dc\u7ef4\u4fee", "s_item_list": [], "oid": 4}], "pid": 2}}
+{
+    "status": 1,
+    "body": {
+        "real_price": 10,
+        "picture": "",
+        "title": "屁股水管维修",
+        "repair_price": 5,
+        "made_by": "小屁股",
+        "material": "屁股肉",
+        "made_in": "中国",
+        "content": "说明",
+        "plus": "附加内容",
+        "sid": 1,
+        "msg": "goods detail get success",
+        "origin_price": 12,
+        "brand": "屁股"
+    }
+}
 or
 {"status": 7, "body": {"msg": "invalid id"}}
 ```
-
-

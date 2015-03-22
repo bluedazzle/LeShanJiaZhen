@@ -517,8 +517,40 @@ def get_goods_p_item(req):
     else:
         return Http404
 
+
+
 @csrf_exempt
-def get_goods(req):
+def get_goods_detail(req):
+    body={}
+    if req.method == 'POST':
+        resjson = simplejson.loads(req.body)
+        sid = resjson['sid']
+        goods_list = GoodsItem.objects.filter(id=sid)
+        if goods_list.count() > 0:
+            goods = goods_list[0]
+            body['title'] = goods.title
+            body['sid'] = goods.id
+            body['material'] = goods.material
+            body['made_by'] = goods.made_by
+            body['made_in'] = goods.made_in
+            body['content'] = goods.content
+            body['origin_price'] = goods.origin_price
+            body['real_price'] = goods.real_price
+            body['repair_price'] = goods.repair_price
+            body['picture'] = goods.picture
+            body['brand'] = goods.brand
+            body['plus'] = goods.plus
+            body['msg'] = 'goods detail get success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            body['msg'] = 'invalid sid'
+            return HttpResponse(encodejson(7, body), content_type='application/json')
+    else:
+        raise Http404
+
+
+@csrf_exempt
+def get_goods_o_item(req):
     body={}
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
@@ -536,16 +568,16 @@ def get_goods(req):
                     sitem = {}
                     sitem['title'] = item.title
                     sitem['sid'] = item.id
-                    sitem['material'] = item.material
-                    sitem['made_by'] = item.made_by
-                    sitem['made_in'] = item.made_in
-                    sitem['content'] = item.content
-                    sitem['origin_price'] = item.origin_price
-                    sitem['real_price'] = item.real_price
-                    sitem['repair_price'] = item.repair_price
+                    # sitem['material'] = item.material
+                    # sitem['made_by'] = item.made_by
+                    # sitem['made_in'] = item.made_in
+                    # sitem['content'] = item.content
+                    # sitem['origin_price'] = item.origin_price
+                    # sitem['real_price'] = item.real_price
+                    # sitem['repair_price'] = item.repair_price
                     sitem['picture'] = item.picture
-                    sitem['brand'] = item.brand
-                    sitem['plus'] = item.plus
+                    # sitem['brand'] = item.brand
+                    # sitem['plus'] = item.plus
                     s_itemlist.append(copy.copy(sitem))
                 oitem['item_name'] = itm.item_name
                 oitem['oid'] = itm.id
@@ -553,7 +585,7 @@ def get_goods(req):
                 goodslist.append(copy.copy(oitem))
             body['goods'] = goodslist
             body['pid'] = goodpitem.id
-            body['msg'] = 'goods detail get success'
+            body['msg'] = 'goods item_o get success'
             return HttpResponse(encodejson(1, body), content_type='application/json')
         else:
             body['msg'] = 'invalid goods pid'
