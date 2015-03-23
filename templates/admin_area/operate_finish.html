@@ -3,7 +3,7 @@
     <script type="text/javascript" src="/js/mine.js" charset="UTF-8"></script>
     <script>
       $(document).ready(function(){
-          $('#page_title').text('已完成预约');
+          $('#page_title').text('已完成订单');
           $('#finish').addClass('active')
       });
     </script>
@@ -11,19 +11,19 @@
     {% if flag %}
        {% if count > 0 %}
            {% if date_start == '2000-01-01' and date_end == '2999-11-11' %}
-           <h6>总共有{{ count }}个预约被完成</h6>
+           <h6>总共有{{ count }}个订单被完成</h6>
             {% else %}
-           <h6>在{{ date_start }}到{{ date_end }}中的预约，共有{{ count }}个被完成</h6>
+           <h6>在{{ date_start }}到{{ date_end }}中的订单，共有{{ count }}个被完成</h6>
             {% endif %}
        {% else %}
-           <h6>该时间的预约没有被完成</h6>
+           <h6>该时间的订单没有被完成</h6>
        {% endif %}
     {% endif %}
     {% if flag0 %}
        {% if count > 0 %}
-           <h6>当天的预约共完成{{ count }}个</h6>
+           <h6>当天的订单共完成{{ count }}个</h6>
        {% else %}
-           <h6>当天的预约没有被完成</h6>
+           <h6>当天的订单没有被完成</h6>
        {% endif %}
     {% endif %}
     </div>
@@ -100,22 +100,43 @@
 {% for item in items %}
    <div class="panel panel-success">
        <div class="panel-heading" style="background-color: #1abc9c;color: #ffffff">
-           预约号：{{ item.appointment_id }}
-           <span style="margin-left: 5%">联系方式：{{ item.consumer }}</span>
+           订单号：{{ item.order_id }}
+           <span style="margin-left: 5%">联系方式：
+               {% if item.consumer %}
+                 {{ item.consumer }}
+               {% else %}
+                 {{ item.associator }}
+               {% endif %}
+           </span>
            <span style="margin-left: 5%">地址：{{ item.address }}</span>
        </div>
        <div class="panel-body">
            <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
-           <div class="col-md-12 col-lg-12">时间：{{ item.appoint_time|date:"Y-m-d H:i:s" }}</div>
+           <div class="col-md-12 col-lg-12">下单时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
                {% if item.process_by %}
             <div class="col-md-12 col-lg-12">操作员：{{ item.process_by.nick }}</div>
                {% endif %}
-           <div class="col-md-12 col-lg-12">报修项目：{{ item.content }}
-               {% if item.photo1 %}
+           {% if not item.ordergoods.all.count == 0 %}
+           <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c">购买商品：</strong>
+                  {% for goods in item.ordergoods.all %}
+                      {{ goods }}&nbsp;&nbsp;
+                  {% endfor %}
+                  {% if item.photo1 %}
                    <strong style="color: #27ad60">(有照片)</strong>
-               {% endif %}
+                  {% endif %}
            </div>
-           <div class="col-md-12 col-lg-12">维修人员：{{ item.service_person }}</div>
+           {% endif %}
+           {% if not item.orderhomeitems.all.count == 0 %}
+               <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c;">维修安装：</strong>
+                  {% for homeitem in item.orderhomeitems.all %}
+                      {{ homeitem }}&nbsp;&nbsp;
+                  {% endfor %}
+                  {% if item.photo1 %}
+                   <strong style="color: #27ad60">(有照片)</strong>
+                  {% endif %}
+               </div>
+           {% endif %}
+           <div class="col-md-12 col-lg-12">服务人员：{{ item.service_person }}</div>
            <div class="col-md-12 col-lg-12">上门时间：{{ item.service_time }}</div>
            <div class="col-md-6 col-lg-6">
                {% if item.remark %}
