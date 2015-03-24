@@ -475,6 +475,7 @@ POST /consumer/get_goods_detail
 * address(_Required_|string)-用户地址
 * city_number(_Required_|string)-城市统一编码
 * submit_price(_Required_|float)-提交总价
+* channel(_Required_|string)-支付渠道，详见ping＋＋文档
 * goods_items(_Required_|array)-商品列表
 * ###sid(_Required_|string)-商品id
 * ###use_repair(_Required_|bool)-是否需要安装

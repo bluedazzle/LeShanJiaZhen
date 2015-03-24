@@ -29,4 +29,4 @@ admin.site.register(AppControl)
 admin.site.register(OrderGoods)
 admin.site.register(OrderHomeItem)
 admin.site.register(Verify)
-
+admin.site.register(OnlineCharge)

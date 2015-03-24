@@ -11,6 +11,7 @@ from HomeApi.HomeAdminManager import *
 from HomeApi.OnlinePay import *
 from HomeApi.location_process import *
 import copy
+import socket
 
 
 pathToStorePicture = r'/var/leshanjiazheng/uploadpicture/'
@@ -598,6 +599,8 @@ def get_goods_o_item(req):
 @csrf_exempt
 def create_online_pay_order(req):
     body={}
+    good_title = ''
+    good_body = ''
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         username = resjson['username']
@@ -644,6 +647,8 @@ def create_online_pay_order(req):
                                            origin_item=goods,
                                            belong=newappoint)
                 newordergoods.save()
+                good_title = goods.title + '等'
+                good_body = good_body + goods.content + '#'
             if submit_price != price_sure:
                 body['msg'] = 'submit price wrong'
                 return HttpResponse(encodejson(20, body), content_type='application/json')
@@ -661,7 +666,18 @@ def create_online_pay_order(req):
                                                belong=newappoint,
                                                origin_item=homeit)
                 new_order_item.save()
-            res = create_new_charge()
+            ping_body = {}
+            channel = resjson['channel']
+            amount = int(price_sure * 100)
+            # ping_body['order_no:'] = newid
+            ping_body['channel'] = channel
+            ping_body['amount'] = amount
+            ping_body['client_ip'] = get_my_ip()
+            ping_body['currency'] = 'cny'
+            ping_body['subject'] = good_title
+            ping_body['body'] = good_body
+            res = create_new_charge(newid, ping_body, curuser)
+            # print res
             body['msg'] = 'server create order success, but not sure ping++ create success'
             body['charge_detail'] = res
             return HttpResponse(encodejson(1, body), content_type='application/json')
@@ -671,6 +687,12 @@ def create_online_pay_order(req):
     else:
         raise Http404
 
+
+
+def get_my_ip():
+    myname = socket.getfqdn(socket.gethostname())
+    myaddr = socket.gethostbyname(myname)
+    return myaddr
 
 
 
