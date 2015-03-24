@@ -2,16 +2,16 @@
 {% block define %}
     <script>
         $(document).ready(function(){
-            $('#page_title').text('查看预约');
+            $('#page_title').text('查看订单');
             $('#find_appointment').addClass('active');
         })
     </script>
     <div class="col-md-12 col-lg-12 text-center">
     {% if flag %}
        {% if count > 0 %}
-           <h6>在{{ date_start }}到{{ date_end }}中，共有{{ count }}个符合查找条件的预约</h6>
+           <h6>在{{ date_start }}到{{ date_end }}中，共有{{ count }}个{{ area }}地区的符合查找条件的订单</h6>
        {% else %}
-           <h6>没有符合查找条件的预约</h6>
+           <h6>没有符合查找条件的订单</h6>
        {% endif %}
     {% endif %}
     </div>
@@ -31,18 +31,19 @@
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;float:right;padding-left: 0;margin-right: 26.7%">
           <span class="input-group-addon">地区</span>
           <select id="select1" name="area"  class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0;">
-                  <option value="乐山">乐山</option>
-                  <option value="测试">测试</option>
+              {% for every_area in areas %}
+                  <option value="{{ every_area.city_num }}">{{ every_area.area_name }}</option>
+              {% endfor %}
           </select>
       </div>
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;float:right;padding-left: 0;margin-right: 1%;">
-          <span class="input-group-addon" style="width: 101px">预约类型</span>
+          <span class="input-group-addon" style="width: 101px">订单类型</span>
           <select id="select2" name="type" class="form-control select select-primary select-block mbl">
-                  <option value="0">所有预约</option>
-                  <option value="1">未受理预约</option>
-                  <option value="2">已接受预约</option>
-                  <option value="3">已完成预约</option>
-                  <option value="4">取消的预约</option>
+                  <option value="0">所有订单</option>
+                  <option value="1">未接受订单</option>
+                  <option value="2">已接受订单</option>
+                  <option value="3">已完成订单</option>
+                  <option value="4">取消的订单</option>
           </select>
       </div>
       <script>
@@ -123,13 +124,19 @@
    <div class="panel panel-default">
        <div class="panel-heading" style="background-color: #bdc3c7;">
         {% endif %}
-           预约号：{{ item.appointment_id }}
-           <span style="margin-left: 5%">联系方式：{{ item.consumer }}</span>
+           订单号：{{ item.order_id }}
+           <span style="margin-left: 5%">联系方式：
+               {% if item.consumer %}
+                   {{ item.consumer }}
+               {% else %}
+                   {{ item.associator }}
+               {% endif %}
+           </span>
            <span style="margin-left: 5%">地址：{{ item.address }}</span>
        </div>
        <div class="panel-body">
            {% if item.status == 1 %}
-            <div class="col-md-12 col-lg-12">状态：未受理</div>
+            <div class="col-md-12 col-lg-12">状态：未接受</div>
         {% elif item.status == 2 %}
             <div class="col-md-12 col-lg-12">状态：已接受</div>
         {% elif item.status == 3 %}
@@ -138,11 +145,50 @@
             <div class="col-md-12 col-lg-12">状态：已取消</div>
         {% endif %}
            <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
-           <div class="col-md-12 col-lg-12">时间：{{ item.appoint_time|date:"Y-m-d H:i:s" }}</div>
+           <div class="col-md-12 col-lg-12">下单时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
            {% if item.process_by %}
            <div class="col-md-12 col-lg-12">操作员：{{ item.process_by.nick }}</div>
            {% endif %}
-          <div class="col-md-12 col-lg-12">报修项目：{{ item.content }}
+          {% if not item.ordergoods.all.count == 0 %}
+           <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c">购买商品：</strong>
+                  {% for goods in item.ordergoods.all %}
+                      {{ goods }}
+                      {% if goods.use_repair %}
+                          <span style="color: #1abc9c;">(需要安装)</span>
+                      {% endif %}
+                      &nbsp;&nbsp;
+                  {% endfor %}
+                  {% if item.photo1 %}
+                   <strong style="color: #27ad60">(有照片)</strong>
+                  {% endif %}
+           </div>
+           {% endif %}
+           {% if not item.orderhomeitems.all.count == 0 %}
+               <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c;">维修安装：</strong>
+                  {% for homeitem in item.orderhomeitems.all %}
+                      {{ homeitem }}&nbsp;&nbsp;
+                  {% endfor %}
+                  {% if item.photo1 %}
+                   <strong style="color: #27ad60">(有照片)</strong>
+                  {% endif %}
+               </div>
+           {% endif %}
+           <div class="col-md-12 col-lg-12">
+               {% if item.remark %}
+               备注：{{ item.remark }}
+               {% else %}
+               备注：无
+               {% endif %}
+           </div>
+
+           <div class="col-md-12 col-lg-12">
+               服务人员：{{ item.service_person }}
+           </div>
+           <div class="col-md-12 col-lg-12">
+               上门时间：{{ item.service_time }}
+           </div>
+
+           <div class="col-md-12 col-lg-12">
                {% if item.photo1 or item.photo2 or item.photo3 or item.photo4 %}
                    <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
                  查看照片

@@ -3,7 +3,7 @@
 
     <script>
         $('#find_appointment').addClass('active')
-        $('#page_title').text('查询预约')
+        $('#page_title').text('查询订单')
     </script>
     <div class="col-md-12 col-lg-12">
        <div class="col-md-4 col-lg-4" style="margin-left: 25%">
@@ -36,7 +36,7 @@
           </form>
        </div>
        <div class="col-md-5 col-lg-5">
-           <button id="a_number" class="btn btn-primary" style="margin-top: 2.5%">预约号查询</button>
+           <button id="a_number" class="btn btn-primary" style="margin-top: 2.5%">订单号查询</button>
        </div>
        <script>
            $('#a_number').click(function(){
@@ -51,7 +51,7 @@
     </div>
     {% if fault %}
         <div class="col-md-12 col-lg-12">
-        <h6 style="margin-top: 3%;margin-left: 38%">没有相关的预约</h6>
+        <h6 style="margin-top: 3%;margin-left: 38%">没有相关的订单</h6>
         </div>
     {% endif %}
    <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
@@ -69,13 +69,19 @@
    <div class="panel panel-default">
        <div class="panel-heading" style="background-color: #bdc3c7;">
         {% endif %}
-           预约号：{{ item.appointment_id }}
-           <span style="margin-left: 5%">联系方式：{{ item.consumer }}</span>
+           订单号：{{ item.order_id }}
+           <span style="margin-left: 5%">联系方式：
+               {% if item.consumer %}
+                   {{ item.consumer }}
+               {% else %}
+                   {{ item.associator }}
+               {% endif %}
+           </span>
            <span style="margin-left: 5%">地址：{{ item.address }}</span>
        </div>
        <div class="panel-body">
        {% if item.status == 1 %}
-            <div class="col-md-12 col-lg-12">状态：未受理</div>
+            <div class="col-md-12 col-lg-12">状态：未接受</div>
         {% elif item.status == 2 %}
             <div class="col-md-12 col-lg-12">状态：已接受</div>
         {% elif item.status == 3 %}
@@ -84,11 +90,46 @@
             <div class="col-md-12 col-lg-12">状态：已取消</div>
         {% endif %}
            <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
-           <div class="col-md-12 col-lg-12">时间：{{ item.appoint_time|date:"Y-m-d H:i:s" }}</div>
+           <div class="col-md-12 col-lg-12">下单时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
            {% if item.process_by %}
            <div class="col-md-12 col-lg-12">操作员：{{ item.process_by.nick }}</div>
            {% endif %}
-           <div class="col-md-12 col-lg-12">报修项目：{{ item.content }}
+           {% if not item.ordergoods.all.count == 0 %}
+           <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c">购买商品：</strong>
+                  {% for goods in item.ordergoods.all %}
+                      {{ goods }}&nbsp;&nbsp;
+                  {% endfor %}
+                  {% if item.photo1 %}
+                   <strong style="color: #27ad60">(有照片)</strong>
+                  {% endif %}
+           </div>
+           {% endif %}
+           {% if not item.orderhomeitems.all.count == 0 %}
+               <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c;">维修安装：</strong>
+                  {% for homeitem in item.orderhomeitems.all %}
+                      {{ homeitem }}&nbsp;&nbsp;
+                  {% endfor %}
+                  {% if item.photo1 %}
+                   <strong style="color: #27ad60">(有照片)</strong>
+                  {% endif %}
+               </div>
+           {% endif %}
+           <div class="col-md-12 col-lg-12">
+               {% if item.remark %}
+               备注：{{ item.remark }}
+               {% else %}
+               备注：无
+               {% endif %}
+           </div>
+
+           <div class="col-md-12 col-lg-12">
+               服务人员：{{ item.service_person }}
+           </div>
+           <div class="col-md-12 col-lg-12">
+               上门时间：{{ item.service_time }}
+           </div>
+
+           <div class="col-md-12 col-lg-12">
                {% if item.photo1 or item.photo2 or item.photo3 or item.photo4 %}
                    <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
                  查看照片

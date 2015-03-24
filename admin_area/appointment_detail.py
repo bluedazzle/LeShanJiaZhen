@@ -288,7 +288,7 @@ def out_excel(appointments, file_name):
         it_date = str(item.create_time)[0:10]
         ws.write(i, 5, it_date)
         if item.status == 1:
-            status_text = u"未受理"
+            status_text = u"未接受"
         elif item.status == 2:
             status_text = u"已接受"
         elif item.status == 3:

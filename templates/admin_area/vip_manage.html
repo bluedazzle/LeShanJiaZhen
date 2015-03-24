@@ -1,6 +1,14 @@
 {% extends 'admin_area/base.html' %}
 {% block define %}
-<script xmlns="http://www.w3.org/1999/html">
-        $('#page_title').text('会员管理')
+   {% if permission %}
+   {% else %}
+       <div class="col-md-12 col-lg-12" style="padding-right: 10%;padding-left: 10%">
+        <h5 style="margin-left: 35%;color: red">您没有操作权限</h5>
+      </div>
+   {% endif %}
+<script>
+        $('#page_title').text('会员管理');
+        $('#message_manage').addClass('active');
+        $('#vip_manage').addClass('active')
 </script>
 {% endblock %}

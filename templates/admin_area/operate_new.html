@@ -2,13 +2,13 @@
 {% block define %}
   {% if count > 0 %}
 <div class="col-md-12 col-lg-12" style="padding-right: 10%;padding-left: 10%">
-  共有{{ count }}个未受理订单
+  共有{{ count }}个未接受订单
 
   <button class="btn btn-large btn-default" style="float: right;margin-right: 3%" onclick="cancel_appointment_all_n()">
    一键取消所有订单
   </button>
   <button class="btn btn-large btn-primary" style="float: right;margin-right: 3%" onclick="get_all_appointment()">
-   一键受理所有订单
+   一键接受所有订单
   </button>
 </div>
    {% else %}
@@ -37,7 +37,11 @@
            {% if not item.ordergoods.all.count == 0 %}
            <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c">购买商品：</strong>
                   {% for goods in item.ordergoods.all %}
-                      {{ goods }}&nbsp;&nbsp;
+                      {{ goods }}
+                      {% if goods.use_repair %}
+                          <span style="color: #1abc9c;">(需要安装)</span>
+                      {% endif %}
+                      &nbsp;&nbsp;
                   {% endfor %}
                   {% if item.photo1 %}
                    <strong style="color: #27ad60">(有照片)</strong>
@@ -129,7 +133,7 @@
 </div>
     <script>
        $(document).ready(function(){
-           $('#page_title').text('未受理订单');
+           $('#page_title').text('未接受订单');
            $('#new').addClass("active");
        })
     </script>
