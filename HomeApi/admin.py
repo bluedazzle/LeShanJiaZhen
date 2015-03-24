@@ -27,4 +27,4 @@ admin.site.register(GoodsItem)
 admin.site.register(Feedback)
 admin.site.register(AppControl)
 admin.site.register(Verify)
-
+admin.site.register(OnlineCharge)

@@ -1,5 +1,6 @@
 import pingpp
 import simplejson
+from HomeApi.models import *
 
 APP_ID = 'app_DibTK09SavX9mHmH'
 TEST_KEY = 'sk_test_DKmjXPD8ij1GjPyvX9ynzzTG'
@@ -20,7 +21,6 @@ def retrieve(req):
 def test():
     ch = pingpp.Charge.create(
     api_key=TEST_KEY,
-    order_no='1234567890',
     amount=1,
     app=dict(id=APP_ID),
     channel='upmp',
@@ -32,8 +32,21 @@ def test():
 
     # print ch.items()
     a = simplejson.dumps(ch)
-    print a
+    return ch
 
-def create_new_charge():
-    pass
+def create_new_charge(new_id, form, curuser):
+    form['app'] = dict(id=APP_ID)
+    ch = pingpp.Charge.create(api_key=TEST_KEY, order_no=new_id, **form)
+    cur_appoint = Appointment.objects.get(order_id=new_id)
+    newcharge = OnlineCharge()
+    newcharge.pingpp_charge_id = ch.id
+    # charge_json = simplejson.loads(ch)
+    dateArray = datetime.datetime.utcfromtimestamp(ch['created'])
+    newcharge.order_id = ch['order_no']
+    newcharge.price = ch['amount']
+    newcharge.order_with = cur_appoint
+    newcharge.own = curuser
+    newcharge.pingpp_create_time = dateArray
+    newcharge.save()
+    return ch
 
