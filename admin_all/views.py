@@ -277,8 +277,8 @@ def manage_apply(request):
 
         if apply_areas.count() > 0:
             for item in apply_areas:
-                old_area = Block.objects.get(area_id=item.old_area_id)
-                new_area = Block.objects.get(area_id=item.new_area_id)
+                old_area = Block.objects.get(id=item.old_area_id)
+                new_area = Block.objects.get(id=item.new_area_id)
                 applications.append({'type': 'A', 'body': {'old_area': old_area,
                                                            'id': item.id,
                                                            'new_area': new_area,
@@ -310,7 +310,7 @@ def pass_application(request):
         if c_a_list:
             for item in c_a_list:
                 c_a_apply = Application.objects.get(id=item)
-                new_area = Block.objects.get(area_id=c_a_apply.new_area_id)
+                new_area = Block.objects.get(id=c_a_apply.new_area_id)
                 area_admin = c_a_apply.apply_user
                 area_admin.area = new_area
                 area_admin.save()
