@@ -150,7 +150,7 @@ def operate_new(request):
             return HttpResponseRedirect('login_in')
         username = request.session['username']
         user = HomeAdmin.objects.get(username=username)
-        appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=1)
+        appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=1, valid=True)
         # appointments = []
         # for i in range(0, 10):
         #     for item in appointments:
@@ -182,7 +182,7 @@ def get_new_appointment(request):
         area_admin = HomeAdmin.objects.get(username=user)
         # area_admin.last_login = datetime.datetime.now()
         # area_admin.save()
-        appointments = Appointment.objects.order_by('-id').filter(area=area_admin.area, status=1)
+        appointments = Appointment.objects.order_by('-id').filter(area=area_admin.area, status=1, valid=True)
         if appointments.count() == 0:
             return HttpResponse(json.dumps('F'), content_type="application/json")
         else:
@@ -200,7 +200,7 @@ def get_new_appointment_count(request):
     else:
         user = request.session['username']
         area_admin = HomeAdmin.objects.get(username=user)
-        appointments = Appointment.objects.filter(area=area_admin.area, status=1)
+        appointments = Appointment.objects.filter(area=area_admin.area, status=1, valid=True)
         count_num = appointments.count()
         notices = Notice.objects.order_by("-id").all()
         notice_id = 'F'
@@ -312,7 +312,7 @@ def find_now_appointment(page_num, all_appointments):
     if all_appointments.count() > 0:
             for item in all_appointments:
                 now_date = str(datetime.datetime.now())[0:10]
-                it_date = str(item.appoint_time)[0:10]
+                it_date = str(item.create_time)[0:10]
                 if it_date == now_date:
                     appointments.append(item)
                 else:
@@ -334,7 +334,7 @@ def find_sometime_appointment(page_num, date_start, date_end, all_appointments):
     appointments = []
     if all_appointments.count() > 0:
         for item in all_appointments:
-            it_date = str(item.appoint_time)[0:10]
+            it_date = str(item.create_time)[0:10]
             date_start = str(date_start)
             date_end = str(date_end)
             if it_date >= date_start and it_date <= date_end:
@@ -1196,14 +1196,6 @@ def edit_goods(request):
         goods_p_id = goods_o[0].parent_item.id
         goods_o_id = goods_o[0].id
         return HttpResponseRedirect('/area_admin/goods_manage?goods_p=' + str(goods_p_id) + '&goods_o=' + str(goods_o_id))
-
-
-
-
-
-
-
-
 
 
 def delete_goods(request):
