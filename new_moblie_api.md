@@ -15,6 +15,7 @@
 |12|验证码错误|
 |13|非法操作|
 |20|金额不正确|
+|21|优惠券使用失败|
 
 ##**订单状态码对照表**
 |status|状态|
@@ -28,13 +29,13 @@
 
 ##**注册**
 #####注册流程
-1、先向consumer/send_reg_verify请求发送验证码验证手机
+1、先向consumer/send_verify请求发送验证码验证手机
 2、请求consumer/register注册成功或失败
 
 #####顾客注册
 ######步骤一：
 ```
-POST /consumer/send_reg_verify
+POST /consumer/send_verify
 ```
 ###**Parameters**
 * phone(_Required_|string)-用户名，必须为手机号
@@ -369,6 +370,8 @@ or
 {"status": 7, "body": {"msg": "invalid city number"}}
 ```
 
+##**商品**
+
 #####获取二级商品列表
 ```
 POST /consumer/get_goods_sec_item
@@ -465,17 +468,20 @@ or
 
 ##**订单**
 
-#####生产在线支付订单
+#####生成含商品支付订单
 ```
-POST /consumer/get_goods_detail
+POST /consumer/create_pay_order
 ```
 ###**Parameters**
 * username(_Required_|string)-用户名，必须为手机号
 * private_token(_Required_|string)-token
 * address(_Required_|string)-用户地址
 * city_number(_Required_|string)-城市统一编码
+* coupon_id(_Optional_|string)-优惠券id
+* use_coupon(_Required_|bool)-是否使用优惠券
+* channel(_Required_|string)-支付渠道(详见ping＋＋文档)
+* online_pay(_Required_|bool)-是否在线支付
 * submit_price(_Required_|float)-提交总价
-* channel(_Required_|string)-支付渠道，详见ping＋＋文档
 * goods_items(_Required_|array)-商品列表
 * ###sid(_Required_|string)-商品id
 * ###use_repair(_Required_|bool)-是否需要安装
@@ -484,7 +490,7 @@ POST /consumer/get_goods_detail
 
 ###**Request**
 ```
-{"username":"18215606355","private_token":"JKGVDnCIH7Ec+OuWPvNeRQtT4dwjoB0U","address":"kb258","city_number":"511000","submit_price":"35.0","goods_items":[{"sid":"1","use_repair":true},{"sid":"2","use_repair":false}],"home_items":[{"hid":"1"}]}
+{"username":"18215606355","private_token":"JKGVDnCIH7Ec+OuWPvNeRQtT4dwjoB0U","coupon_id":"20102101","use_coupon":false,"channel":"alipay","address":"kb258","online_pay":true,"city_number":"511000","submit_price":"35.0","goods_items":[{"sid":"1","use_repair":true},{"sid":"2","use_repair":false}],"home_items":[{"hid":"1"}]}
 ```
 ###**Return**
 ```
@@ -492,7 +498,52 @@ POST /consumer/get_goods_detail
     "status": 1,
     "body": {
         "msg": "server create order success, but not sure ping++ create success",
-        "charge_detail": null
+        "charge_detail": {
+            "order_no": "201503250100000018",
+            "extra": {},
+            "app": "app_DibTK09SavX9mHmH",
+            "livemode": false,
+            "currency": "cny",
+            "time_settle": null,
+            "time_expire": 1427356166,
+            "id": "ch_zrLmnHG4unjHCyHOmLf904m1",
+            "subject": "生育水管维修等",
+            "failure_msg": null,
+            "channel": "alipay",
+            "metadata": {},
+            "body": "说明#内功#",
+            "credential": {
+                "alipay": {
+                    "orderInfo": "_input_charset=\"utf-8\"&body=\"说明#内功#\"&it_b_pay=\"1440m\"&notify_url=\"https%3A%2F%2Fapi.pingxx.com%2Fnotify%2Fcharges%2Fch_zrLmnHG4unjHCyHOmLf904m1\"&out_trade_no=\"201503250100000018\"&partner=\"2008978902273687\"&payment_type=\"1\"&seller_id=\"2008978902273687\"&service=\"mobile.securitypay.pay\"&subject=\"生育水管维修等\"&total_fee=\"35\"&sign=\"ckR5dmJQMTg4YWJMdmIxQ3VUeUhTZUxH\"&sign_type=\"RSA\""
+                },
+                "object": "credential"
+            },
+            "client_ip": "10.211.55.2",
+            "description": null,
+            "amount_refunded": 0,
+            "refunded": false,
+            "object": "charge",
+            "paid": false,
+            "amount_settle": 0,
+            "time_paid": null,
+            "failure_code": null,
+            "refunds": {
+                "url": "/v1/charges/ch_zrLmnHG4unjHCyHOmLf904m1/refunds",
+                "has_more": false,
+                "object": "list",
+                "data": []
+            },
+            "created": 1427269766,
+            "transaction_no": null,
+            "amount": 3500
+        }
+    }
+}
+or
+{
+    "status": 1,
+    "body": {
+        "msg": "create off-line order success"
     }
 }
 or
@@ -507,6 +558,116 @@ or
     "status": 7,
     "body": {
         "msg": "invalid city_number"
+    }
+}
+or
+{
+    "status": 21,
+    "body": {
+        "msg": "the coupon has used, over due or is not belong you"
+    }
+}
+```
+
+
+##**订单**
+
+#####生成不含商品预约订单
+```
+POST /consumer/create_appointment
+```
+###**Parameters**
+* phone(_Required_|string)-用户手机号
+* private_token(_Required_|string)-consumer token
+* address(_Required_|string)-用户地址
+* city_number(_Required_|string)-城市统一编码
+* home_items(_Required_|string)-维修服务列表
+* ###hid(_Required_|string)-服务id
+
+###**Request**
+```
+{"phone":"18215606355","private_token":"AqMxVDKmpUN2lE+WCyzbZ8sJ7dkfQhXa","address":"kb258","city_number":"511000","home_items":[{"hid":"1"}]}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "appointment create success"
+    }
+}
+or
+{
+    "status": 9,
+    "body": {
+        "msg": "phone is not verified"
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid city_number"
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "home item id:10invalid"
+    }
+}
+```
+
+
+##**订单**
+#####验证非注册用户预约手机号
+1、先向consumer/send_verify请求发送验证码验证手机
+2、请求consumer/verify_consumer 验证手机号并得到consumer token
+
+#####请求验证码
+######步骤一：
+```
+POST /consumer/send_verify
+```
+###**Parameters**
+* phone(_Required_|string)-用户名，必须为手机号
+###**Request**
+```
+{"phone":18215606355}
+```
+###**Return**
+```
+{"status": 1, "body": {"verify_code": "209467", "success": true}}
+or
+{"status":2,"body":null}
+```
+
+######步骤二：
+```
+POST /consumer/verify_consumer
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* verify_code(_Required_|string)-验证码
+###**Request**
+```
+{"username":"18215606355","verify_code":"123456"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "verify success",
+        "private_token": "AqMxVDKmpUN2lE+WCyzbZ8sJ7dkfQhXa"
+    }
+}
+or
+{
+    "status": 13,
+    "body": {
+        "msg": "verify fail"
     }
 }
 ```

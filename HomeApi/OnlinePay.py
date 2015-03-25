@@ -1,5 +1,6 @@
 import pingpp
 import simplejson
+import datetime
 from HomeApi.models import *
 
 APP_ID = 'app_DibTK09SavX9mHmH'
@@ -35,18 +36,23 @@ def test():
     return ch
 
 def create_new_charge(new_id, form, curuser):
+    # print form['amount']
     form['app'] = dict(id=APP_ID)
     ch = pingpp.Charge.create(api_key=TEST_KEY, order_no=new_id, **form)
     cur_appoint = Appointment.objects.get(order_id=new_id)
     newcharge = OnlineCharge()
     newcharge.pingpp_charge_id = ch.id
     # charge_json = simplejson.loads(ch)
-    dateArray = datetime.datetime.utcfromtimestamp(ch['created'])
+    # print ch['amount']
+    dateArray = datetime.datetime.fromtimestamp(ch['created'])
+    expire = datetime.datetime.fromtimestamp(ch['time_expire'])
     newcharge.order_id = ch['order_no']
     newcharge.price = ch['amount']
+    newcharge.time_expire = expire
     newcharge.order_with = cur_appoint
     newcharge.own = curuser
     newcharge.pingpp_create_time = dateArray
     newcharge.save()
     return ch
+
 

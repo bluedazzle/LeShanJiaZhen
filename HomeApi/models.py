@@ -112,10 +112,10 @@ class HomeAdmin(AbstractBaseUser):
         app_label = 'HomeApi'
 
 class Consumer(models.Model):
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=15, unique=True)
     verified = models.BooleanField(default=False)
     create_time = models.DateTimeField(auto_now_add=True)
-    token = models.CharField(max_length=100, null=True)
+    token = models.CharField(max_length=100, null=True, blank=True)
 
     def __unicode__(self):
         return self.phone
@@ -303,6 +303,7 @@ class GoodsItem(models.Model):
     real_price = models.DecimalField(max_digits=10, decimal_places=2)
     repair_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     picture = models.CharField(max_length=100, null=True, blank=True)
+    selled = models.IntegerField(max_length=10, default=0)
     #推荐权重
     recommand = models.IntegerField(max_length=10, null=True, blank=True, default=0)
     parent_item = models.ForeignKey(Goods_O, related_name='goodsitems')
@@ -354,7 +355,11 @@ class Appointment(models.Model):
     service_person = models.CharField(max_length=20, blank=True, null=True)
     service_time = models.CharField(max_length=50, blank=True, null=True)
     order_type = models.IntegerField(max_length=4)
+    online_pay = models.BooleanField(default=True)
+    amount = models.FloatField(max_length=10, null=True, blank=True)
     valid = models.BooleanField(default=True)
+    use_coupon = models.BooleanField(default=False)
+    order_coupon = models.ForeignKey(Coupon, null=True, blank=True)
 
     if_appraise = models.BooleanField(default=False)
     comment = models.CharField(max_length=200, null=True, blank=True)

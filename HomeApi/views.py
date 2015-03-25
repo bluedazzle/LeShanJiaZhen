@@ -10,6 +10,7 @@ from PIL import Image
 from HomeApi.HomeAdminManager import *
 from HomeApi.OnlinePay import *
 from HomeApi.location_process import *
+from django.utils.timezone import utc
 import copy
 import socket
 
@@ -25,8 +26,13 @@ def send_reg_verify(req):
         verify_res = createverfiycode(phone)
         verify_res = simplejson.loads(verify_res)
         if verify_res['success'] is True:
-            newverify = Verify(phone=phone, verify=verify_res['verify_code'])
-            newverify.save()
+            try:
+                verify = Verify.objects.get(phone=phone)
+                verify.verify_res = verify_res['verify_code']
+                verify.save()
+            except Exception:
+                newverify = Verify(phone=phone, verify=verify_res['verify_code'])
+                newverify.save()
             return HttpResponse(encodejson(1, verify_res), content_type='application/json')
         else:
             return HttpResponse(encodejson(2, {}), content_type='application/json')
@@ -597,7 +603,7 @@ def get_goods_o_item(req):
 
 
 @csrf_exempt
-def create_online_pay_order(req):
+def create_pay_order(req):
     body={}
     good_title = ''
     good_body = ''
@@ -609,13 +615,19 @@ def create_online_pay_order(req):
             curuser = Associator.objects.get(username=username)
             address = resjson['address']
             city_num = resjson['city_number']
+            pay = bool(resjson['online_pay'])
+            use_coupon = bool(resjson['use_coupon'])
+            coupon_id = ''
+            print use_coupon
+            if use_coupon:
+                coupon_id = resjson['coupon_id']
             block_list = Block.objects.filter(city_num=city_num)
             if not block_list.exists():
                 body['msg'] = 'invalid city_number'
                 return HttpResponse(encodejson(7, body), content_type='application/json')
             block = block_list[0]
             newid = create_order_id()
-            newappoint = Appointment(order_id=newid, status=1, address=address, area=block, associator=curuser, order_type=1)
+            newappoint = Appointment(order_id=newid, status=1, address=address, area=block, associator=curuser, order_type=1, online_pay=pay)
             newappoint.save()
             goodslist = resjson['goods_items']
             submit_price = float(resjson['submit_price'])
@@ -628,6 +640,7 @@ def create_online_pay_order(req):
                     body['msg'] = 'goods id:' + str(sid) + 'invalid'
                     newappoint.valid = False
                     newappoint.save()
+                    newappoint.delete()
                     return HttpResponse(encodejson(7, body), content_type='application/json')
                 goods = goodsitems[0]
                 price_sure += float(goods.real_price)
@@ -650,6 +663,9 @@ def create_online_pay_order(req):
                 good_title = goods.title + '等'
                 good_body = good_body + goods.content + '#'
             if submit_price != price_sure:
+                newappoint.valid = False
+                newappoint.save()
+                newappoint.delete()
                 body['msg'] = 'submit price wrong'
                 return HttpResponse(encodejson(20, body), content_type='application/json')
             home_item_list = resjson['home_items']
@@ -658,6 +674,9 @@ def create_online_pay_order(req):
                 home_list = HomeItem.objects.filter(id=hid)
                 if not home_list.exists():
                     body['msg'] = 'home item id:' + str(hid) + 'invalid'
+                    newappoint.valid = False
+                    newappoint.save()
+                    newappoint.delete()
                     return HttpResponse(encodejson(7, body), content_type='application/json')
                 homeit = home_list[0]
                 new_order_item = OrderHomeItem(title=homeit.title,
@@ -666,9 +685,44 @@ def create_online_pay_order(req):
                                                belong=newappoint,
                                                origin_item=homeit)
                 new_order_item.save()
+            if not pay:
+                newappoint.amount = price_sure
+                newappoint.save()
+                body['msg'] = 'create off-line order success'
+                return HttpResponse(encodejson(1, body), content_type='application/json')
+            coupon_amount = 0.0
+            if use_coupon:
+                coupon_list = Coupon.objects.filter(cou_id=coupon_id)
+                if not coupon_list.exists():
+                    newappoint.valid = False
+                    newappoint.save()
+                    newappoint.delete()
+                    body['msg'] = 'coupon invalid'
+                    return HttpResponse(encodejson(7, body), content_type='application/json')
+                coupon = coupon_list[0]
+                print coupon.cou_id
+                if not (coupon.if_use is False and coupon.own == curuser and if_in_due(coupon.deadline)):
+                    newappoint.valid = False
+                    newappoint.save()
+                    newappoint.delete()
+                    body['msg'] = 'the coupon has used, over due or is not belong you'
+                    return HttpResponse(encodejson(21, body), content_type='application/json')
+                coupon.if_use = True
+                coupon_amount = float(coupon.value)
+                newappoint.use_coupon = True
+                newappoint.order_coupon = coupon
+                newappoint.save()
+                coupon.save()
             ping_body = {}
             channel = resjson['channel']
-            amount = int(price_sure * 100)
+            print coupon_amount
+            amount = (price_sure - coupon_amount)
+            newappoint.amount = amount
+            newappoint.save()
+            if amount < 0.0:
+                amount = 0.0
+            print amount
+            amount = int(amount * 100)
             # ping_body['order_no:'] = newid
             ping_body['channel'] = channel
             ping_body['amount'] = amount
@@ -689,6 +743,88 @@ def create_online_pay_order(req):
 
 
 
+@csrf_exempt
+def verify_consumer(req):
+    body={}
+    if req.method == 'POST':
+        resjson = simplejson.loads(req.body)
+        phone = resjson['phone']
+        verify = resjson['verify_code']
+        if verify_reg(phone, verify):
+            consumer = Consumer.objects.get(phone=phone)
+            if consumer.verified:
+                body['private_token'] = consumer.token
+            else:
+                newtoken = createtoken()
+                consumer.verified = True
+                consumer.token = newtoken
+                consumer.save()
+                body['private_token'] = newtoken
+            body['msg'] = 'verify success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            body['msg'] = 'verify fail'
+            return HttpResponse(encodejson(13, body), content_type='application/json')
+    else:
+        raise Http404
+
+
+
+
+@csrf_exempt
+def create_appointment(req):
+    body={}
+    if req.method == 'POST':
+        resjson = simplejson.loads(req.body)
+        phone = resjson['phone']
+        token = resjson['private_token']
+        consumer_list = Consumer.objects.filter(phone=phone)
+        if consumer_list.exists():
+            consumer = consumer_list[0]
+            if not consumer.verified:
+                body['msg'] = 'phone is not verified'
+                return HttpResponse(encodejson(9, body), content_type='application/json')
+            else:
+                try:
+                    ve = Consumer.objects.get(phone=phone, token=token)
+                    address = resjson['address']
+                    city_num = resjson['city_number']
+                    try:
+                        city = Block.objects.get(city_num=city_num)
+                    except Exception:
+                        body['msg'] = 'invalid city number'
+                        return HttpResponse(encodejson(7, body), content_type='application/json')
+                    newid = create_order_id(pay=False)
+                    newappoint = Appointment(status=1, address=address, consumer=ve, order_id=newid, order_type=2, online_pay=False, area=city)
+                    newappoint.save()
+                    home_item_list = resjson['home_items']
+                    for item in home_item_list:
+                        hid = item['hid']
+                        home_list = HomeItem.objects.filter(id=hid)
+                        if not home_list.exists():
+                            body['msg'] = 'home item id:' + str(hid) + 'invalid'
+                            newappoint.delete()
+                            return HttpResponse(encodejson(7, body), content_type='application/json')
+                        homeit = home_list[0]
+                        new_order_item = OrderHomeItem(title=homeit.title,
+                                               price=homeit.price,
+                                               content=homeit.content,
+                                               belong=newappoint,
+                                               origin_item=homeit)
+                        new_order_item.save()
+                    body['msg'] = 'appointment create success'
+                    return HttpResponse(encodejson(1, body), content_type='application/json')
+                except Exception:
+                    body['msg'] = 'phone is not verified'
+                    return HttpResponse(encodejson(9, body), content_type='application/json')
+        else:
+            newconsumer = Consumer(phone=phone)
+            newconsumer.save()
+            body['msg'] = 'phone is not verified'
+            return HttpResponse(encodejson(9, body), content_type='application/json')
+
+
+
 def get_my_ip():
     myname = socket.getfqdn(socket.gethostname())
     myaddr = socket.gethostbyname(myname)
@@ -698,7 +834,10 @@ def get_my_ip():
 
 def create_order_id(pay=True):
     odate = datetime.date.today()
-    todaynum = int(Appointment.objects.filter(create_time__gte=odate).count()) + 1
+    if pay:
+        todaynum = int(Appointment.objects.filter(create_time__gte=odate, order_type=1).count()) + 1
+    else:
+        todaynum = int(Appointment.objects.filter(create_time__gte=odate, order_type=2).count()) + 1
     odate = str(odate).replace('-', '')
     paystr = '00'
     if pay:
@@ -788,3 +927,12 @@ def verify_reg(phone, verify_code):
             return True
         else:
             return False
+
+
+def if_in_due(deadline):
+    nowt = datetime.datetime.utcnow().replace(tzinfo=utc)
+    detla = deadline - nowt
+    if detla < datetime.timedelta():
+        return False
+    else:
+        return True

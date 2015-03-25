@@ -24,7 +24,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -65,9 +65,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 DB_ENGINE = 'django.db.backends.postgresql_psycopg2'
 DB_NAME = 'homemaking'
 DB_USER = 'postgres'                      # Not used with sqlite3.
-DB_PASSWORD = 'GDBDYL886'                  # Not used with sqlite3.
+DB_PASSWORD = '123456'                  # Not used with sqlite3.
 DB_HOST = 'localhost'                      # Set to empty string for localhost. Not used with sqlite3.
-DB_PORT = '5433'
+DB_PORT = '5432'
 
 DATABASES = {
     'default': {
