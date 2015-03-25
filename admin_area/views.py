@@ -622,26 +622,38 @@ def find_appointment(request):
         context.update(csrf(request))
         phone = request.POST.get('phone')
         appointment = request.POST.get('appointments')
+        appointments_return = []
         if phone:
             user = HomeAdmin.objects.get(username=username)
             consumer = Consumer.objects.filter(phone=phone)
-            if consumer.count() == 0:
+            associator = Associator.objects.filter(username=phone)
+            if consumer.count() == 0 and associator.count() == 0:
                 return render_to_response('admin_area/find_appointment.html',
                                           {'fault': 'T'},
                                           context_instance=RequestContext(request))
-            consumer1 = consumer[0]
-            appointments = Appointment.objects.order_by('-id').filter(consumer=consumer1, area=user.area)
-            if appointments.count() == 0:
+            if not consumer.count() == 0:
+                consumer1 = consumer[0]
+                appointments = Appointment.objects.order_by('-id').filter(consumer=consumer1, area=user.area)
+                for appointment_one in appointments:
+                    appointments_return.append(appointment_one)
+
+            if not associator.count() == 0:
+                associator1 = associator[0]
+                appointments = Appointment.objects.order_by('-id').filter(associator=associator1, area=user.area)
+                for appointment_one in appointments:
+                    appointments_return.append(appointment_one)
+
+            if len(appointments_return) == 0:
                 return render_to_response('admin_area/find_appointment.html',
                                           {'fault': 'T'},
                                           context_instance=RequestContext(request))
             else:
                 return render_to_response('admin_area/find_appointment.html',
-                                          {'items': appointments},
+                                          {'items': appointments_return},
                                           context_instance=RequestContext(request))
         if appointment:
             user = HomeAdmin.objects.get(username=username)
-            appointments = Appointment.objects.order_by('-id').filter(area=user.area, id=appointment)
+            appointments = Appointment.objects.order_by('-id').filter(area=user.area, order_id=appointment)
             if appointments.count() == 0:
                 return render_to_response('admin_area/find_appointment.html',
                                           {'fault': 'T'},
@@ -853,7 +865,15 @@ def push_message(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return render_to_response('admin_area/push_message.html', context_instance=RequestContext(request))
+        user = HomeAdmin.objects.get(type=1, username=request.session['username'])
+        if user.manage_send_message:
+            return render_to_response('admin_area/push_message.html',
+                                      {'permission': True},
+                                      context_instance=RequestContext(request))
+        else:
+            return render_to_response('admin_area/push_message.html',
+                                      {'permission': False},
+                                      context_instance=RequestContext(request))
     if request.method == 'POST':
         message = request.POST.get('mes_push')
         message = message.encode('utf-8')
@@ -1223,21 +1243,42 @@ def coupon_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return render_to_response('admin_area/coupon_manage.html', context_instance=RequestContext(request))
+        user = HomeAdmin.objects.get(type=1, username=request.session['username'])
+        if user.manage_coupon:
+            return render_to_response('admin_area/coupon_manage.html',
+                                      {'permission': True},
+                                      context_instance=RequestContext(request))
+        return render_to_response('admin_area/coupon_manage.html',
+                                  {'permission': False},
+                                  context_instance=RequestContext(request))
 
 
 def game_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return render_to_response('admin_area/game_manage.html', context_instance=RequestContext(request))
+        user = HomeAdmin.objects.get(type=1, username=request.session['username'])
+        if user.manage_game:
+            return render_to_response('admin_area/game_manage.html',
+                                      {'permission': True},
+                                      context_instance=RequestContext(request))
+        return render_to_response('admin_area/game_manage.html',
+                                  {'permission': False},
+                                  context_instance=RequestContext(request))
 
 
 def vip_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return render_to_response('admin_area/vip_manage.html', context_instance=RequestContext(request))
+        user = HomeAdmin.objects.get(type=1, username=request.session['username'])
+        if user.manage_check_vip:
+            return render_to_response('admin_area/vip_manage.html',
+                                      {'permission': True},
+                                      context_instance=RequestContext(request))
+        return render_to_response('admin_area/vip_manage.html',
+                                  {'permission': False},
+                                  context_instance=RequestContext(request))
 
 
 def index(req):

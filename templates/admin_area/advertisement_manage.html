@@ -1,7 +1,9 @@
 {% extends 'admin_area/base.html' %}
 {% block define %}
     <script>
-        $('#page_title').text('广告管理')
+        $('#page_title').text('广告管理');
+        $('#message_manange').addClass('active');
+        $('#advertisement_manage').addClass('active')
     </script>
 <div class="col-md-12 col-lg-12 text-center">
 <h6>请选择图片文件(png，400 x 200)</h6>
@@ -69,7 +71,7 @@ $('#submit').click(function(){
 </div>
 <script>
   function delete_ad(id){
-      var r = confirm("确定要删除这个广告？")
+      var r = confirm("确定要删除这个广告？");
       if(r){
           window.location.href = "delete_advertisement?advertisement_id="+id;
       }

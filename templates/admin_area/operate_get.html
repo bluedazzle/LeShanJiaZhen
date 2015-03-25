@@ -38,7 +38,11 @@
            {% if not item.ordergoods.all.count == 0 %}
            <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c">购买商品：</strong>
                   {% for goods in item.ordergoods.all %}
-                      {{ goods }}&nbsp;&nbsp;
+                      {{ goods }}
+                      {% if goods.use_repair %}
+                          <span style="color: #1abc9c;">(需要安装)</span>
+                      {% endif %}
+                      &nbsp;&nbsp;
                   {% endfor %}
                   {% if item.photo1 %}
                    <strong style="color: #27ad60">(有照片)</strong>
@@ -78,10 +82,10 @@
            </form>
            <div class="col-md-6 col-lg-6">
                <button class="btn btn-large btn-default" style="float: right;margin-right: 3%" onclick="cancel_appointment_g('{{ item.id }}')">
-                 取消预约
+                 取消订单
                </button>
                <button class="btn btn-large btn-info" style="float: right;margin-right: 3%" onclick="finish_appointment('{{ item.id }}')">
-                 完成预约
+                 完成订单
                </button>
                {% if item.photo1 or item.photo2 or item.photo3 or item.photo4 %}
                    <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">

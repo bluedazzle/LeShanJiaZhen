@@ -119,7 +119,11 @@
            {% if not item.ordergoods.all.count == 0 %}
            <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c">购买商品：</strong>
                   {% for goods in item.ordergoods.all %}
-                      {{ goods }}&nbsp;&nbsp;
+                      {{ goods }}
+                      {% if goods.use_repair %}
+                          <span style="color: #1abc9c;">(需要安装)</span>
+                      {% endif %}
+                      &nbsp;&nbsp;
                   {% endfor %}
                   {% if item.photo1 %}
                    <strong style="color: #27ad60">(有照片)</strong>

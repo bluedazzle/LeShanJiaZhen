@@ -4,6 +4,7 @@ from views import *
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+import time
 
 
 def out_appointment(request):
@@ -39,13 +40,13 @@ def out_appointment(request):
 
         print len(appointments)
         if a_status == 1:
-            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("未受理的预约", "utf-8")
+            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("未接受的订单", "utf-8")
         elif a_status == 2:
-            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("已接受的预约", "utf-8")
+            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("已接受的订单", "utf-8")
         elif a_status == 3:
-            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("完成的预约", "utf-8")
+            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("完成的订单", "utf-8")
         elif a_status == 4:
-            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("取消的预约", "utf-8")
+            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("取消的订单", "utf-8")
         else:
             file_name = area.area_name + a_date_start + u'到' + a_date_end + u'所有预约'
 
@@ -57,42 +58,57 @@ def out_appointment(request):
 
 def out_excel(appointments, file_name):
     wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet(file_name)
+    now_time = time.clock()
+    ws = wb.add_sheet(str(now_time))
     style0 = xlwt.easyxf('font: name Times New Roman, color-index red, bold on')
-    ws.write(0, 0, "预约号")
-    ws.write(0, 1, "预约电话")
-    ws.write(0, 2, "姓名")
-    ws.write(0, 3, "地址")
-    ws.write(0, 4, "时间")
-    ws.write(0, 5, "预约状态")
-    ws.write(0, 6, "地区")
-    ws.write(0, 7, "操作员")
-    ws.write(0, 8, "预约内容")
-    ws.write(0, 9, "备注")
+    ws.write(0, 0, "订单号")
+    ws.write(0, 1, "订单类型")
+    ws.write(0, 2, "联系电话")
+    ws.write(0, 3, "姓名")
+    ws.write(0, 4, "地址")
+    ws.write(0, 5, "下单时间")
+    ws.write(0, 6, "订单状态")
+    ws.write(0, 7, "地区")
+    ws.write(0, 8, "操作员")
+    ws.write(0, 9, "订单内容")
+    ws.write(0, 10, "备注")
     i = 1
     for item in appointments:
-        ws.write(i, 0, item.appointment_id, style0)
-        ws.write(i, 1, item.consumer.phone, style0)
-        ws.write(i, 2, item.name)
-        ws.write(i, 3, item.address)
-        it_date = str(item.appoint_time)[0:10]
-        ws.write(i, 4, it_date)
+        ws.write(i, 0, item.order_id, style0)
+        if item.consumer:
+            ws.write(i, 2, item.consumer.phone, style0)
+        else:
+            ws.write(i, 2, item.associator.username, style0)
+        if item.orderhomeitems.all().count() > 0:
+            ws.write(i, 1, u"维修安装")
+        else:
+            ws.write(i, 1, u"商品购买")
+        ws.write(i, 3, item.name)
+        ws.write(i, 4, item.address)
+        it_date = str(item.create_time)[0:10]
+        ws.write(i, 5, it_date)
         if item.status == 1:
-            status_text = "未受理"
+            status_text = u"未接受"
         elif item.status == 2:
-            status_text = "已接受"
+            status_text = u"已接受"
         elif item.status == 3:
-            status_text = "已完成"
+            status_text = u"已完成"
         else:
-            status_text = "已取消"
-        ws.write(i, 5, status_text, style0)
-        ws.write(i, 6, item.area.area_name)
-        if item.process_by:
-            ws.write(i, 7, item.process_by.nick)
-        else:
-            ws.write(i, 7, "无")
-        ws.write(i, 8, item.content)
-        ws.write(i, 9, item.remark)
+            status_text = u"已取消"
+        ws.write(i, 6, status_text, style0)
+        ws.write(i, 7, item.area.area_name)
+        ws.write(i, 8, item.process_by.nick)
+        content = ''
+        print 'ok'
+        if item.orderhomeitems.all().count() > 0:
+            for orderhomeitem in item.orderhomeitems.all():
+                content = content + orderhomeitem.title + '\t\t'
+        elif item.ordergoods.all().count > 0:
+            for goods in item.ordergoods.all():
+                content = content + goods.title + '\t\t'
+
+        ws.write(i, 9, content)
+        ws.write(i, 10, item.remark)
         i += 1
 
     wb.save("out_files/"+file_name+".xls")

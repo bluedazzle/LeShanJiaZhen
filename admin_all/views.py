@@ -84,20 +84,20 @@ def find_appointment(request):
         page_num = request.GET.get('page')
         date_start = request.GET.get('start_date')
         date_end = request.GET.get('end_date')
-        area_name = request.GET.get('area')
+        area_num = request.GET.get('area')
         status = request.GET.get('type')
-
+        areas_all = Block.objects.all()
         #检查是否是查询某段时间的操作
-        if date_start and date_end and area_name and status:
+        if date_start and date_end and area_num and status:
             request.session['a_date_start'] = date_start
             request.session['a_date_end'] = date_end
-            request.session['area'] = area_name
+            request.session['area'] = area_num
             request.session['status'] = status
         #查询首页
         if not page_num:
             #查看某段时间的预约
-            if date_start and date_end and area_name and status:
-                area = Block.objects.get(area_name=area_name)
+            if date_start and date_end and area_num and status:
+                area = Block.objects.get(city_num=area_num)
                 if status == '0':
                     all_appointments = Appointment.objects.order_by('-id').filter(area=area)
                 else:
@@ -114,9 +114,11 @@ def find_appointment(request):
                                            'date_start': date_start,
                                            'date_end': date_end,
                                            'status': status,
-                                           'area': area_name}, context_instance=RequestContext(request))
+                                           'area': area.area_name,
+                                           'areas': areas_all}, context_instance=RequestContext(request))
             else:
-                return render_to_response('admin_all/find_appointment.html')
+                return render_to_response('admin_all/find_appointment.html',
+                                          {'areas': areas_all})
 
         #查询某一页
         else:
@@ -125,8 +127,8 @@ def find_appointment(request):
                 date_start = request.session['a_date_start']
                 date_end = request.session['a_date_end']
                 status = request.session['status']
-                area_name = request.session['area']
-                area = Block.objects.get(area_name=area_name)
+                area_num = request.session['area']
+                area = Block.objects.get(city_num=area_num)
                 if status == 0:
                     all_appointments = Appointment.objects.order_by('-id').filter(area=area)
                 else:
@@ -143,16 +145,17 @@ def find_appointment(request):
                                            'date_start': date_start,
                                            'date_end': date_end,
                                            'status': status,
-                                           'area': area_name}, context_instance=RequestContext(request))
+                                           'area': area_name,
+                                           'areas': areas_all}, context_instance=RequestContext(request))
             else:
-                return render_to_response('admin_all/find_appointment.html')
+                return render_to_response('admin_all/find_appointment.html', {'areas': areas_all})
 
 
 def find_sometime_appointment(page_num, date_start, date_end, all_appointments):
     appointments = []
     if all_appointments.count() > 0:
         for item in all_appointments:
-            it_date = str(item.appoint_time)[0:10]
+            it_date = str(item.create_time)[0:10]
             date_start = str(date_start)
             date_end = str(date_end)
             if it_date >= date_start and it_date <= date_end:
@@ -274,8 +277,8 @@ def manage_apply(request):
 
         if apply_areas.count() > 0:
             for item in apply_areas:
-                old_area = Block.objects.get(area_id=item.old_area_id)
-                new_area = Block.objects.get(area_id=item.new_area_id)
+                old_area = Block.objects.get(id=item.old_area_id)
+                new_area = Block.objects.get(id=item.new_area_id)
                 applications.append({'type': 'A', 'body': {'old_area': old_area,
                                                            'id': item.id,
                                                            'new_area': new_area,
@@ -307,7 +310,7 @@ def pass_application(request):
         if c_a_list:
             for item in c_a_list:
                 c_a_apply = Application.objects.get(id=item)
-                new_area = Block.objects.get(area_id=c_a_apply.new_area_id)
+                new_area = Block.objects.get(id=c_a_apply.new_area_id)
                 area_admin = c_a_apply.apply_user
                 area_admin.area = new_area
                 area_admin.save()
