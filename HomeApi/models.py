@@ -133,25 +133,26 @@ class HomeItem_P(models.Model):
     def __unicode__(self):
         return self.item_name
 
-class HomeItem_O(models.Model):
+class HomeItem(models.Model):
     item_name = models.CharField(max_length=50)
     create_time = models.DateTimeField(auto_now_add=True)
     parent_item = models.ForeignKey(HomeItem_P)
     sort_id = models.IntegerField(max_length=10, blank=True, null=True)
+    pic_url = models.CharField(max_length=50, null=True, blank=True)
 
     def __unicode__(self):
         return self.item_name
 
-class HomeItem(models.Model):
-    title = models.CharField(max_length=30)
-    price = models.CharField(max_length=10, blank=True, null=True)
-    content = models.CharField(max_length=500)
-    create_time = models.DateTimeField(auto_now_add=True)
-    parent_item = models.ForeignKey(HomeItem_P, null=True, blank=True)
-    sort_id = models.IntegerField(max_length=20, blank=True, null=True)
-
-    def __unicode__(self):
-        return self.title
+# class HomeItem(models.Model):
+#     title = models.CharField(max_length=30)
+#     price = models.CharField(max_length=10, blank=True, null=True)
+#     content = models.CharField(max_length=500)
+#     create_time = models.DateTimeField(auto_now_add=True)
+#     parent_item = models.ForeignKey(HomeItem_P, null=True, blank=True)
+#     sort_id = models.IntegerField(max_length=20, blank=True, null=True)
+#
+#     def __unicode__(self):
+#         return self.title
 
 
 class Advertisement(models.Model):
@@ -356,6 +357,7 @@ class Appointment(models.Model):
     service_time = models.CharField(max_length=50, blank=True, null=True)
     order_type = models.IntegerField(max_length=4)
     online_pay = models.BooleanField(default=True)
+    send_type = models.IntegerField(max_length=2, default=1)
     amount = models.FloatField(max_length=10, null=True, blank=True)
     valid = models.BooleanField(default=True)
     use_coupon = models.BooleanField(default=False)
@@ -400,15 +402,14 @@ class OrderGoods(models.Model):
 
 
 class OrderHomeItem(models.Model):
-    title = models.CharField(max_length=30)
-    price = models.CharField(max_length=10, blank=True, null=True)
-    content = models.CharField(max_length=500)
+    item_name = models.CharField(max_length=50)
     create_time = models.DateTimeField(auto_now_add=True)
-    belong = models.ForeignKey(Appointment, related_name='orderhomeitems')
-    origin_item = models.ForeignKey(HomeItem, related_name='actitems')
+    origin_item = models.ForeignKey(HomeItem, related_name='actitem')
+    belong = models.ForeignKey(Appointment, related_name='orderitem')
 
     def __unicode__(self):
-        return self.title
+        return self.item_name
+
 
 
 class OnlineCharge(models.Model):
@@ -417,6 +418,9 @@ class OnlineCharge(models.Model):
     channel_id = models.CharField(max_length=64, null=True, blank=True)
     paid = models.BooleanField(default=False)
     refund_url = models.CharField(max_length=200, null=True, blank=True)
+    request_refund = models.BooleanField(default=False)
+    refund = models.BooleanField(default=False)
+    refund_id = models.CharField(max_length=64, null=True, blank=True)
     price = models.IntegerField(max_length=10)
     time_expire = models.DateTimeField(max_length=30, null=True, blank=True)
     pingpp_create_time = models.DateTimeField(max_length=30)

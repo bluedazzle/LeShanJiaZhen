@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from HomeApi import views
+from HomeApi import OnlinePay
 
 urlpatterns = patterns('',
     url(r'^consumer/login$', views.login),
@@ -24,4 +25,6 @@ urlpatterns = patterns('',
     url(r'^consumer/create_pay_order$', views.create_pay_order),
     url(r'^consumer/create_appointment$', views.create_appointment),
     url(r'^consumer/verify_consumer$', views.verify_consumer),
+    url(r'^consumer/get_charge_status$', views.status_search),
+    url(r'^pingpp/charge_result$', OnlinePay.charge_result),
     )

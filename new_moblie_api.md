@@ -26,6 +26,15 @@
 |4|已完成|
 |5|已撤单|
 
+##**优惠券码对照表**
+|status|状态|
+| --------------  | :---: |
+|1|注册|
+|2|在线支付|
+|3|游戏获取|
+|4|好友邀请|
+|5|系统赠送|
+
 
 ##**注册**
 #####注册流程
@@ -478,6 +487,7 @@ POST /consumer/create_pay_order
 * address(_Required_|string)-用户地址
 * city_number(_Required_|string)-城市统一编码
 * coupon_id(_Optional_|string)-优惠券id
+* send_type(_Required_|integer)-送货类型
 * use_coupon(_Required_|bool)-是否使用优惠券
 * channel(_Required_|string)-支付渠道(详见ping＋＋文档)
 * online_pay(_Required_|bool)-是否在线支付
@@ -490,7 +500,7 @@ POST /consumer/create_pay_order
 
 ###**Request**
 ```
-{"username":"18215606355","private_token":"JKGVDnCIH7Ec+OuWPvNeRQtT4dwjoB0U","coupon_id":"20102101","use_coupon":false,"channel":"alipay","address":"kb258","online_pay":true,"city_number":"511000","submit_price":"35.0","goods_items":[{"sid":"1","use_repair":true},{"sid":"2","use_repair":false}],"home_items":[{"hid":"1"}]}
+{"username":"18215606355","send_type":1,"private_token":"JKGVDnCIH7Ec+OuWPvNeRQtT4dwjoB0U","coupon_id":"20102101","use_coupon":false,"channel":"alipay","address":"kb258","online_pay":true,"city_number":"511000","submit_price":"35.0","goods_items":[{"sid":"1","use_repair":true},{"sid":"2","use_repair":false}],"home_items":[{"hid":"1"}]}
 ```
 ###**Return**
 ```
@@ -572,21 +582,65 @@ or
 
 ##**订单**
 
+#####查询订单支付状态
+```
+POST /consumer/get_charge_status
+```
+###**Parameters**
+* phone(_Required_|string)-用户手机号
+* private_token(_Required_|string)-consumer token
+* order_id(_Required_|string)-订单id
+
+###**Request**
+```
+{"username":"18215606355","private_token":"LpOrR6BxMiAYUalZXQH1yIbKFEnGtkvS","order_id":"201503270100000001"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "order status get success",
+        "order_id": "201503270100000001",
+        "paid": true
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid order id"
+    }
+}
+or
+{
+    "status": 13,
+    "body": {
+        "msg": "login first before other action"
+    }
+}
+```
+
+
+
+##**订单**
+
 #####生成不含商品预约订单
 ```
 POST /consumer/create_appointment
 ```
 ###**Parameters**
 * phone(_Required_|string)-用户手机号
-* private_token(_Required_|string)-consumer token
+* private_token(_Required_|string)-consumer token or 用户token
 * address(_Required_|string)-用户地址
 * city_number(_Required_|string)-城市统一编码
+* login(_Required_|string)-是否登陆用户
 * home_items(_Required_|string)-维修服务列表
 * ###hid(_Required_|string)-服务id
 
 ###**Request**
 ```
-{"phone":"18215606355","private_token":"AqMxVDKmpUN2lE+WCyzbZ8sJ7dkfQhXa","address":"kb258","city_number":"511000","home_items":[{"hid":"1"}]}
+{"phone":"18215606355","login":false,"private_token":"AqMxVDKmpUN2lE+WCyzbZ8sJ7dkfQhXa","address":"kb258","city_number":"511000","home_items":[{"hid":"1"}]}
 ```
 ###**Return**
 ```

@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 import pingpp
 import simplejson
 import datetime
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from HomeApi.models import *
 
 APP_ID = 'app_DibTK09SavX9mHmH'
@@ -54,5 +57,37 @@ def create_new_charge(new_id, form, curuser):
     newcharge.pingpp_create_time = dateArray
     newcharge.save()
     return ch
+
+
+@csrf_exempt
+def charge_result(req):
+    notify = simplejson.loads(req.body)
+    print
+    if 'object' not in notify:
+      return HttpResponse('fail')
+    else:
+      if notify['object'] == 'charge':
+        # 开发者在此处加入对支付异步通知的处理代码
+        charge_id = notify['id']
+        paid = bool(notify['paid'])
+        online_charge = OnlineCharge.objects.get(pingpp_charge_id=charge_id)
+        if paid:
+            online_charge.paid = True
+            online_charge.save()
+        print 'success'
+        return HttpResponse('success')
+      elif notify['object'] == 'refund':
+        # 开发者在此处加入对退款异步通知的处理代码
+        refund_id = notify['id']
+        id = notify['charge']
+        online_charge = OnlineCharge.objects.get(pingpp_charge_id=id)
+        online_charge.refund = True
+        online_charge.refund_id = refund_id
+        online_charge.save()
+        print 'success'
+        return HttpResponse('success')
+      else:
+        print 'fail'
+        return HttpResponse('fail')
 
 
