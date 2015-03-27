@@ -12,6 +12,7 @@ from HomeApi.OnlinePay import *
 from HomeApi.location_process import *
 from django.utils.timezone import utc
 import copy
+import time
 import socket
 
 
@@ -240,7 +241,7 @@ def get_messages(req):
                 message = {}
                 message['content'] = itm.content
                 message['create_time'] = str(timezone.localtime(itm.create_time))
-                message['deadline'] = str(timezone.localtime(itm.deadline))
+                message['deadline'] = time.mktime(itm.deadline.timetuple())
                 messages.append(copy.copy(message))
             body['messages'] = messages
             return HttpResponse(encodejson(1, body), content_type='application/json')
@@ -291,7 +292,7 @@ def get_coupon(req):
                 coupon['type'] = itm.type
                 coupon['create_time'] = str(timezone.localtime(itm.create_time))
                 coupon['owned_time'] = str(timezone.localtime(itm.owned_time))
-                coupon['deadline'] = str(timezone.localtime(itm.deadline))
+                coupon['deadline'] = time.mktime(itm.deadline.timetuple())
                 coupons.append(copy.copy(coupon))
             body['coupons'] = coupons
             return HttpResponse(encodejson(1, body), content_type='application/json')
@@ -385,7 +386,7 @@ def get_invite_coupon(req):
         resjson = simplejson.loads(req.body)
         token = resjson['private_token']
         username = resjson['username']
-        invite_code = resjson['invite_code']
+        invite_code = str(resjson['invite_code']).upper()
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
             if invite_code == curuser.invite_code:
