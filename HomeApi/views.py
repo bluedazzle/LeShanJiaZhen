@@ -10,6 +10,7 @@ from PIL import Image
 from HomeApi.HomeAdminManager import *
 from HomeApi.OnlinePay import *
 from HomeApi.location_process import *
+from django.core.serializers import serialize, deserialize
 from django.utils.timezone import utc
 import copy
 import time
@@ -240,8 +241,10 @@ def get_messages(req):
             for itm in message_list:
                 message = {}
                 message['content'] = itm.content
+                message['id'] = itm.id
                 message['create_time'] = str(timezone.localtime(itm.create_time))
                 message['deadline'] = time.mktime(itm.deadline.timetuple())
+                message['read'] = itm.read
                 messages.append(copy.copy(message))
             body['messages'] = messages
             return HttpResponse(encodejson(1, body), content_type='application/json')
@@ -272,6 +275,52 @@ def add_message(req):
         else:
             body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
+
+
+@csrf_exempt
+def get_unread_message_count(req):
+    body={}
+    if req.method == 'POST':
+        jsonres = simplejson.loads(req.body)
+        token = jsonres['private_token']
+        username = jsonres['username']
+        if if_legal(username, token):
+            curuser = Associator.objects.get(username=username)
+            message_list = Message.objects.filter(own=curuser, read=False)
+            body['count'] = message_list.count()
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            body['msg'] = 'login first before other action'
+            return HttpResponse(encodejson(13, body), content_type='application/json')
+    else:
+        raise Http404
+
+
+@csrf_exempt
+def read_message(req):
+    body={}
+    if req.method == 'POST':
+        jsonres = simplejson.loads(req.body)
+        token = jsonres['private_token']
+        username = jsonres['username']
+        mid = jsonres['mid']
+        if if_legal(username, token):
+            curuser = Associator.objects.get(username=username)
+            message_list = Message.objects.filter(own=curuser, id=mid)
+            if not message_list.exists():
+                body['msg'] = 'invalid mid'
+                return HttpResponse(encodejson(7, body), content_type='application/json')
+            message = message_list[0]
+            message.read = True
+            message.save()
+            body['msg'] = 'message status change success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            body['msg'] = 'login first before other action'
+            return HttpResponse(encodejson(13, body), content_type='application/json')
+    else:
+        raise Http404
+
 
 @csrf_exempt
 def get_coupon(req):
@@ -978,6 +1027,79 @@ def get_recommmand_list(req):
     body['recommand_list'] = rec_list
     body['msg'] = 'recommand list get success'
     return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
+
+@csrf_exempt
+def get_advertisment(req):
+    body={}
+    if not req.method == 'POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    city_num = resjson['city_number']
+    block_list = Block.objects.filter(city_num=city_num)
+    if not block_list.exists():
+        body['msg'] = 'invalid city number'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    block = block_list[0]
+    advertisment_list = Advertisement.objects.filter(area=block)
+    jsondata = serialize('json', advertisment_list)
+    rejson = simplejson.loads(jsondata)
+    body['advertisment_list'] = rejson
+    body['msg'] = 'advertisment list get success'
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
+
+@csrf_exempt
+def appraise(req):
+    body={}
+    if not req.method == 'POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    username = resjson['username']
+    token = resjson['private_token']
+    if not if_legal(username, token):
+        body['msg'] = 'login befor other action'
+        return HttpResponse(encodejson(13, body), content_type='application/json')
+    order_id = resjson['order_id']
+    curuser = Associator.objects.get(username=username)
+    appoint_list = Appointment.objects.filter(order_id=order_id, associator=curuser)
+    if not appoint_list.exists():
+        body['msg'] = 'invalid order id'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    appoint_list = Appointment.objects.filter(order_id=order_id, status=5)
+    if appoint_list.exists():
+        body['msg'] = 'the order has been canceled'
+        return HttpResponse(encodejson(9, body), content_type='application/json')
+    appoint_list = Appointment.objects.filter(order_id=order_id, status=6)
+    if appoint_list.exists():
+        body['msg'] = 'the order has appraised'
+        return HttpResponse(encodejson(6, body), content_type='application/json')
+    appoint = Appointment.objects.get(order_id=order_id)
+    comment = resjson['comment']
+    rate = resjson['rate']
+    rb1 = bool(resjson['rb1'])
+    rb2 = bool(resjson['rb2'])
+    rb3 = bool(resjson['rb3'])
+    rb4 = bool(resjson['rb4'])
+    rb5 = bool(resjson['rb5'])
+    rb6 = bool(resjson['rb6'])
+    appoint.comment = comment
+    appoint.rate = rate
+    appoint.rb1 = rb1
+    appoint.rb2 = rb2
+    appoint.rb3 = rb3
+    appoint.rb4 = rb4
+    appoint.rb5 = rb5
+    appoint.rb6 = rb6
+    appoint.if_appraise = True
+    appoint.status = 6
+    appoint.save()
+    body['msg'] = 'appraise success'
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
 
 
 
