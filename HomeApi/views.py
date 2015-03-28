@@ -877,6 +877,111 @@ def create_appointment(req):
 
 
 
+@csrf_exempt
+def get_home_item_p(req):
+    body={}
+    if not req.method == 'POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    city_num = resjson['city_number']
+    block_list = Block.objects.filter(city_num=city_num)
+    if not block_list.exists():
+        body['msg'] = 'invalid city number'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    block = Block.objects.get(city_num=city_num)
+    homeitemp_list = HomeItem_P.objects.filter(area=block)
+    home_items_list = []
+    for itm in homeitemp_list:
+        homeitem = {}
+        homeitem['pid'] = itm.id
+        homeitem['item_name'] = itm.item_name
+        homeitem['type'] = itm.type
+        homeitem['note'] = itm.note
+        homeitem['icon'] = itm.icon
+        homeitem['sort_id'] = itm.sort_id
+        if itm.recommand:
+            homeitem['recommand'] = itm.recommand.id
+        else:
+            homeitem['recommand'] = None
+        home_items_list.append(copy.copy(homeitem))
+    body['parent_item_list'] = home_items_list
+    body['msg'] = 'get home items success'
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
+
+@csrf_exempt
+def get_home_item(req):
+    body={}
+    if not req.method == 'POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    pid = resjson['pid']
+    pitems = HomeItem_P.objects.filter(id=pid)
+    if not pitems.exists():
+        body['msg'] = 'invalid pid'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    pitem = pitems[0]
+    homeitem_list = HomeItem.objects.filter(parent_item=pitem)
+    home_list=[]
+    for itm in homeitem_list:
+        homeitem = {}
+        homeitem['item_name'] = itm.item_name
+        homeitem['sort_id'] = itm.sort_id
+        homeitem['hid'] = itm.id
+        homeitem['pic_url'] = itm.pic_url
+        home_list.append(copy.copy(homeitem))
+    body['home_items'] = home_list
+    body['msg'] = 'get homeitems success'
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
+
+@csrf_exempt
+def get_recommmand_list(req):
+    body={}
+    if not req.method=='POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    pid = resjson['recommand_id']
+    goodps = Goods_P.objects.filter(id=pid)
+    if not goodps.exists():
+        body['msg'] = 'invalid recommand id'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    goodp = goodps[0]
+    goods_os = Goods_O.objects.filter(parent_item=goodp)
+    gooditems_all = None
+    i = 0
+    for itm in goods_os:
+        gooditems = GoodsItem.objects.filter(parent_item=itm)
+        if i == 0:
+            gooditems_all = gooditems
+        else:
+            gooditems_all = gooditems_all | gooditems
+        i += 1
+    if gooditems_all is None:
+        body['msg'] = 'no recommand list'
+        body['recommand_list'] = []
+        return HttpResponse(encodejson(1, body), content_type='application/json')
+    recommand_list = gooditems_all.order_by('-recommand')
+    rec_list = []
+    for item in recommand_list:
+        rec = {}
+        rec['title'] = item.title
+        rec['recommand'] = item.recommand
+        rec['real_price'] = item.real_price
+        rec['origin_price'] = item.origin_price
+        rec['repair_price'] = item.repair_price
+        rec['sid'] = item.id
+        rec['picture'] = item.picture
+        rec_list.append(copy.copy(rec))
+    body['recommand_list'] = rec_list
+    body['msg'] = 'recommand list get success'
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
+
+
 def get_my_ip():
     myname = socket.getfqdn(socket.gethostname())
     myaddr = socket.gethostbyname(myname)

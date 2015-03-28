@@ -122,27 +122,6 @@ class Consumer(models.Model):
 
 
 
-class HomeItem_P(models.Model):
-    item_name = models.CharField(max_length=10)
-    type = models.IntegerField(max_length=2)
-    create_time = models.DateTimeField(auto_now_add=True)
-    area = models.ForeignKey(Block, null=True, blank=True)
-    icon = models.CharField(max_length=100, blank=True, null=True)
-    sort_id = models.IntegerField(max_length=10, blank=True, null=True)
-
-    def __unicode__(self):
-        return self.item_name
-
-class HomeItem(models.Model):
-    item_name = models.CharField(max_length=50)
-    create_time = models.DateTimeField(auto_now_add=True)
-    parent_item = models.ForeignKey(HomeItem_P)
-    sort_id = models.IntegerField(max_length=10, blank=True, null=True)
-    pic_url = models.CharField(max_length=50, null=True, blank=True)
-
-    def __unicode__(self):
-        return self.item_name
-
 # class HomeItem(models.Model):
 #     title = models.CharField(max_length=30)
 #     price = models.CharField(max_length=10, blank=True, null=True)
@@ -311,6 +290,32 @@ class GoodsItem(models.Model):
 
     def __unicode__(self):
         return self.title
+
+
+class HomeItem_P(models.Model):
+    item_name = models.CharField(max_length=10)
+    note = models.CharField(max_length=100, null=True, blank=True)
+    type = models.IntegerField(max_length=2)
+    create_time = models.DateTimeField(auto_now_add=True)
+    area = models.ForeignKey(Block, null=True, blank=True)
+    icon = models.CharField(max_length=100, blank=True, null=True)
+    recommand = models.ForeignKey(Goods_P, blank=True, null=True, related_name='homeitem')
+    sort_id = models.IntegerField(max_length=10, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.item_name
+
+
+class HomeItem(models.Model):
+    item_name = models.CharField(max_length=50)
+    create_time = models.DateTimeField(auto_now_add=True)
+    parent_item = models.ForeignKey(HomeItem_P)
+    sort_id = models.IntegerField(max_length=10, blank=True, null=True)
+    pic_url = models.CharField(max_length=50, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.item_name
+
 
 class Feedback(models.Model):
     phone = models.CharField(max_length=15)

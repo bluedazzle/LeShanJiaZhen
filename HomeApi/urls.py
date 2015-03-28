@@ -26,5 +26,8 @@ urlpatterns = patterns('',
     url(r'^consumer/create_appointment$', views.create_appointment),
     url(r'^consumer/verify_consumer$', views.verify_consumer),
     url(r'^consumer/get_charge_status$', views.status_search),
+    url(r'^consumer/get_homeitem$', views.get_home_item_p),
+    url(r'^consumer/get_homeitem_detail$', views.get_home_item),
+    url(r'^consumer/get_recommand$', views.get_recommmand_list),
     url(r'^pingpp/charge_result$', OnlinePay.charge_result),
     )

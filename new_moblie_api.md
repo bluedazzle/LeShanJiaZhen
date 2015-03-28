@@ -29,10 +29,10 @@
 ##**优惠券码对照表**
 |status|状态|
 | --------------  | :---: |
-|1|注册|
+|1|好友邀请|
 |2|在线支付|
 |3|游戏获取|
-|4|好友邀请|
+|4|注册|
 |5|系统赠送|
 
 
@@ -722,6 +722,172 @@ or
     "status": 13,
     "body": {
         "msg": "verify fail"
+    }
+}
+```
+
+
+##**维修／安装**
+
+#####获取维修／安装项目
+```
+POST /consumer/get_homeitem
+```
+###**Parameters**
+* city_number(_Required_|string)-城市统一编码
+###**Request**
+```
+{"city_number":"511000"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "get home items success",
+        "parent_item_list": [
+            {
+                "note": "",
+                "sort_id": null,
+                "item_name": "123",
+                "type": 1,
+                "recommand": 1,
+                "pid": 1,
+                "icon": ""
+            }
+        ]
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid city number"
+    }
+}
+```
+
+
+##**维修／安装**
+
+#####获取维修／安装项目详细
+```
+POST /consumer/get_homeitem_detail
+```
+###**Parameters**
+* pid(_Required_|string)-父维修／安装项目id
+###**Request**
+```
+{"pid":"1"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "get homeitems success",
+        "home_items": [
+            {
+                "item_name": " ",
+                "sort_id": null,
+                "hid": 1,
+                "pic_url": null
+            },
+            {
+                "item_name": "test",
+                "sort_id": 12,
+                "hid": 2,
+                "pic_url": ""
+            },
+            {
+                "item_name": "test2",
+                "sort_id": null,
+                "hid": 3,
+                "pic_url": ""
+            }
+        ]
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid pid"
+    }
+}
+```
+
+##**维修／安装**
+
+#####获取商品推荐列表
+```
+POST /consumer/get_recommand
+```
+###**Parameters**
+* recommand_id(_Required_|string)-推荐商品pid
+###**Request**
+```
+{"pid":"1"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "recommand list get success",
+        "recommand_list": [
+            {
+                "real_price": 20,
+                "picture": "",
+                "recommand": 10,
+                "title": "生育水管维修",
+                "repair_price": 4,
+                "sid": 2,
+                "origin_price": 30
+            },
+            {
+                "real_price": 20,
+                "picture": "",
+                "recommand": 3,
+                "title": "小米水龙头",
+                "repair_price": 4,
+                "sid": 3,
+                "origin_price": 40
+            },
+            {
+                "real_price": 20,
+                "picture": "",
+                "recommand": 1,
+                "title": "魅族水龙头",
+                "repair_price": 4,
+                "sid": 4,
+                "origin_price": 40
+            },
+            {
+                "real_price": 10,
+                "picture": "",
+                "recommand": 0,
+                "title": "屁股水管维修",
+                "repair_price": 5,
+                "sid": 1,
+                "origin_price": 12
+            }
+        ]
+    }
+}
+or
+{
+    "status": 1,
+    "body": {
+        "msg": "no recommand list",
+        "recommand_list": []
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid recommand id"
     }
 }
 ```
