@@ -141,7 +141,7 @@ class Advertisement(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     area = models.ForeignKey(Block)
     is_new = models.BooleanField(default=True)
-    type = models.IntegerField(max_length=2)
+    type = models.IntegerField(max_length=2, null=True, blank=True)
     first_jump = models.IntegerField(max_length=3, null=True, blank=True)
     second_jump = models.IntegerField(max_length=3, null=True, blank=True)
     third_jump = models.IntegerField(max_length=3, null=True, blank=True)

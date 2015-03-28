@@ -26,6 +26,7 @@ urlpatterns = patterns('',
     url('^vip_manage$', vip_manage),
     url('^give_coupon$', give_coupon),
     url('^check_coupon$', check_coupon),
+    url('^feed_back$', feed_back),
     #option
     url('^register_verify$', phone_verify),
     url('^f_register_verify$', f_phone_verify),
@@ -53,4 +54,6 @@ urlpatterns = patterns('',
     url('^edit_goods_o$', edit_goods_o),
     url('^edit_goods$', edit_goods),
     url('^delete_goods$', delete_goods),
+    # test
+    url('^create_coupons$', create_coupons)
 )

@@ -17,6 +17,7 @@ import datetime
 import time
 import os
 from PIL import Image
+import random
 BASE = os.path.dirname(os.path.dirname(__file__))
 base_url = 'http://localhost:8000'
 # base_url = 'http://115.29.138.80'
@@ -1308,7 +1309,138 @@ def check_coupon(request):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
         return check_permission(request, 'manage_coupon', 'admin_area/check_coupon.html')
+    if request.method == 'POST':
+        user = HomeAdmin.objects.get(username=request.session['username'])
+        if not user.manage_coupon:
+            return render_to_response('admin_area/check_coupon.html',
+                                      context_instance=RequestContext(request))
+        context = {}
+        context.update(csrf(request))
+        end_date = request.POST.get('end_date')
+        start_date = request.POST.get('start_date')
+        type = request.POST.get('type')
+        if_use = request.POST.get('if_use')
+        page_num = request.POST.get('page_num')
+        owner = request.POST.get('owner')
+        end_time = time.strptime(end_date, "%Y-%m-%d")
+        start_time = time.strptime(start_date, "%Y-%m-%d")
+        end_time = datetime.datetime(*end_time[:6])
+        start_time = datetime.datetime(*start_time[:6])
+        if owner:
+            as_owner = Associator.objects.filter(username=owner)
+            if as_owner.count() == 0:
+                return render_to_response('admin_area/check_coupon.html',
+                                          {'permission': True,
+                                           'owner_no': True},
+                                          context_instance=RequestContext(request))
+            else:
+                return check_owner_coupons(request, as_owner, end_time, start_time, if_use, type, start_date, end_date)
 
+        if if_use == '0':
+            if type == '0':
+                coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                                create_time__gte=start_time)
+            else:
+                coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                                create_time__gte=start_time,
+                                                type=int(type))
+        elif if_use == '1':
+            if type == '0':
+                coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                                create_time__gte=start_time,
+                                                if_use=False)
+            else:
+                coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                                create_time__gte=start_time,
+                                                if_use=False,
+                                                type=int(type))
+        else:
+            if type == '0':
+                coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                                create_time__gte=start_time,
+                                                if_use=True)
+            else:
+                coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                                create_time__gte=start_time,
+                                                if_use=True,
+                                                type=int(type))
+        coupon_count = coupons.count()
+        paginator = Paginator(coupons, 30)
+        try:
+            coupons = paginator.page(page_num)
+        except PageNotAnInteger:
+            coupons = paginator.page(1)
+        except EmptyPage:
+            coupons = paginator.page(paginator.num_pages)
+        except:
+            pass
+        return render_to_response('admin_area/check_coupon.html',
+                                  {'coupons': coupons,
+                                   'coupon_count': coupon_count,
+                                   'date_start': start_date,
+                                   'date_end': end_date,
+                                   'permission': True,
+                                   'if_use': if_use,
+                                   'type': type},
+                                  context_instance=RequestContext(request))
+
+
+def check_owner_coupons(request, owner, end_time, start_time, if_use, type, start_date, end_date):
+    if if_use == '0':
+        if type == '0':
+            coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                            create_time__gte=start_time,
+                                            own=owner)
+        else:
+            coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                            create_time__gte=start_time,
+                                            type=int(type),
+                                            own=owner)
+    elif if_use == '1':
+        if type == '0':
+            coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                            create_time__gte=start_time,
+                                            if_use=False,
+                                            own=owner)
+        else:
+            coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                            create_time__gte=start_time,
+                                            if_use=False,
+                                            type=int(type),
+                                            own=owner)
+    else:
+        if type == '0':
+            coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                            create_time__gte=start_time,
+                                            if_use=True,
+                                            own=owner)
+        else:
+            coupons = Coupon.objects.filter(create_time__lte=end_time,
+                                            create_time__gte=start_time,
+                                            if_use=True,
+                                            type=int(type),
+                                            own=owner)
+
+    coupon_count = coupons.count()
+    paginator = Paginator(coupons, 30)
+    try:
+        coupons = paginator.page(page_num)
+    except PageNotAnInteger:
+        coupons = paginator.page(1)
+    except EmptyPage:
+        coupons = paginator.page(paginator.num_pages)
+    except:
+        pass
+    return render_to_response('admin_area/check_coupon.html',
+                              {'coupons': coupons,
+                               'coupon_count': coupon_count,
+                               'date_start': start_date,
+                               'date_end': end_date,
+                               'permission': True,
+                               'type': type,
+                               'if_use': if_use,
+                               'owner': owner.username},
+                              context_instance=RequestContext(request))
 
 # 游戏管理部分
 def game_manage(request):
@@ -1343,6 +1475,47 @@ def push_message(request):
             return HttpResponse(json.dumps('F'))
 
 
+def feed_back(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return render_to_response('admin_area/feed_back.html',
+                                  context_instance=RequestContext(request))
+
+
 def index(req):
     return render_to_response('index.html')
+
+
+def create_coupons(request):
+    if request.method == 'GET':
+        for i in range(0, 1000):
+            date_now = time.strftime("%Y%m%d", time.localtime())
+            type = random.randint(1, 5)
+            coupons = Coupon.objects.order_by('-create_time').filter(type=type)
+            if coupons.count() == 0:
+                coupon_num = date_now + str(type) + '000001'
+            else:
+                date_newest = coupons[0].create_time.strftime("%Y%m%d")
+                if date_newest == date_now:
+                    coupon_num = str(int(coupons[0].cou_id)+1)
+                else:
+                    coupon_num = date_now + str(type) + '000001'
+            coupon_new = Coupon()
+            coupon_new.cou_id = coupon_num
+            coupon_new.type = type
+            coupon_new.value = random.randint(1, 10)
+            coupon_new.own = Associator.objects.get(username='15682513909')
+            time_now = datetime.datetime.utcnow()
+            year = int(time_now.strftime("%Y"))
+            month = int(time_now.strftime("%m"))
+            day = int(time_now.strftime("%d"))
+            hour = int(time_now.strftime("%H"))
+            minute = int(time_now.strftime("%M"))
+            seconds = int(time_now.strftime("%S"))
+            coupon_new.deadline = datetime.datetime(year+1, month, day, hour, minute, seconds)
+            coupon_new.save()
+
+        return HttpResponse(json.dumps('OK'))
+
 
