@@ -1,10 +1,11 @@
 from django.conf.urls import patterns, include, url
 from HomeApi import views
+from HomeApi import OnlinePay
 
 urlpatterns = patterns('',
     url(r'^consumer/login$', views.login),
     url(r'^consumer/logout$', views.logout),
-    url(r'^consumer/send_reg_verify$', views.send_reg_verify),
+    url(r'^consumer/send_verify$', views.send_reg_verify),
     url(r'^consumer/verify_reg_code$', views.verify_reg),
     url(r'^consumer/register$', views.register),
     url(r'^consumer/change_password$', views.change_password),
@@ -21,5 +22,12 @@ urlpatterns = patterns('',
     url(r'^consumer/get_goods_item$', views.get_goods_p_item),
     url(r'^consumer/get_goods_sec_item$', views.get_goods_o_item),
     url(r'^consumer/get_goods_detail$', views.get_goods_detail),
-    url(r'^consumer/create_online_pay_order$', views.create_online_pay_order),
+    url(r'^consumer/create_pay_order$', views.create_pay_order),
+    url(r'^consumer/create_appointment$', views.create_appointment),
+    url(r'^consumer/verify_consumer$', views.verify_consumer),
+    url(r'^consumer/get_charge_status$', views.status_search),
+    url(r'^consumer/get_homeitem$', views.get_home_item_p),
+    url(r'^consumer/get_homeitem_detail$', views.get_home_item),
+    url(r'^consumer/get_recommand$', views.get_recommmand_list),
+    url(r'^pingpp/charge_result$', OnlinePay.charge_result),
     )

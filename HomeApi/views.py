@@ -10,7 +10,9 @@ from PIL import Image
 from HomeApi.HomeAdminManager import *
 from HomeApi.OnlinePay import *
 from HomeApi.location_process import *
+from django.utils.timezone import utc
 import copy
+import time
 import socket
 
 
@@ -25,8 +27,13 @@ def send_reg_verify(req):
         verify_res = createverfiycode(phone)
         verify_res = simplejson.loads(verify_res)
         if verify_res['success'] is True:
-            newverify = Verify(phone=phone, verify=verify_res['verify_code'])
-            newverify.save()
+            try:
+                verify = Verify.objects.get(phone=phone)
+                verify.verify_res = verify_res['verify_code']
+                verify.save()
+            except Exception:
+                newverify = Verify(phone=phone, verify=verify_res['verify_code'])
+                newverify.save()
             return HttpResponse(encodejson(1, verify_res), content_type='application/json')
         else:
             return HttpResponse(encodejson(2, {}), content_type='application/json')
@@ -42,10 +49,7 @@ def register(req):
         jsonres = simplejson.loads(req.body)
         username = jsonres['username']
         passwd = jsonres['password']
-        address = jsonres['address']
         verify = jsonres['verify_code']
-        sex = jsonres['sex']
-        birthday = jsonres['birthday']
         if not verify_reg(username, verify):
             body['msg'] = 'verify_code does not exist'
             return HttpResponse(encodejson(7, body), content_type='application/json')
@@ -53,10 +57,10 @@ def register(req):
         if ishave.count()>0:
             body['msg'] = 'username has exist'
             return HttpResponse(encodejson(6, body), content_type='application/json')
-        birthday_datetime = string_to_datetime(birthday)
+        # birthday_datetime = string_to_datetime(birthday)
         passwd = hashlib.md5(passwd).hexdigest()
         token = createtoken()
-        newass = Associator(username=username, password=passwd, birthday=birthday_datetime, address=address, sex=sex)
+        newass = Associator(username=username, password=passwd)
         invite_code = create_invite_code()
         newass.invite_code = invite_code
         newass.private_token = token
@@ -237,7 +241,7 @@ def get_messages(req):
                 message = {}
                 message['content'] = itm.content
                 message['create_time'] = str(timezone.localtime(itm.create_time))
-                message['deadline'] = str(timezone.localtime(itm.deadline))
+                message['deadline'] = time.mktime(itm.deadline.timetuple())
                 messages.append(copy.copy(message))
             body['messages'] = messages
             return HttpResponse(encodejson(1, body), content_type='application/json')
@@ -288,7 +292,7 @@ def get_coupon(req):
                 coupon['type'] = itm.type
                 coupon['create_time'] = str(timezone.localtime(itm.create_time))
                 coupon['owned_time'] = str(timezone.localtime(itm.owned_time))
-                coupon['deadline'] = str(timezone.localtime(itm.deadline))
+                coupon['deadline'] = time.mktime(itm.deadline.timetuple())
                 coupons.append(copy.copy(coupon))
             body['coupons'] = coupons
             return HttpResponse(encodejson(1, body), content_type='application/json')
@@ -382,7 +386,7 @@ def get_invite_coupon(req):
         resjson = simplejson.loads(req.body)
         token = resjson['private_token']
         username = resjson['username']
-        invite_code = resjson['invite_code']
+        invite_code = str(resjson['invite_code']).upper()
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
             if invite_code == curuser.invite_code:
@@ -597,7 +601,7 @@ def get_goods_o_item(req):
 
 
 @csrf_exempt
-def create_online_pay_order(req):
+def create_pay_order(req):
     body={}
     good_title = ''
     good_body = ''
@@ -609,13 +613,20 @@ def create_online_pay_order(req):
             curuser = Associator.objects.get(username=username)
             address = resjson['address']
             city_num = resjson['city_number']
+            pay = bool(resjson['online_pay'])
+            send_type = resjson['send_type']
+            use_coupon = bool(resjson['use_coupon'])
+            coupon_id = ''
+            print use_coupon
+            if use_coupon:
+                coupon_id = resjson['coupon_id']
             block_list = Block.objects.filter(city_num=city_num)
             if not block_list.exists():
                 body['msg'] = 'invalid city_number'
                 return HttpResponse(encodejson(7, body), content_type='application/json')
             block = block_list[0]
             newid = create_order_id()
-            newappoint = Appointment(order_id=newid, status=1, address=address, area=block, associator=curuser, order_type=1)
+            newappoint = Appointment(order_id=newid, status=1, address=address, send_type=send_type, area=block, associator=curuser, order_type=1, online_pay=pay)
             newappoint.save()
             goodslist = resjson['goods_items']
             submit_price = float(resjson['submit_price'])
@@ -628,6 +639,7 @@ def create_online_pay_order(req):
                     body['msg'] = 'goods id:' + str(sid) + 'invalid'
                     newappoint.valid = False
                     newappoint.save()
+                    newappoint.delete()
                     return HttpResponse(encodejson(7, body), content_type='application/json')
                 goods = goodsitems[0]
                 price_sure += float(goods.real_price)
@@ -649,26 +661,69 @@ def create_online_pay_order(req):
                 newordergoods.save()
                 good_title = goods.title + '等'
                 good_body = good_body + goods.content + '#'
-            if submit_price != price_sure:
+            if send_type == 1:
+                if price_sure < 20.0:
+                    price_sure += 5
+            coupon_amount = 0.0
+            if use_coupon:
+                coupon_list = Coupon.objects.filter(cou_id=coupon_id)
+                if not coupon_list.exists():
+                    newappoint.valid = False
+                    newappoint.save()
+                    newappoint.delete()
+                    body['msg'] = 'coupon invalid'
+                    return HttpResponse(encodejson(7, body), content_type='application/json')
+                coupon = coupon_list[0]
+                print coupon.cou_id
+                if not (coupon.if_use is False and coupon.own == curuser and if_in_due(coupon.deadline)):
+                    newappoint.valid = False
+                    newappoint.save()
+                    newappoint.delete()
+                    body['msg'] = 'the coupon has used, over due or is not belong you'
+                    return HttpResponse(encodejson(21, body), content_type='application/json')
+                coupon.if_use = True
+                coupon_amount = float(coupon.value)
+                newappoint.use_coupon = True
+                newappoint.order_coupon = coupon
+                newappoint.save()
+                coupon.save()
+            ping_body = {}
+            channel = resjson['channel']
+            print coupon_amount
+            amount = (price_sure - coupon_amount)
+            newappoint.amount = amount
+            newappoint.save()
+            if amount < 0.0:
+                amount = 0.0
+            print amount
+            if submit_price != amount:
+                newappoint.valid = False
+                newappoint.save()
+                newappoint.delete()
                 body['msg'] = 'submit price wrong'
                 return HttpResponse(encodejson(20, body), content_type='application/json')
+            amount = int(amount * 100)
             home_item_list = resjson['home_items']
             for item in home_item_list:
                 hid = item['hid']
                 home_list = HomeItem.objects.filter(id=hid)
                 if not home_list.exists():
                     body['msg'] = 'home item id:' + str(hid) + 'invalid'
+                    newappoint.valid = False
+                    newappoint.save()
+                    newappoint.delete()
                     return HttpResponse(encodejson(7, body), content_type='application/json')
                 homeit = home_list[0]
-                new_order_item = OrderHomeItem(title=homeit.title,
-                                               price=homeit.price,
-                                               content=homeit.content,
+                new_order_item = OrderHomeItem(item_name=homeit.item_name,
+                                               create_time=datetime.datetime.now(),
                                                belong=newappoint,
                                                origin_item=homeit)
                 new_order_item.save()
-            ping_body = {}
-            channel = resjson['channel']
-            amount = int(price_sure * 100)
+            if not pay:
+                newappoint.amount = price_sure
+                newappoint.save()
+                body['msg'] = 'create off-line order success'
+                return HttpResponse(encodejson(1, body), content_type='application/json')
             # ping_body['order_no:'] = newid
             ping_body['channel'] = channel
             ping_body['amount'] = amount
@@ -676,16 +731,254 @@ def create_online_pay_order(req):
             ping_body['currency'] = 'cny'
             ping_body['subject'] = good_title
             ping_body['body'] = good_body
+            if amount == 0:
+                body['msg'] = 'amount is 0,local order create success'
+                body['charge_detail'] = False
+                body['order_id'] = newid
+                return HttpResponse(encodejson(1, body), content_type='application/json')
             res = create_new_charge(newid, ping_body, curuser)
             # print res
             body['msg'] = 'server create order success, but not sure ping++ create success'
             body['charge_detail'] = res
+            body['order_id'] = newid
             return HttpResponse(encodejson(1, body), content_type='application/json')
         else:
             body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
     else:
         raise Http404
+
+
+
+@csrf_exempt
+def status_search(req):
+    body={}
+    if not req.method == 'POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    order_id = resjson['order_id']
+    username = resjson['username']
+    token = resjson['private_token']
+    if not if_legal(username, token):
+        body['msg'] = 'login first before other action'
+        return HttpResponse(encodejson(13, body), content_type='application/json')
+    order_list = Appointment.objects.filter(order_id=order_id)
+    if not order_list.exists():
+        body['msg'] = 'invalid order id'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    order = order_list[0]
+    if order.amount == 0:
+        body['msg'] = 'amount = 0'
+        return HttpResponse(encodejson(1, body), content_type='application/json')
+    if order.chargeinfo.paid:
+        body['paid'] = True
+    else:
+        body['paid'] = False
+    body['msg'] = 'order status get success'
+    body['order_id'] = order_id
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
+
+
+@csrf_exempt
+def verify_consumer(req):
+    body={}
+    if req.method == 'POST':
+        resjson = simplejson.loads(req.body)
+        phone = resjson['phone']
+        verify = resjson['verify_code']
+        if verify_reg(phone, verify):
+            consumer = Consumer.objects.get(phone=phone)
+            if consumer.verified:
+                body['private_token'] = consumer.token
+            else:
+                newtoken = createtoken()
+                consumer.verified = True
+                consumer.token = newtoken
+                consumer.save()
+                body['private_token'] = newtoken
+            body['msg'] = 'verify success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        else:
+            body['msg'] = 'verify fail'
+            return HttpResponse(encodejson(13, body), content_type='application/json')
+    else:
+        raise Http404
+
+
+
+
+@csrf_exempt
+def create_appointment(req):
+    body={}
+    consumer = None
+    if req.method == 'POST':
+        resjson = simplejson.loads(req.body)
+        phone = resjson['phone']
+        token = resjson['private_token']
+        login = bool(resjson['login'])
+        if login:
+            if not if_legal(phone, token):
+                body['msg'] = 'login first before other action'
+                return HttpResponse(encodejson(13, body), content_type='application/json')
+            consumer = Associator(username=phone)
+        else:
+            consumer_list = Consumer.objects.filter(phone=phone)
+            if not consumer_list.exists():
+                newconsumer = Consumer(phone=phone)
+                newconsumer.save()
+                body['msg'] = 'phone is not verified'
+                return HttpResponse(encodejson(9, body), content_type='application/json')
+            consumer = consumer_list[0]
+            if not consumer.verified:
+                body['msg'] = 'phone is not verified'
+                return HttpResponse(encodejson(9, body), content_type='application/json')
+        try:
+            if login:
+                ve = consumer
+            else:
+                ve = Consumer.objects.get(phone=phone, token=token)
+            address = resjson['address']
+            city_num = resjson['city_number']
+            try:
+                city = Block.objects.get(city_num=city_num)
+            except Exception:
+                body['msg'] = 'invalid city number'
+                return HttpResponse(encodejson(7, body), content_type='application/json')
+            newid = create_order_id(pay=False)
+            newappoint = Appointment(status=1, address=address, order_id=newid, order_type=2, online_pay=False, area=city)
+            if login:
+                newappoint.associator = ve
+            else:
+                newappoint.consumer = ve
+            newappoint.save()
+            home_item_list = resjson['home_items']
+            for item in home_item_list:
+                hid = item['hid']
+                home_list = HomeItem.objects.filter(id=hid)
+                if not home_list.exists():
+                    body['msg'] = 'home item id:' + str(hid) + 'invalid'
+                    newappoint.delete()
+                    return HttpResponse(encodejson(7, body), content_type='application/json')
+                homeit = home_list[0]
+                new_order_item = OrderHomeItem(item_name=homeit.item_name,
+                                           create_time=datetime.datetime.now(),
+                                           belong=newappoint,
+                                           origin_item=homeit)
+                new_order_item.save()
+            body['msg'] = 'appointment create success'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        except Exception, e:
+            print e
+            body['msg'] = 'json value missing or consumer token not correct'
+            return HttpResponse(encodejson(2, body), content_type='application/json')
+
+
+
+
+@csrf_exempt
+def get_home_item_p(req):
+    body={}
+    if not req.method == 'POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    city_num = resjson['city_number']
+    block_list = Block.objects.filter(city_num=city_num)
+    if not block_list.exists():
+        body['msg'] = 'invalid city number'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    block = Block.objects.get(city_num=city_num)
+    homeitemp_list = HomeItem_P.objects.filter(area=block)
+    home_items_list = []
+    for itm in homeitemp_list:
+        homeitem = {}
+        homeitem['pid'] = itm.id
+        homeitem['item_name'] = itm.item_name
+        homeitem['type'] = itm.type
+        homeitem['note'] = itm.note
+        homeitem['icon'] = itm.icon
+        homeitem['sort_id'] = itm.sort_id
+        if itm.recommand:
+            homeitem['recommand'] = itm.recommand.id
+        else:
+            homeitem['recommand'] = None
+        home_items_list.append(copy.copy(homeitem))
+    body['parent_item_list'] = home_items_list
+    body['msg'] = 'get home items success'
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
+
+@csrf_exempt
+def get_home_item(req):
+    body={}
+    if not req.method == 'POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    pid = resjson['pid']
+    pitems = HomeItem_P.objects.filter(id=pid)
+    if not pitems.exists():
+        body['msg'] = 'invalid pid'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    pitem = pitems[0]
+    homeitem_list = HomeItem.objects.filter(parent_item=pitem)
+    home_list=[]
+    for itm in homeitem_list:
+        homeitem = {}
+        homeitem['item_name'] = itm.item_name
+        homeitem['sort_id'] = itm.sort_id
+        homeitem['hid'] = itm.id
+        homeitem['pic_url'] = itm.pic_url
+        home_list.append(copy.copy(homeitem))
+    body['home_items'] = home_list
+    body['msg'] = 'get homeitems success'
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
+
+@csrf_exempt
+def get_recommmand_list(req):
+    body={}
+    if not req.method=='POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    pid = resjson['recommand_id']
+    goodps = Goods_P.objects.filter(id=pid)
+    if not goodps.exists():
+        body['msg'] = 'invalid recommand id'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    goodp = goodps[0]
+    goods_os = Goods_O.objects.filter(parent_item=goodp)
+    gooditems_all = None
+    i = 0
+    for itm in goods_os:
+        gooditems = GoodsItem.objects.filter(parent_item=itm)
+        if i == 0:
+            gooditems_all = gooditems
+        else:
+            gooditems_all = gooditems_all | gooditems
+        i += 1
+    if gooditems_all is None:
+        body['msg'] = 'no recommand list'
+        body['recommand_list'] = []
+        return HttpResponse(encodejson(1, body), content_type='application/json')
+    recommand_list = gooditems_all.order_by('-recommand')
+    rec_list = []
+    for item in recommand_list:
+        rec = {}
+        rec['title'] = item.title
+        rec['recommand'] = item.recommand
+        rec['real_price'] = item.real_price
+        rec['origin_price'] = item.origin_price
+        rec['repair_price'] = item.repair_price
+        rec['sid'] = item.id
+        rec['picture'] = item.picture
+        rec_list.append(copy.copy(rec))
+    body['recommand_list'] = rec_list
+    body['msg'] = 'recommand list get success'
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
 
 
 
@@ -698,7 +991,10 @@ def get_my_ip():
 
 def create_order_id(pay=True):
     odate = datetime.date.today()
-    todaynum = int(Appointment.objects.filter(create_time__gte=odate).count()) + 1
+    if pay:
+        todaynum = int(Appointment.objects.filter(create_time__gte=odate, order_type=1).count()) + 1
+    else:
+        todaynum = int(Appointment.objects.filter(create_time__gte=odate, order_type=2).count()) + 1
     odate = str(odate).replace('-', '')
     paystr = '00'
     if pay:
@@ -788,3 +1084,12 @@ def verify_reg(phone, verify_code):
             return True
         else:
             return False
+
+
+def if_in_due(deadline):
+    nowt = datetime.datetime.utcnow().replace(tzinfo=utc)
+    detla = deadline - nowt
+    if detla < datetime.timedelta():
+        return False
+    else:
+        return True

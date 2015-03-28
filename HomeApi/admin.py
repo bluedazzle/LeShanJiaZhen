@@ -8,7 +8,7 @@ class PhoneVerifyAdmin(admin.ModelAdmin):
 
 admin.site.register(HomeAdmin)
 admin.site.register(HomeItem_P)
-admin.site.register(HomeItem_O)
+# admin.site.register(HomeItem_O)
 admin.site.register(HomeItem)
 admin.site.register(Advertisement)
 admin.site.register(Appointment)
