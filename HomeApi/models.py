@@ -228,10 +228,12 @@ class Associator(AbstractBaseUser):
         app_label = 'HomeApi'
 
 class Coupon(models.Model):
-    cou_id = models.CharField(max_length=14, unique=True)
+    cou_id = models.CharField(max_length=15, unique=True)
     value = models.IntegerField(max_length=3)
     if_use = models.BooleanField(default=False)
+    # 1为好友邀请，2为在线支付，3为游戏获取，4为注册，5为系统赠送
     type = models.IntegerField(max_length=2)
+    # 游戏标识
     game_sign = models.CharField(max_length=6, null=True, blank=True)
     own = models.ForeignKey(Associator, null=True, blank=True, related_name='coupons')
     create_time = models.DateTimeField(auto_now=True)
@@ -264,7 +266,7 @@ class CouponControl(models.Model):
 class Message(models.Model):
     content = models.CharField(max_length=200)
     create_time = models.DateTimeField(auto_now_add=True)
-    deadline = models.DateTimeField(max_length=30, null=True, blank=True)
+    read = models.BooleanField(default=False)
     own = models.ForeignKey(Associator, related_name='messages')
 
     def __unicode__(self):

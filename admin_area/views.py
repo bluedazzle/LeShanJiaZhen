@@ -861,29 +861,6 @@ def delete_program_p(request):
         return HttpResponseRedirect('program_manage')
 
 
-def push_message(request):
-    if not request.session.get('username'):
-        return HttpResponseRedirect('login_in')
-    if request.method == 'GET':
-        user = HomeAdmin.objects.get(type=1, username=request.session['username'])
-        if user.manage_send_message:
-            return render_to_response('admin_area/push_message.html',
-                                      {'permission': True},
-                                      context_instance=RequestContext(request))
-        else:
-            return render_to_response('admin_area/push_message.html',
-                                      {'permission': False},
-                                      context_instance=RequestContext(request))
-    if request.method == 'POST':
-        message = request.POST.get('mes_push')
-        message = message.encode('utf-8')
-        req = customedPush(message)
-        if req:
-            return HttpResponse(json.dumps('T'))
-        else:
-            return HttpResponse(json.dumps('F'))
-
-
 def goods_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
@@ -1096,6 +1073,8 @@ def edit_goods(request):
                                       context_instance=RequestContext(request))
 
     if request.method == 'POST':
+        context = {}
+        context.update(csrf(request))
         goods_o_id = request.POST.get('goods_o_id')
         goods_id = request.POST.get('goods_id')
         title = request.POST.get('item_name')
@@ -1239,46 +1218,129 @@ def delete_goods(request):
                 return HttpResponseRedirect('goods_manage?goods_p=' + str(p_id))
 
 
+# 检查用户是否有相应的操作权限，并返回相应的GET请求
+def check_permission(request, kind, template):
+    user = HomeAdmin.objects.get(type=1, username=request.session['username'])
+    if kind == 'manage_game':
+        user_permission = user.manage_game
+    elif kind == 'manage_coupon':
+        user_permission = user.manage_coupon
+    elif kind == 'manage_send_message':
+        user_permission = user.manage_send_message
+    elif kind == 'manage_check_vip':
+        user_permission = user.manage_check_vip
+
+    if user_permission:
+        content = {'permission': True}
+    else:
+        content = {'permission': False}
+
+    return render_to_response(template,
+                              content,
+                              context_instance=RequestContext(request))
+
+
+# 维修基金管理部分
 def coupon_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        user = HomeAdmin.objects.get(type=1, username=request.session['username'])
-        if user.manage_coupon:
-            return render_to_response('admin_area/coupon_manage.html',
-                                      {'permission': True},
+        return check_permission(request, 'manage_coupon', 'admin_area/coupon_manage.html')
+
+
+# 赠送维修基金
+def give_coupon(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return check_permission(request, 'manage_coupon', 'admin_area/give_coupon.html')
+    if request.method == 'POST':
+        context = {}
+        context.update(csrf(request))
+        phone = request.POST.get('phone')
+        value = request.POST.get('value')
+        content = request.POST.get('content')
+        date_now = time.strftime("%Y%m%d", time.localtime())
+        associators = Associator.objects.filter(username=phone)
+        if associators.count() == 0:
+            return render_to_response('admin_area/give_coupon.html',
+                                      {'phone': phone,
+                                       'value': value,
+                                       'content': content},
                                       context_instance=RequestContext(request))
-        return render_to_response('admin_area/coupon_manage.html',
-                                  {'permission': False},
+
+        coupons = Coupon.objects.order_by('-create_time').filter(type=5)
+        if coupons.count() == 0:
+            coupon_num = date_now + '5' + '000001'
+        else:
+            date_newest = coupons[0].create_time.strftime("%Y%m%d")
+            if date_newest == date_now:
+                coupon_num = str(int(coupons[0].cou_id)+1)
+            else:
+                coupon_num = date_now + '5' + '000001'
+        coupon_new = Coupon()
+        coupon_new.cou_id = coupon_num
+        coupon_new.type = 5
+        coupon_new.value = value
+        coupon_new.own = Associator.objects.get(username=phone)
+        time_now = datetime.datetime.utcnow()
+        year = int(time_now.strftime("%Y"))
+        month = int(time_now.strftime("%m"))
+        day = int(time_now.strftime("%d"))
+        hour = int(time_now.strftime("%H"))
+        minute = int(time_now.strftime("%M"))
+        seconds = int(time_now.strftime("%S"))
+        coupon_new.deadline = datetime.datetime(year+1, month, day, hour, minute, seconds)
+        coupon_new.save()
+        message_new = Message()
+        message_new.content = "您获得了快乐居家赠送的%s元维修基金" %value
+        message_new.own = associators[0]
+        message_new.save()
+        return render_to_response('admin_area/give_coupon.html',
+                                  {'give_success': True,
+                                   'permission': True},
                                   context_instance=RequestContext(request))
 
 
+# 查询维修基金的发放情况
+def check_coupon(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return check_permission(request, 'manage_coupon', 'admin_area/check_coupon.html')
+
+
+# 游戏管理部分
 def game_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        user = HomeAdmin.objects.get(type=1, username=request.session['username'])
-        if user.manage_game:
-            return render_to_response('admin_area/game_manage.html',
-                                      {'permission': True},
-                                      context_instance=RequestContext(request))
-        return render_to_response('admin_area/game_manage.html',
-                                  {'permission': False},
-                                  context_instance=RequestContext(request))
+        return check_permission(request, 'manage_game', 'admin_area/game_manage.html')
 
 
+# 会员管理部分
 def vip_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        user = HomeAdmin.objects.get(type=1, username=request.session['username'])
-        if user.manage_check_vip:
-            return render_to_response('admin_area/vip_manage.html',
-                                      {'permission': True},
-                                      context_instance=RequestContext(request))
-        return render_to_response('admin_area/vip_manage.html',
-                                  {'permission': False},
-                                  context_instance=RequestContext(request))
+        return check_permission(request, 'manage_check_vip', 'admin_area/vip_manage.html')
+
+
+# 消息推送操作
+def push_message(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return check_permission(request, 'manage_send_message', 'admin_area/push_message.html')
+
+    if request.method == 'POST':
+        message = request.POST.get('mes_push')
+        message = message.encode('utf-8')
+        req = customedPush(message)
+        if req:
+            return HttpResponse(json.dumps('T'))
+        else:
+            return HttpResponse(json.dumps('F'))
 
 
 def index(req):

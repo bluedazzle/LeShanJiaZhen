@@ -24,6 +24,8 @@ urlpatterns = patterns('',
     url('^coupon_manage$', coupon_manage),
     url('^game_manage$', game_manage),
     url('^vip_manage$', vip_manage),
+    url('^give_coupon$', give_coupon),
+    url('^check_coupon$', check_coupon),
     #option
     url('^register_verify$', phone_verify),
     url('^f_register_verify$', f_phone_verify),

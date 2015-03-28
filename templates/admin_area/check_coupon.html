@@ -1,0 +1,55 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+    {% if permission %}
+<div class="col-md-12 col-lg-12" style="padding-left: 10%;padding-right: 10%;padding-top: 5%">
+       <table class="table">
+           <thead>
+             <tr>
+                 <h6 style="padding-bottom: 1%">
+                 维修基金列表
+                 </h6>
+             </tr>
+           </thead>
+           <tbody>
+              <tr style="background-color: #1abc9c; color: #ffffff">
+                  <th>编号</th>
+                  <th>发放时间</th>
+                  <th></th>
+                  <th>地址</th>
+                  <th></th>
+              </tr>
+              {% for area in areas %}
+              <tr>
+                  <td>{{ area.area_name }}</td>
+                  <td>{{ area.city_num }}</td>
+                  <td>{{ area.area_tel }}</td>
+                  <td>{{ area.area_address }}</td>
+                  <td style="max-width: 60px;padding-right:0">
+                     <a role="button" href="edit_area?area_id={{ area.id }}" class="btn btn-sm btn-default">修改</a>
+                     <button class="btn btn-sm btn-danger" onclick="delete_area('{{ area.id }}')">删除</button>
+                  </td>
+              </tr>
+              {% endfor %}
+           </tbody>
+           <script>
+               function delete_area(area_id){
+                   var r = confirm("确定删除该地区吗？");
+                   if(r){
+                       window.location.href = "delete_area?area_id="+area_id;
+                   }
+               }
+           </script>
+       </table>
+</div>
+    {% else %}
+       <div class="col-md-12 col-lg-12" style="padding-right: 10%;padding-left: 10%">
+        <h5 style="margin-left: 35%;color: red">您没有操作权限</h5>
+       </div>
+    {% endif %}
+<script>
+        $('#page_title').text('维修基金查询');
+        $('#coupon_manage').addClass('active');
+        $('#message_manage').addClass('active')
+</script>
+
+{% endblock %}
