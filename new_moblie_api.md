@@ -25,6 +25,7 @@
 |3|配送中|
 |4|已完成|
 |5|已撤单|
+|6|已评价|
 
 ##**优惠券码对照表**
 |status|状态|
@@ -260,6 +261,66 @@ POST /consumer/get_messages
 or
 {"status": 13, "body": {"msg": "login first before other action"}}
 ```
+
+##**消息**
+
+#####获取消息中心未读消息数量
+```
+POST /consumer/get_unread_message_count
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* private_token(_Required_|string)-用户token
+###**Request**
+```
+{"username":"18215606355","private_token":"123456"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "count": 1
+    }
+}
+or
+{"status": 13, "body": {"msg": "login first before other action"}}
+```
+
+
+##**消息**
+
+#####设置消息为已读
+```
+POST /consumer/read_message
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* private_token(_Required_|string)-用户token
+* mid(_Required_|string)-消息id
+###**Request**
+```
+{"username":"18215606355","private_token":"123456","mid":"1"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "message status change success"
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid mid"
+    }
+}
+or
+{"status": 13, "body": {"msg": "login first before other action"}}
+```
+
 
 ##**获取优惠券**
 
@@ -702,6 +763,60 @@ or
 
 
 ##**订单**
+
+#####评价订单
+```
+POST /consumer/appraise
+```
+###**Parameters**
+* username(_Required_|string)-用户手机号
+* private_token(_Required_|string)-用户token
+* order_id(_Required_|string)-订单id
+* rate(_Required_|integer)-星级
+* rb1(_Required_|bool)-具体勾选评价1
+* rb2(_Required_|bool)-具体勾选评价2
+* rb3(_Required_|bool)-具体勾选评价3
+* rb4(_Required_|bool)-具体勾选评价4
+* rb5(_Required_|bool)-具体勾选评价5
+* rb6(_Required_|bool)-具体勾选评价6
+
+###**Request**
+```
+{"order_id":"201503270000000006","username":"18215606355","private_token":"LpOrR6BxMiAYUalZXQH1yIbKFEnGtkvS","rate":"4","rb1":true,"rb2":true,"rb3":true,"rb4":true,"rb5":false,"rb6":false,"comment":"test"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "appraise success"
+    }
+}
+or
+{
+    "status": 6,
+    "body": {
+        "msg": "the order has appraised"
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid order id"
+    }
+}
+or
+{
+    "status": 9,
+    "body": {
+        "msg": "the order has been canceled"
+    }
+}
+```
+
+
+##**订单**
 #####验证非注册用户预约手机号
 1、先向consumer/send_verify请求发送验证码验证手机
 2、请求consumer/verify_consumer 验证手机号并得到consumer token
@@ -915,6 +1030,70 @@ or
     "status": 7,
     "body": {
         "msg": "invalid recommand id"
+    }
+}
+```
+
+
+##**广告**
+
+#####获取广告
+```
+POST /consumer/get_advertisment
+```
+###**Parameters**
+* city_number(_Required_|string)-城市统一编码
+###**Request**
+```
+{"city_number":"1"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "advertisment_list": [
+            {
+                "fields": {
+                    "content": "化霜定时器（100L内）",
+                    "third_jump": null,
+                    "title": "生育水管维修",
+                    "photo": "",
+                    "area": 2,
+                    "is_new": true,
+                    "second_jump": 2,
+                    "create_time": "2015-03-28T08:08:38.837Z",
+                    "type": 1,
+                    "first_jump": 3
+                },
+                "model": "HomeApi.advertisement",
+                "pk": 2
+            },
+            {
+                "fields": {
+                    "content": "化霜定时器（100L内）",
+                    "third_jump": 1,
+                    "title": "小米水龙头",
+                    "photo": "",
+                    "area": 2,
+                    "is_new": true,
+                    "second_jump": 12,
+                    "create_time": "2015-03-28T08:08:05.681Z",
+                    "type": 1,
+                    "first_jump": 1
+                },
+                "model": "HomeApi.advertisement",
+                "pk": 1
+            }
+        ],
+        "msg": "advertisment list get success"
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid city number
     }
 }
 ```

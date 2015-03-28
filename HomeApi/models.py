@@ -147,7 +147,7 @@ class Advertisement(models.Model):
     third_jump = models.IntegerField(max_length=3, null=True, blank=True)
 
     def __unicode__(self):
-        return unicode(self.create_time)
+        return unicode(self.title)
 
 
 
@@ -251,6 +251,7 @@ class Message(models.Model):
     content = models.CharField(max_length=200)
     create_time = models.DateTimeField(auto_now_add=True)
     deadline = models.DateTimeField(max_length=30, null=True, blank=True)
+    read = models.BooleanField(default=False)
     own = models.ForeignKey(Associator, related_name='messages')
 
     def __unicode__(self):
