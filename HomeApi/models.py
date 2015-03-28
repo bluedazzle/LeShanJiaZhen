@@ -135,10 +135,16 @@ class Consumer(models.Model):
 
 
 class Advertisement(models.Model):
+    title = models.CharField(max_length=100)
     content = models.CharField(max_length=500, blank=True, null=True)
     photo = models.CharField(max_length=150, blank=True, null=True)
     create_time = models.DateTimeField(auto_now_add=True)
+    area = models.ForeignKey(Block)
     is_new = models.BooleanField(default=True)
+    type = models.IntegerField(max_length=2)
+    first_jump = models.IntegerField(max_length=3, null=True, blank=True)
+    second_jump = models.IntegerField(max_length=3, null=True, blank=True)
+    third_jump = models.IntegerField(max_length=3, null=True, blank=True)
 
     def __unicode__(self):
         return unicode(self.create_time)
