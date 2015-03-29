@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from appointment_detail import *
+from tests import *
 
 
 urlpatterns = patterns('',
@@ -55,5 +56,6 @@ urlpatterns = patterns('',
     url('^edit_goods$', edit_goods),
     url('^delete_goods$', delete_goods),
     # test
-    url('^create_coupons$', create_coupons)
+    url('^create_coupons$', create_coupons),
+    url('^create_appointments$', create_appointments),
 )

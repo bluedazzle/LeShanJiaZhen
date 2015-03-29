@@ -622,7 +622,8 @@ def find_appointment(request):
         context = {}
         context.update(csrf(request))
         phone = request.POST.get('phone')
-        appointment = request.POST.get('appointments')
+        appointment = request.POST.get('appointment')
+        page_num = request.POST.get('page_num')
         appointments_return = []
         if phone:
             user = HomeAdmin.objects.get(username=username)
@@ -649,9 +650,20 @@ def find_appointment(request):
                                           {'fault': 'T'},
                                           context_instance=RequestContext(request))
             else:
+                paginator = Paginator(appointments_return, 10)
+                try:
+                    appointments_return = paginator.page(page_num)
+                except PageNotAnInteger:
+                    appointments_return = paginator.page(1)
+                except EmptyPage:
+                    appointments_return = paginator.page(paginator.num_pages)
+                except:
+                    pass
                 return render_to_response('admin_area/find_appointment.html',
-                                          {'items': appointments_return},
+                                          {'items': appointments_return,
+                                           'phone': phone},
                                           context_instance=RequestContext(request))
+
         if appointment:
             user = HomeAdmin.objects.get(username=username)
             appointments = Appointment.objects.order_by('-id').filter(area=user.area, order_id=appointment)
@@ -660,8 +672,18 @@ def find_appointment(request):
                                           {'fault': 'T'},
                                           context_instance=RequestContext(request))
             else:
+                paginator = Paginator(appointments, 10)
+                try:
+                    appointments = paginator.page(page_num)
+                except PageNotAnInteger:
+                    appointments = paginator.page(1)
+                except EmptyPage:
+                    appointments = paginator.page(paginator.num_pages)
+                except:
+                    pass
                 return render_to_response('admin_area/find_appointment.html',
-                                          {'items': appointments},
+                                          {'items': appointments,
+                                           'appiontment': appointment},
                                           context_instance=RequestContext(request))
 
 
@@ -1331,10 +1353,13 @@ def check_coupon(request):
             if as_owner.count() == 0:
                 return render_to_response('admin_area/check_coupon.html',
                                           {'permission': True,
-                                           'owner_no': True},
+                                           'owner_no': True,
+                                           'date_start': start_date,
+                                           'date_end': end_date,
+                                           'owner': owner},
                                           context_instance=RequestContext(request))
             else:
-                return check_owner_coupons(request, as_owner, end_time, start_time, if_use, type, start_date, end_date)
+                return check_owner_coupons(request, as_owner[0], end_time, start_time, if_use, type, start_date, end_date, page_num)
 
         if if_use == '0':
             if type == '0':
@@ -1381,11 +1406,12 @@ def check_coupon(request):
                                    'date_end': end_date,
                                    'permission': True,
                                    'if_use': if_use,
-                                   'type': type},
+                                   'type': type,
+                                   'owner': owner},
                                   context_instance=RequestContext(request))
 
 
-def check_owner_coupons(request, owner, end_time, start_time, if_use, type, start_date, end_date):
+def check_owner_coupons(request, owner, end_time, start_time, if_use, type, start_date, end_date, page_num):
     if if_use == '0':
         if type == '0':
             coupons = Coupon.objects.filter(create_time__lte=end_time,
@@ -1486,36 +1512,5 @@ def feed_back(request):
 def index(req):
     return render_to_response('index.html')
 
-
-def create_coupons(request):
-    if request.method == 'GET':
-        for i in range(0, 1000):
-            date_now = time.strftime("%Y%m%d", time.localtime())
-            type = random.randint(1, 5)
-            coupons = Coupon.objects.order_by('-create_time').filter(type=type)
-            if coupons.count() == 0:
-                coupon_num = date_now + str(type) + '000001'
-            else:
-                date_newest = coupons[0].create_time.strftime("%Y%m%d")
-                if date_newest == date_now:
-                    coupon_num = str(int(coupons[0].cou_id)+1)
-                else:
-                    coupon_num = date_now + str(type) + '000001'
-            coupon_new = Coupon()
-            coupon_new.cou_id = coupon_num
-            coupon_new.type = type
-            coupon_new.value = random.randint(1, 10)
-            coupon_new.own = Associator.objects.get(username='15682513909')
-            time_now = datetime.datetime.utcnow()
-            year = int(time_now.strftime("%Y"))
-            month = int(time_now.strftime("%m"))
-            day = int(time_now.strftime("%d"))
-            hour = int(time_now.strftime("%H"))
-            minute = int(time_now.strftime("%M"))
-            seconds = int(time_now.strftime("%S"))
-            coupon_new.deadline = datetime.datetime(year+1, month, day, hour, minute, seconds)
-            coupon_new.save()
-
-        return HttpResponse(json.dumps('OK'))
 
 

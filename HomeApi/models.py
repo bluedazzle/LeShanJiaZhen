@@ -369,6 +369,7 @@ class Appointment(models.Model):
     associator = models.ForeignKey(Associator, null=True, blank=True)
     service_person = models.CharField(max_length=20, blank=True, null=True)
     service_time = models.CharField(max_length=50, blank=True, null=True)
+    # order_type = 1:goods, order_type = 2:homeitem
     order_type = models.IntegerField(max_length=4)
     online_pay = models.BooleanField(default=True)
     send_type = models.IntegerField(max_length=2, default=1)

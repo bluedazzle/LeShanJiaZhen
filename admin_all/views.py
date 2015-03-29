@@ -14,6 +14,7 @@ import re
 import simplejson
 import hashlib
 import datetime
+import time
 
 # Create your views here.
 
@@ -87,24 +88,12 @@ def find_appointment(request):
         area_num = request.GET.get('area')
         status = request.GET.get('type')
         areas_all = Block.objects.all()
-        #检查是否是查询某段时间的操作
-        if date_start and date_end and area_num and status:
-            request.session['a_date_start'] = date_start
-            request.session['a_date_end'] = date_end
-            request.session['area'] = area_num
-            request.session['status'] = status
         #查询首页
         if not page_num:
             #查看某段时间的预约
             if date_start and date_end and area_num and status:
                 area = Block.objects.get(city_num=area_num)
-                if status == '0':
-                    all_appointments = Appointment.objects.order_by('-id').filter(area=area)
-                else:
-                    status = int(status)
-                    all_appointments = Appointment.objects.order_by('-id').filter(status=status, area=area)
-
-                result = find_sometime_appointment(1, date_start, date_end, all_appointments)
+                result = find_sometime_appointment(1, date_start, date_end, int(status), area)
                 appointments = result['appointments']
                 count = result['count']
                 return render_to_response('admin_all/find_appointment.html',
@@ -114,7 +103,7 @@ def find_appointment(request):
                                            'date_start': date_start,
                                            'date_end': date_end,
                                            'status': status,
-                                           'area': area.area_name,
+                                           'area': area,
                                            'areas': areas_all}, context_instance=RequestContext(request))
             else:
                 return render_to_response('admin_all/find_appointment.html',
@@ -123,21 +112,12 @@ def find_appointment(request):
         #查询某一页
         else:
             #查询某段时间预约的某一页
-            if request.session.get('a_date_start') and request.session.get('a_date_end') and request.session.get('status') and request.session['area']:
-                date_start = request.session['a_date_start']
-                date_end = request.session['a_date_end']
-                status = request.session['status']
-                area_num = request.session['area']
+            if date_start and date_end and area_num and status:
                 area = Block.objects.get(city_num=area_num)
-                if status == 0:
-                    all_appointments = Appointment.objects.order_by('-id').filter(area=area)
-                else:
-                    status = int(status)
-                    all_appointments = Appointment.objects.order_by('-id').filter(status=status, area=area)
-
-                result = find_sometime_appointment(page_num, date_start, date_end, all_appointments)
+                result = find_sometime_appointment(page_num, date_start, date_end, int(status), area)
                 appointments = result['appointments']
                 count = result['count']
+                print "OK"
                 return render_to_response('admin_all/find_appointment.html',
                                           {'items': appointments,
                                            'count': count,
@@ -145,24 +125,27 @@ def find_appointment(request):
                                            'date_start': date_start,
                                            'date_end': date_end,
                                            'status': status,
-                                           'area': area_name,
+                                           'area': area,
                                            'areas': areas_all}, context_instance=RequestContext(request))
             else:
                 return render_to_response('admin_all/find_appointment.html', {'areas': areas_all})
 
 
-def find_sometime_appointment(page_num, date_start, date_end, all_appointments):
-    appointments = []
-    if all_appointments.count() > 0:
-        for item in all_appointments:
-            it_date = str(item.create_time)[0:10]
-            date_start = str(date_start)
-            date_end = str(date_end)
-            if it_date >= date_start and it_date <= date_end:
-                appointments.append(item)
-            else:
-                continue
-    count = len(appointments)
+def find_sometime_appointment(page_num, date_start, date_end, status, area):
+    end_time = time.strptime(date_end, "%Y-%m-%d")
+    start_time = time.strptime(date_start, "%Y-%m-%d")
+    end_time = datetime.datetime(*end_time[:6])
+    start_time = datetime.datetime(*start_time[:6])
+    if status == 0:
+        appointments = Appointment.objects.order_by('-id').filter(create_time__lte=end_time,
+                                                                  create_time__gte=start_time,
+                                                                  area=area)
+    else:
+        appointments = Appointment.objects.order_by('-id').filter(create_time__lte=end_time,
+                                                                  create_time__gte=start_time,
+                                                                  status=status,
+                                                                  area=area)
+    count = appointments.count()
     paginator = Paginator(appointments, 15)
     try:
         appointments = paginator.page(page_num)

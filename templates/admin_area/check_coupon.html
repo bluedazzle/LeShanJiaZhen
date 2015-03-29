@@ -8,26 +8,35 @@
     <div class="col-md-12 col-lg-12" style="margin-top: 1%">
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 32%;max-width: 305px;margin-right:26.1%;float: right">
          <span class="input-group-addon" style="width: 80px">截止日期:</span>
-         <input id="end_date" name="end_date" type="text" class="form-control" style="margin-right: 10%;" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
+         <input id="end_date" name="end_date" type="text" class="form-control" style="margin-right: 10%;"
+                onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly"
+                 value="{{ date_end }}"/>
       </div>
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 32%;max-width: 305px;margin-right: 1%;float: right">
          <span class="input-group-addon">起始日期:</span>
-         <input id="start_date" name="start_date" type="text" class="form-control" style="margin-right: 10%;" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
+         <input id="start_date" name="start_date" type="text" class="form-control" style="margin-right: 10%;"
+                onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly"
+                 value="{{ date_start }}"/>
       </div>
     </div>
     <div class="col-md-12 col-lg-12" style="margin-top: 1%">
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 29%;max-width: 290px;float:right;padding-left: 0;margin-right: 26%">
           <span class="input-group-addon">使用情况</span>
           <select id="select1" name="if_use"  class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0;">
-              <option value="0">所有</option>
+              <option value="0" selected>所有</option>
               <option value="1">未使用</option>
               <option value="2">已使用</option>
           </select>
       </div>
+        {% if if_use %}
+            <script>
+            $('#select1').val({{ if_use }})
+            </script>
+        {% endif %}
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 29%;max-width: 290px;float:right;padding-left: 0;margin-right: 1%;">
           <span class="input-group-addon" style="width: 101px">获得方式</span>
           <select id="select2" name="type" class="form-control select select-primary select-block mbl">
-              <option value="0">所有</option>
+              <option value="0" selected>所有</option>
               <option value="1">好友邀请</option>
               <option value="2">在线支付</option>
               <option value="3">游戏获取</option>
@@ -35,6 +44,11 @@
               <option value="5">系统赠送</option>
           </select>
       </div>
+        {% if type %}
+            <script>
+            $('#select2').val({{ type }})
+            </script>
+        {% endif %}
       <script>
               $("#select1").select2({dropdownCssClass: 'dropdown-inverse'});
               $("#select2").select2({dropdownCssClass: 'dropdown-inverse'});
@@ -42,7 +56,8 @@
       <div class="col-md-8 col-lg-8 input-group has-success" style="width: 100%;max-width: 620px;margin-top: 4.5%;margin-left: 23%">
          <span class="input-group-addon">拥有者(可选):</span>
          <input id="owner" name="owner" type="text" class="form-control"
-                onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+                onkeyup="this.value=this.value.replace(/\D/g,'')"
+                 value="{{ owner }}"/>
       </div>
     </div>
     </form>
@@ -112,6 +127,12 @@
               {% endfor %}
            </tbody>
        </table>
+    {% else %}
+        {% if not owner_no %}
+        <h5 style="text-align: center;padding-top: 5%;color: red;">
+           在{{ date_start }}到{{ date_end }}中，没有符合条件的维修基金
+        </h5>
+         {% endif %}
     {% endif %}
 </div>
     {% else %}
@@ -126,7 +147,7 @@
 </script>
 {% if coupons.has_previous or coupons.has_next %}
   {% if coupons.paginator.num_pages < 15 %}
-  <div class="text-right" style="margin-right: 4%">
+  <div class="text-center">
       <div class="pagination pagination-success">
           <ul>
               {% if coupons.has_previous %}
@@ -150,6 +171,8 @@
   <div class="text-center">
      {% if coupons.has_previous %}
          <button class="btn btn-success" onclick="turn_page('{{ coupons.previous_page_number }}')">上一页</button>
+     {% else %}
+         <button class="btn btn-success" disabled="disabled">上一页</button>
      {% endif %}
      <select id="select3" class="form-control select select-success select-block mbl" onchange="turn_page(this.value)">
          {% for page in coupons.paginator.page_range %}
@@ -160,8 +183,13 @@
              {% endif %}
          {% endfor %}
      </select>
+     <script>
+         $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
+     </script>
      {% if coupons.has_next %}
          <button class="btn btn-success" onclick="turn_page('{{ coupons.next_page_number }}')">下一页</button>
+     {% else %}
+         <button class="btn btn-success" disabled="disabled">下一页</button>
      {% endif %}
   </div>
   {% endif %}
@@ -175,7 +203,6 @@
     <input name="owner" value="{{ owner }}"/>
   </form>
   <script>
-   $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
    function turn_page(page_num){
        $('#page_num').val(page_num);
        $('#page_form').submit();
