@@ -30,7 +30,7 @@ def send_reg_verify(req):
         if verify_res['success'] is True:
             try:
                 verify = Verify.objects.get(phone=phone)
-                verify.verify_res = verify_res['verify_code']
+                verify.verify = verify_res['verify_code']
                 verify.save()
             except Exception:
                 newverify = Verify(phone=phone, verify=verify_res['verify_code'])
@@ -895,17 +895,36 @@ def create_appointment(req):
                 ve = Consumer.objects.get(phone=phone, token=token)
             address = resjson['address']
             city_num = resjson['city_number']
+            use_coupon = bool(resjson['use_coupon'])
             try:
                 city = Block.objects.get(city_num=city_num)
             except Exception:
                 body['msg'] = 'invalid city number'
                 return HttpResponse(encodejson(7, body), content_type='application/json')
+            coupon = None
+            if use_coupon:
+                cid = resjson['coupon_id']
+                cou_list = Coupon.objects.filter(cou_id=cid)
+                if not cou_list.exists():
+                    body['msg'] = 'invalid coupon id'
+                    return HttpResponse(encodejson(7, body), content_type='application/json')
+                coupon = cou_list[0]
+                print coupon.cou_id
+                print coupon.if_use
+                if not (coupon.if_use is False and coupon.own.username == ve.username and if_in_due(coupon.deadline)):
+                    body['msg'] = 'the coupon has used, over due or is not belong you'
+                    return HttpResponse(encodejson(21, body), content_type='application/json')
             newid = create_order_id(pay=False)
-            newappoint = Appointment(status=1, order_phone=order_phone, address=address, order_id=newid, order_type=2, online_pay=False, area=city)
+            newappoint = Appointment(status=1, order_phone=order_phone, use_coupon=use_coupon, address=address, order_id=newid, order_type=2, online_pay=False, area=city)
             if login:
                 newappoint.associator = ve
             else:
                 newappoint.consumer = ve
+            if use_coupon:
+                newappoint.use_coupon = True
+                newappoint.order_coupon = coupon
+                coupon.if_use = True
+                coupon.save()
             newappoint.save()
             home_item_list = resjson['home_items']
             for item in home_item_list:
@@ -1410,7 +1429,7 @@ def verify_reg(phone, verify_code):
 def if_in_due(deadline):
     nowt = datetime.datetime.utcnow().replace(tzinfo=utc)
     detla = deadline - nowt
-    if detla < datetime.timedelta():
+    if detla < datetime.timedelta(0):
         return False
     else:
         return True

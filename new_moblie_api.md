@@ -677,13 +677,15 @@ POST /consumer/create_appointment
 * private_token(_Required_|string)-consumer token or 用户token
 * address(_Required_|string)-用户地址
 * city_number(_Required_|string)-城市统一编码
-* login(_Required_|string)-是否登陆用户
+* login(_Required_|bool)-是否登陆用户
+* use_coupon(_Required_|bool)-是否使用优惠券
+* coupon_id(_Optional_|string)-优惠券id
 * home_items(_Required_|string)-维修服务列表
 * ###hid(_Required_|string)-服务id
 
 ###**Request**
 ```
-{"phone":"18215606355","login":false,"private_token":"AqMxVDKmpUN2lE+WCyzbZ8sJ7dkfQhXa","address":"kb258","city_number":"511000","home_items":[{"hid":"1"}]}
+{"phone":"18215606355","private_token":"LpOrR6BxMiAYUalZXQH1yIbKFEnGtkvS","address":"test","city_number":"511100","login":true,"order_phone":"1234567","use_coupon":true,"coupon_id":"20150330300008","home_items":[{"hid":"1"}]}
 ```
 ###**Return**
 ```
