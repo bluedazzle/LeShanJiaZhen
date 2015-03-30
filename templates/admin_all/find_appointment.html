@@ -20,11 +20,15 @@
     <div class="col-md-12 col-lg-12" style="margin-top: 3%">
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;margin-right:27%;float: right">
          <span class="input-group-addon" style="width: 80px">截止日期:</span>
-         <input id="end_date" name="end_date" type="text" class="form-control" style="margin-right: 10%;" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
+         <input id="end_date" name="end_date" type="text" class="form-control" style="margin-right: 10%;"
+                onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly"
+                 value="{{ date_end }}"/>
       </div>
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;margin-right: 1%;float: right">
          <span class="input-group-addon">起始日期:</span>
-         <input id="start_date" name="start_date" type="text" class="form-control" style="margin-right: 10%;" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
+         <input id="start_date" name="start_date" type="text" class="form-control" style="margin-right: 10%;"
+                onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly"
+                 value="{{ date_start }}"/>
       </div>
     </div>
     <div class="col-md-12 col-lg-12" style="margin-top: 1%">
@@ -35,6 +39,11 @@
                   <option value="{{ every_area.city_num }}">{{ every_area.area_name }}</option>
               {% endfor %}
           </select>
+      {% if area %}
+          <script>
+          $('#select1').val({{ area.city_num }})
+          </script>
+      {% endif %}
       </div>
       <div class="col-md-5 col-lg-5 input-group has-success" style="width: 30%;max-width: 300px;float:right;padding-left: 0;margin-right: 1%;">
           <span class="input-group-addon" style="width: 101px">订单类型</span>
@@ -45,6 +54,11 @@
                   <option value="3">已完成订单</option>
                   <option value="4">取消的订单</option>
           </select>
+          {% if status %}
+              <script>
+              $('#select2').val('{{ status }}')
+              </script>
+          {% endif %}
       </div>
       <script>
               $("#select1").select2({dropdownCssClass: 'dropdown-inverse'});
@@ -163,9 +177,9 @@
                   {% endif %}
            </div>
            {% endif %}
-           {% if not item.orderhomeitems.all.count == 0 %}
+           {% if not item.orderitem.all.count == 0 %}
                <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c;">维修安装：</strong>
-                  {% for homeitem in item.orderhomeitems.all %}
+                  {% for homeitem in item.orderitem.all %}
                       {{ homeitem }}&nbsp;&nbsp;
                   {% endfor %}
                   {% if item.photo1 %}
@@ -225,15 +239,17 @@
        </div>
    </div>
 {% endfor %}
+  </div>
 {% if items.has_previous or items.has_next %}
-  <div class="text-right" style="margin-right: 4%">
+    {% if items.paginator.num_pages < 15 %}
+  <div class="text-center">
       <div class="pagination pagination-success">
           <ul>
               {% if items.has_previous %}
             <li><a class="btn btn-info previous" href="?page={{ items.previous_page_number }}">上一页</a></li>
              {% endif %}
              {% for page in items.paginator.page_range %}
-               {% if page = items.number %}
+               {% if page == items.number %}
             <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
                {% else %}
             <li><a href="?page={{ page }}">{{ page }}</a></li>
@@ -245,5 +261,35 @@
             {% endif %}
           </ul>
       </div>
+  </div>
+     {% else %}
+  <div class="text-center">
+     {% if items.has_previous %}
+         <a role="button" class="btn btn-success" href="?start_date={{ date_start }}&end_date={{ date_end }}&type={{ status }}&area={{ area.city_num }}&page={{ items.previous_page_number }}">上一页</a>
+     {% else %}
+         <button class="btn btn-success" disabled="disabled">上一页</button>
+     {% endif %}
+     <select id="select3" class="form-control select select-success select-block mbl" onchange="turn_page(this.value)">
+         {% for page in items.paginator.page_range %}
+             {% if page == items.number %}
+             <option value="{{ page }}" selected>第{{ page }}页</option>
+             {% else %}
+             <option value="{{ page }}">第{{ page }}页</option>
+             {% endif %}
+         {% endfor %}
+     </select>
+     <script>
+         $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
+         function turn_page(page_num){
+             window.location.href = "find_appointment?start_date={{ date_start }}&end_date={{ date_end }}&type={{ status }}&area={{ area.city_num }}&page=" + page_num;
+         }
+     </script>
+     {% if items.has_next %}
+         <a role="button" class="btn btn-success" href="?end_date={{ date_end }}&start_date={{ date_start }}&type={{ status }}&area={{ area.city_num }}&page={{ items.next_page_number }}">下一页</a>
+     {% else %}
+         <button class="btn btn-success" disabled="disabled">下一页</button>
+     {% endif %}
+  </div>
+  {% endif %}
 {% endif %}
 {% endblock %}

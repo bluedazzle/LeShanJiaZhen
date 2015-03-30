@@ -141,7 +141,7 @@ class Advertisement(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     area = models.ForeignKey(Block)
     is_new = models.BooleanField(default=True)
-    type = models.IntegerField(max_length=2)
+    type = models.IntegerField(max_length=2, null=True, blank=True)
     first_jump = models.IntegerField(max_length=3, null=True, blank=True)
     second_jump = models.IntegerField(max_length=3, null=True, blank=True)
     third_jump = models.IntegerField(max_length=3, null=True, blank=True)
@@ -214,10 +214,12 @@ class Associator(AbstractBaseUser):
         app_label = 'HomeApi'
 
 class Coupon(models.Model):
-    cou_id = models.CharField(max_length=14, unique=True)
+    cou_id = models.CharField(max_length=15, unique=True)
     value = models.IntegerField(max_length=3)
     if_use = models.BooleanField(default=False)
+    # 1为好友邀请，2为在线支付，3为游戏获取，4为注册，5为系统赠送
     type = models.IntegerField(max_length=2)
+    # 游戏标识
     game_sign = models.CharField(max_length=6, null=True, blank=True)
     own = models.ForeignKey(Associator, null=True, blank=True, related_name='coupons')
     create_time = models.DateTimeField(auto_now=True)
@@ -369,6 +371,7 @@ class Appointment(models.Model):
     associator = models.ForeignKey(Associator, null=True, blank=True)
     service_person = models.CharField(max_length=20, blank=True, null=True)
     service_time = models.CharField(max_length=50, blank=True, null=True)
+    # order_type = 1:goods, order_type = 2:homeitem
     order_type = models.IntegerField(max_length=4)
     online_pay = models.BooleanField(default=True)
     send_type = models.IntegerField(max_length=2, default=1)

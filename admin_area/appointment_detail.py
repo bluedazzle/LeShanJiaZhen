@@ -71,10 +71,10 @@ def get_appointment_all(request):
                 item.status = 2
                 item.process_by = user
                 item.save()
-            try:
-                send_get_message(appointments)
-            except:
-                pass
+            # try:
+            #     send_get_message(appointments)
+            # except:
+            #     pass
             return HttpResponseRedirect('operate_new')
         else:
             return HttpResponseRedirect('login_in')
@@ -106,17 +106,17 @@ def cancel_appointment_all_n(request):
             user = HomeAdmin.objects.get(username=username)
             appointments = Appointment.objects.filter(area=user.area, status=1)
             if appointments.count() == 0:
-                return HttpResponseRedirect('operate_new')
+                return HttpResponseRedirect('operate_get')
 
             for item in appointments:
                 item.status = 4
                 item.area = user.area
                 item.save()
-            try:
-                send_cancel_message(appointments)
-            except:
-                pass
-            return HttpResponseRedirect('operate_new')
+            # try:
+            #     send_cancel_message(appointments)
+            # except:
+            #     pass
+            return HttpResponseRedirect('operate_get')
         else:
             return HttpResponseRedirect('login_in')
 
@@ -198,7 +198,7 @@ def finish_appointment_all(request):
         if request.session.get('username'):
             username = request.session['username']
             user = HomeAdmin.objects.get(username=username)
-            appointments = Appointment.objects.get(area=user.area, status=2)
+            appointments = Appointment.objects.filter(area=user.area, status=2)
             if appointments.count() == 0:
                 return HttpResponseRedirect('operate_get')
 
