@@ -233,6 +233,7 @@ class CouponControl(models.Model):
     game_start_time = models.DateTimeField(max_length=30, null=True, blank=True)
     game_end_time = models.DateTimeField(max_length=30, null=True, blank=True)
     game_coupon_num = models.IntegerField(max_length=10, null=True, blank=True)
+    game_current_num = models.IntegerField(max_length=10, null=True, blank=True)
     game_sign = models.CharField(max_length=6, null=True, blank=True)
     game_active = models.BooleanField(default=False)
 
@@ -245,7 +246,7 @@ class CouponControl(models.Model):
     invite_money = models.FloatField(max_length=5, null=True, blank=True)
 
     def __unicode__(self):
-        return self.id
+        return str(self.id)
 
 class Message(models.Model):
     content = models.CharField(max_length=200)
@@ -352,6 +353,7 @@ class AppControl(models.Model):
 
 class Appointment(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
+    order_phone = models.CharField(max_length=15, default='000')
     order_id = models.CharField(max_length=100, unique=True)
     remark = models.CharField(max_length=100, blank=True, null=True)
     status = models.IntegerField(max_length=2)
@@ -428,10 +430,13 @@ class OnlineCharge(models.Model):
     pingpp_charge_id = models.CharField(max_length=64)
     order_id = models.CharField(max_length=20, unique=True)
     channel_id = models.CharField(max_length=64, null=True, blank=True)
+    channel = models.CharField(max_length=20, default='miss')
     paid = models.BooleanField(default=False)
     refund_url = models.CharField(max_length=200, null=True, blank=True)
     request_refund = models.BooleanField(default=False)
     refund = models.BooleanField(default=False)
+    refund_desc = models.CharField(max_length=300, null=True, blank=True)
+    refund_fail_mes = models.CharField(max_length=300, null=True, blank=True)
     refund_id = models.CharField(max_length=64, null=True, blank=True)
     price = models.IntegerField(max_length=10)
     time_expire = models.DateTimeField(max_length=30, null=True, blank=True)
