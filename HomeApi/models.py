@@ -239,16 +239,27 @@ class CouponControl(models.Model):
     game_sign = models.CharField(max_length=6, null=True, blank=True)
     game_active = models.BooleanField(default=False)
 
-    online_money_low = models.FloatField(max_length=5, null=True, blank=True)
-    online_money_high = models.FloatField(max_length=5, null=True, blank=True)
+    online_money_low = models.IntegerField(max_length=5, null=True, blank=True)
+    online_money_high = models.IntegerField(max_length=5, null=True, blank=True)
     online_active = models.BooleanField(default=False)
 
-    reg_money = models.FloatField(max_length=5, null=True, blank=True)
+    reg_money = models.IntegerField(max_length=5, null=True, blank=True)
 
-    invite_money = models.FloatField(max_length=5, null=True, blank=True)
+    invite_money = models.IntegerField(max_length=5, null=True, blank=True)
 
     def __unicode__(self):
         return str(self.id)
+
+
+class GameRecord(models.Model):
+    game_id = models.CharField(max_length=20)
+    start_time = models.DateTimeField(max_length=30)
+    end_time = models.DateTimeField(max_length=30)
+    money_high = models.DecimalField(max_digits=10, decimal_places=2)
+    money_low = models.DecimalField(max_digits=10, decimal_places=2)
+    origin_coupon_num = models.IntegerField(max_length=6)
+    actually_coupon_num = models.IntegerField(max_length=6)
+    game_active = models.BooleanField(default=True)
 
 class Message(models.Model):
     content = models.CharField(max_length=200)

@@ -1242,7 +1242,7 @@ def delete_goods(request):
 
 
 # 检查用户是否有相应的操作权限，并返回相应的GET请求
-def check_permission(request, kind, template):
+def check_permission(request, kind, template, content={}):
     user = HomeAdmin.objects.get(type=1, username=request.session['username'])
     if kind == 'manage_game':
         user_permission = user.manage_game
@@ -1254,9 +1254,15 @@ def check_permission(request, kind, template):
         user_permission = user.manage_check_vip
 
     if user_permission:
-        content = {'permission': True}
+        if content:
+            content['permission'] = True
+        else:
+            content = {'permission': True}
     else:
-        content = {'permission': False}
+        if content:
+            content['permission'] = False
+        else:
+            content = {'permission': False}
 
     return render_to_response(template,
                               content,
@@ -1467,6 +1473,46 @@ def check_owner_coupons(request, owner, end_time, start_time, if_use, type, star
                                'if_use': if_use,
                                'owner': owner.username},
                               context_instance=RequestContext(request))
+
+
+def set_coupon(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        coupon_control = CouponControl.objects.all()
+        if coupon_control.count() == 0:
+            new_coupon_control = CouponControl()
+            new_coupon_control.save()
+            return check_permission(request,
+                                    'manage_coupon',
+                                    'admin_area/set_coupon.html',
+                                    {'item': new_coupon_control})
+        return check_permission(request,
+                                'manage_coupon',
+                                'admin_area/set_coupon.html',
+                                {'item': coupon_control[0]})
+    if request.method == 'POST':
+        context = {}
+        context.update(csrf(request))
+        user_admin = HomeAdmin.objects.get(username=request.session['username'])
+        if not user_admin.manage_coupon:
+            return render_to_response('admin_area/set_coupon.html')
+        online_money_high = request.POST.get('online_money_high')
+        online_money_low = request.POST.get('online_money_low')
+        reg_money = request.POST.get('reg_money')
+        invite_money = request.POST.get('invite_money')
+        coupon_control = CouponControl.objects.all()
+        control_id = coupon_control[0].id
+        coupon_control = CouponControl.objects.get(id=control_id)
+        coupon_control.online_money_low = online_money_low
+        coupon_control.online_money_high = online_money_high
+        coupon_control.reg_money = reg_money
+        coupon_control.invite_money = invite_money
+        coupon_control.save()
+        return render_to_response('admin_area/set_coupon.html',
+                                  {'permission': True,
+                                   'item': coupon_control,
+                                   'set_success': True})
 
 # 游戏管理部分
 def game_manage(request):
