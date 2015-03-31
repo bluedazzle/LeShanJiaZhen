@@ -27,6 +27,7 @@ urlpatterns = patterns('',
     url('^vip_manage$', vip_manage),
     url('^give_coupon$', give_coupon),
     url('^check_coupon$', check_coupon),
+    url('^set_coupon$', set_coupon),
     url('^feed_back$', feed_back),
     #option
     url('^register_verify$', phone_verify),
