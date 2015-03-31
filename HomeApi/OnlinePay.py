@@ -50,6 +50,7 @@ def create_new_charge(new_id, form, curuser):
     dateArray = datetime.datetime.fromtimestamp(ch['created'])
     expire = datetime.datetime.fromtimestamp(ch['time_expire'])
     newcharge.order_id = ch['order_no']
+    newcharge.channel = ch['channel']
     newcharge.price = ch['amount']
     newcharge.time_expire = expire
     newcharge.order_with = cur_appoint
@@ -91,3 +92,24 @@ def charge_result(req):
         return HttpResponse('fail')
 
 
+def refund_order(order_id, description, amount):
+    pingpp.api_key = TEST_KEY
+    ch = pingpp.Charge.retrieve(order_id)
+    re = ch.refunds.create(description=description, amount=amount)
+    # print '233333'
+    # print re
+    # print re['object']
+    # print '233333'
+    if re['object'] == 'refund':
+        refund_o = OnlineCharge.objects.get(pingpp_charge_id=order_id)
+        refund_o.refund_id = re['id']
+        refund_o.refund = re['succeed']
+        refund_o.refund_desc = re['description']
+        refund_o.refund_fail_mes = re['failure_msg']
+        refund_o.save()
+    else:
+        return None
+    if re['succeed']:
+        return True
+    else:
+        return False

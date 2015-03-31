@@ -30,7 +30,7 @@ def send_reg_verify(req):
         if verify_res['success'] is True:
             try:
                 verify = Verify.objects.get(phone=phone)
-                verify.verify_res = verify_res['verify_code']
+                verify.verify = verify_res['verify_code']
                 verify.save()
             except Exception:
                 newverify = Verify(phone=phone, verify=verify_res['verify_code'])
@@ -449,19 +449,19 @@ def get_invite_coupon(req):
                         body['msg'] = 'you have exchanged this invite code'
                         return HttpResponse(encodejson(6, body), content_type='application/json')
                     else:
-                        if create_new_coupon(5, 1, curuser):
-                            if curuser.invite_str == '' or curuser.invite_str is None:
-                                curuser.invite_str = invite_code
-                            else:
-                                invite_str = curuser.invite_str
-                                invite_str = invite_str + ',' + invite_code
-                                curuser.invite_str = invite_str
-                            curuser.save()
-                            body['msg'] = 'invite code exchange success'
-                            return HttpResponse(encodejson(1, body), content_type='application/json')
+                        newc = create_new_coupon(5, 1, curuser)
+                        if curuser.invite_str == '' or curuser.invite_str is None:
+                            curuser.invite_str = invite_code
                         else:
-                            body['msg'] = 'invite code exchange failed'
-                            return HttpResponse(encodejson(2, body), content_type='application/json')
+                            invite_str = curuser.invite_str
+                            invite_str = invite_str + ',' + invite_code
+                            curuser.invite_str = invite_str
+                        curuser.save()
+                        body['msg'] = 'invite code exchange success'
+                        body['cou_id'] = newc.cou_id
+                        body['deadline'] = datetime_to_timestamp(newc.deadline)
+                        body['value'] = newc.value
+                        return HttpResponse(encodejson(1, body), content_type='application/json')
                 else:
                     body['msg'] = 'no invite code info'
                     return HttpResponse(encodejson(7, body), content_type='application/json')
@@ -675,7 +675,7 @@ def create_pay_order(req):
                 return HttpResponse(encodejson(7, body), content_type='application/json')
             block = block_list[0]
             newid = create_order_id()
-            newappoint = Appointment(order_id=newid, status=1, address=address, send_type=send_type, area=block, associator=curuser, order_type=1, online_pay=pay)
+            newappoint = Appointment(order_id=newid, status=1, order_phone=username, address=address, send_type=send_type, area=block, associator=curuser, order_type=1, online_pay=pay)
             newappoint.save()
             goodslist = resjson['goods_items']
             submit_price = float(resjson['submit_price'])
@@ -730,12 +730,12 @@ def create_pay_order(req):
                     newappoint.delete()
                     body['msg'] = 'the coupon has used, over due or is not belong you'
                     return HttpResponse(encodejson(21, body), content_type='application/json')
-                coupon.if_use = True
+                # coupon.if_use = True
                 coupon_amount = float(coupon.value)
                 newappoint.use_coupon = True
                 newappoint.order_coupon = coupon
                 newappoint.save()
-                coupon.save()
+                # coupon.save()
             ping_body = {}
             channel = resjson['channel']
             print coupon_amount
@@ -768,6 +768,10 @@ def create_pay_order(req):
                                                belong=newappoint,
                                                origin_item=homeit)
                 new_order_item.save()
+            if use_coupon:
+                coupon = Coupon.objects.get(cou_id=coupon_id)
+                coupon.if_use = True
+                coupon.save()
             if not pay:
                 newappoint.amount = price_sure
                 newappoint.save()
@@ -865,6 +869,7 @@ def create_appointment(req):
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         phone = resjson['phone']
+        order_phone = resjson['order_phone']
         token = resjson['private_token']
         login = bool(resjson['login'])
         if login:
@@ -890,17 +895,36 @@ def create_appointment(req):
                 ve = Consumer.objects.get(phone=phone, token=token)
             address = resjson['address']
             city_num = resjson['city_number']
+            use_coupon = bool(resjson['use_coupon'])
             try:
                 city = Block.objects.get(city_num=city_num)
             except Exception:
                 body['msg'] = 'invalid city number'
                 return HttpResponse(encodejson(7, body), content_type='application/json')
+            coupon = None
+            if use_coupon:
+                cid = resjson['coupon_id']
+                cou_list = Coupon.objects.filter(cou_id=cid)
+                if not cou_list.exists():
+                    body['msg'] = 'invalid coupon id'
+                    return HttpResponse(encodejson(7, body), content_type='application/json')
+                coupon = cou_list[0]
+                print coupon.cou_id
+                print coupon.if_use
+                if not (coupon.if_use is False and coupon.own.username == ve.username and if_in_due(coupon.deadline)):
+                    body['msg'] = 'the coupon has used, over due or is not belong you'
+                    return HttpResponse(encodejson(21, body), content_type='application/json')
             newid = create_order_id(pay=False)
-            newappoint = Appointment(status=1, address=address, order_id=newid, order_type=2, online_pay=False, area=city)
+            newappoint = Appointment(status=1, order_phone=order_phone, use_coupon=use_coupon, address=address, order_id=newid, order_type=2, online_pay=False, area=city)
             if login:
                 newappoint.associator = ve
             else:
                 newappoint.consumer = ve
+            if use_coupon:
+                newappoint.use_coupon = True
+                newappoint.order_coupon = coupon
+                coupon.if_use = True
+                coupon.save()
             newappoint.save()
             home_item_list = resjson['home_items']
             for item in home_item_list:
@@ -1101,6 +1125,191 @@ def appraise(req):
 
 
 
+@csrf_exempt
+def get_orders(req):
+    body = {}
+    if not req.method == 'POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    username = resjson['username']
+    token = resjson['private_token']
+    if not if_legal(username, token):
+        body['msg'] = 'login befor other action'
+        return HttpResponse(encodejson(13, body), content_type='application/json')
+    curuser = Associator.objects.get(username=username)
+    order_list = Appointment.objects.filter(associator=curuser)
+    order_items = []
+    for itm in order_list:
+        order = {}
+        order['create_time'] = datetime_to_string(itm.create_time)
+        order['order_phone'] = itm.order_phone
+        order['order_id'] = itm.order_id
+        order['status'] = itm.status
+        order['address'] = itm.address
+        order['name'] = itm.name
+        order['order_type'] = itm.order_type
+        order['online_pay'] = itm.online_pay
+        order['send_type'] = itm.send_type
+        order['amount'] = itm.amount
+        order['use_coupon'] = itm.use_coupon
+        if itm.use_coupon:
+            order['coupon_id'] = itm.order_coupon.cou_id
+            order['coupon_value'] = itm.order_coupon.value
+        order['if_appraise'] = itm.if_appraise
+        if itm.if_appraise:
+            order['comment'] = itm.comment
+            order['rate'] = itm.rate
+            order['rb1'] = itm.rb1
+            order['rb2'] = itm.rb2
+            order['rb3'] = itm.rb3
+            order['rb4'] = itm.rb4
+            order['rb5'] = itm.rb5
+            order['rb6'] = itm.rb6
+        if itm.order_type == 1 and itm.amount != 0:
+            try:
+                order['charge_id'] = itm.chargeinfo.pingpp_charge_id
+                order['paid'] = itm.chargeinfo.paid
+                order['request_refund'] = itm.chargeinfo.request_refund
+                order['refund'] = itm.chargeinfo.refund
+                order['channel'] = itm.chargeinfo.channel
+                goods_list = []
+                for item in itm.ordergoods.all():
+                    goods = {}
+                    goods['title'] = item.title
+                    goods['real_price'] = item.real_price
+                    goods['repair_price'] = item.repair_price
+                    goods['use_repair'] = item.use_repair
+                    goods['origin_price'] = item.origin_price
+                    goods_list.append(copy.copy(goods))
+                order['goods_list'] = goods_list
+            except Exception:
+                continue
+        elif itm.amount == 0:
+            goods_list = []
+            for item in itm.ordergoods.all():
+                goods = {}
+                goods['title'] = item.title
+                goods['real_price'] = item.real_price
+                goods['repair_price'] = item.repair_price
+                goods['use_repair'] = item.use_repair
+                goods['origin_price'] = item.origin_price
+                goods_list.append(copy.copy(goods))
+            order['goods_list'] = goods_list
+        home_items = []
+        for item in itm.orderitem.all():
+            home_item = {}
+            home_item['item_name'] = item.item_name
+            home_items.append(copy.copy(home_item))
+        order['home_itmes'] = home_items
+        order_items.append(copy.copy(order))
+    body['order_list'] = order_items
+    body['msg'] = 'get order list success'
+    return HttpResponse(encodejson(1, body), content_type='aplication/json')
+
+
+@csrf_exempt
+def cancel_order(req):
+    body = {}
+    if not req.method == 'POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    username = resjson['username']
+    token = resjson['private_token']
+    if not if_legal(username, token):
+        body['msg'] = 'login befor other action'
+        return HttpResponse(encodejson(13, body), content_type='application/json')
+    curuser = Associator.objects.get(username=username)
+    order_id = resjson['order_id']
+    order_list = Appointment.objects.filter(order_id=order_id, associator=curuser)
+    if not order_list.exists():
+        body['msg'] = 'invalid order id'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    order = order_list[0]
+    if order.status != 1:
+        body['msg'] = 'the order can not be canceled'
+        body['order_status'] = order.status
+        return HttpResponse(encodejson(3, body), content_type='application/json')
+    if order.use_coupon:
+        order.order_coupon.if_use = False
+    order.status = 5
+    if order.order_type == 1:
+        try:
+            order.chargeinfo.request_refund = True
+            if order.chargeinfo.paid:
+                res = refund_order(order.chargeinfo.pingpp_charge_id, 'test', order.chargeinfo.price)
+                if res is None:
+                    body['msg'] = 'fail'
+                    return HttpResponse(encodejson(2, body), content_type='application/json')
+                elif res is False:
+                    body['msg'] = order.chargeinfo.fefund_fail_mes
+                    return HttpResponse(encodejson(0, body), content_type='application/json')
+        except Exception, e:
+            print e
+            pass
+    order.save()
+    order.order_coupon.save()
+    order.chargeinfo.save()
+    body['msg'] = 'order cancel success'
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
+
+
+@csrf_exempt
+def check_game(req):
+    body = {}
+    if not req.method == 'POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    username = resjson['username']
+    token = resjson['private_token']
+    if not if_legal(username, token):
+        body['msg'] = 'login befor other action'
+        return HttpResponse(encodejson(13, body), content_type='application/json')
+    coupon_control = CouponControl.objects.all()[0]
+    if coupon_control.game_active:
+        body['have_game'] = True
+        body['msg'] = 'game status get success'
+        return HttpResponse(encodejson(1, body), content_type='application/json')
+    else:
+        body['have_game'] = False
+        body['msg'] = 'game status get success'
+        return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
+@csrf_exempt
+def play_game(req):
+    body = {}
+    if not req.method == 'POST':
+        raise Http404
+    resjson = simplejson.loads(req.body)
+    username = resjson['username']
+    token = resjson['private_token']
+    if not if_legal(username, token):
+        body['msg'] = 'login befor other action'
+        return HttpResponse(encodejson(13, body), content_type='application/json')
+    coupon_control = CouponControl.objects.all()[0]
+    if not coupon_control.game_active:
+        body['msg'] = 'no game can play'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    if not (not isactive(coupon_control.game_start_time.replace(tzinfo=None), 0) and isactive(coupon_control.game_end_time.replace(tzinfo=None), 0)):
+        body['msg'] = 'game time not begin or already end'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    if coupon_control.game_current_num == coupon_control.game_coupon_num:
+        body['msg'] = 'coupon send over number'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    value = random.randint(coupon_control.game_money_low, coupon_control.game_money_high)
+    curuser = Associator.objects.get(username=username)
+    newc = create_new_coupon(value, 3, curuser, 365, coupon_control.game_sign)
+    body['msg'] = 'get coupon success'
+    body['value'] = value
+    body['cou_id'] = newc.cou_id
+    body['deadline'] = datetime_to_timestamp(newc.deadline)
+    coupon_control.game_current_num += 1
+    coupon_control.save()
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
 
 
 
@@ -1128,17 +1337,20 @@ def create_order_id(pay=True):
 
 
 
-def create_new_coupon(value, ctype, own, expire=365):
-    have_count = Coupon.objects.filter(type=ctype).count()
+def create_new_coupon(value, ctype, own, expire=365, gamesign=''):
+    if gamesign != '':
+        have_count = Coupon.objects.filter(type=ctype, game_sign=gamesign).count()
+    else:
+        have_count = Coupon.objects.filter(type=ctype).count()
     odate = datetime.date.today()
     odate = str(odate).replace('-', '')
     newcou_id = '%s%i%05i' % (odate, ctype, have_count+1)
     owntime = datetime.datetime.now()
     expire_day = datetime.timedelta(expire)
     deadline = owntime + expire_day
-    newcoupon = Coupon(cou_id=newcou_id, value=value, type=ctype, own=own, owned_time=owntime, deadline=deadline)
+    newcoupon = Coupon(cou_id=newcou_id, value=value, type=ctype, own=own, game_sign=gamesign, owned_time=owntime, deadline=deadline)
     newcoupon.save()
-    return True
+    return newcoupon
 
 
 
@@ -1178,6 +1390,12 @@ def string_to_datetime(timestring, timeformat='%Y-%m-%d'):
     dateres = datetime.datetime.strptime(timestring, timeformat)
     return dateres
 
+def datetime_to_timestamp(datetimet):
+    return time.mktime(datetimet.timetuple())
+
+def datetime_to_string(datetimet):
+    return str(timezone.localtime(datetimet))
+
 def create_invite_code(count=6):
     return string.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBA1234567890', count)).replace(" ", "")
 
@@ -1211,7 +1429,7 @@ def verify_reg(phone, verify_code):
 def if_in_due(deadline):
     nowt = datetime.datetime.utcnow().replace(tzinfo=utc)
     detla = deadline - nowt
-    if detla < datetime.timedelta():
+    if detla < datetime.timedelta(0):
         return False
     else:
         return True

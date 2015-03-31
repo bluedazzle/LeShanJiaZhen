@@ -3,6 +3,7 @@
 ##**STATUS结果码对照表**
 |status结果码|状态|
 | --------------  | :---: |
+|0|失败|
 |1|成功|
 |2|未知错误|
 |3|订单状态改变|
@@ -322,29 +323,9 @@ or
 ```
 
 
-##**获取优惠券**
+##**反馈**
 
-#####顾客获取优惠券
-```
-POST /consumer/get_coupons
-```
-###**Parameters**
-* username(_Required_|string)-用户名，必须为手机号
-* private_token(_Required_|string)-用户token
-###**Request**
-```
-{"username":"18215606355","private_token":"123456"}
-```
-###**Return**
-```
-{"status": 1, "body": {"coupons": [{"owned_time": "2015-03-13 20:14:22+08:00", "create_time": "2015-03-13 20:14:25.308127+08:00", "cou_id": "20102102", "deadline": "2015-03-13 20:06:30+08:00", "type": 1, "value": 5, "if_use": false}, {"owned_time": "2015-03-13 20:14:14+08:00", "create_time": "2015-03-13 20:14:16.314338+08:00", "cou_id": "20102101", "deadline": "2015-03-13 20:06:51+08:00", "type": 2, "value": 13, "if_use": false}, {"owned_time": "2015-03-13 20:14:08+08:00", "create_time": "2015-03-13 20:14:09.464093+08:00", "cou_id": "20102105", "deadline": "2015-03-13 20:07:06+08:00", "type": 1, "value": 5, "if_use": true}]}}
-or
-{"status": 13, "body": {"msg": "login first before other action"}}
-```
-
-##**获取优惠券**
-
-#####顾客获取优惠券
+#####顾客提交反馈
 ```
 POST /consumer/new_feedback
 ```
@@ -400,32 +381,6 @@ POST /consumer/change_info
 {"status": 1, "body": {"msg": "change info success"}}
 or
 {"status": 13, "body": {"msg": "login first before other action"}}
-```
-
-
-##**兑换邀请码优惠券**
-
-#####顾客兑换邀请码优惠券
-```
-POST /consumer/get_invite_coupon
-```
-###**Parameters**
-* username(_Required_|string)-用户名，必须为手机号
-* private_token(_Required_|string)-token
-* invite_code(_Required|string)-邀请码
-###**Request**
-```
-{"username":"18215606355","private_token":"asdfasdfasqwe56","invite_code":"123455"}
-```
-###**Return**
-```
-{"status": 1, "body": {"msg": "invite code exchange success"}}
-or
-{"status": 6, "body": {"msg": "you have exchanged this invite code"}}
-or
-{"status": 7, "body": {"msg": "no invite code info"}}
-or
-{"status": 14, "body": {"msg": "you can not exchange your own invite code"}}
 ```
 
 
@@ -722,13 +677,15 @@ POST /consumer/create_appointment
 * private_token(_Required_|string)-consumer token or 用户token
 * address(_Required_|string)-用户地址
 * city_number(_Required_|string)-城市统一编码
-* login(_Required_|string)-是否登陆用户
+* login(_Required_|bool)-是否登陆用户
+* use_coupon(_Required_|bool)-是否使用优惠券
+* coupon_id(_Optional_|string)-优惠券id
 * home_items(_Required_|string)-维修服务列表
 * ###hid(_Required_|string)-服务id
 
 ###**Request**
 ```
-{"phone":"18215606355","login":false,"private_token":"AqMxVDKmpUN2lE+WCyzbZ8sJ7dkfQhXa","address":"kb258","city_number":"511000","home_items":[{"hid":"1"}]}
+{"phone":"18215606355","private_token":"LpOrR6BxMiAYUalZXQH1yIbKFEnGtkvS","address":"test","city_number":"511100","login":true,"order_phone":"1234567","use_coupon":true,"coupon_id":"20150330300008","home_items":[{"hid":"1"}]}
 ```
 ###**Return**
 ```
@@ -790,6 +747,137 @@ POST /consumer/appraise
     "status": 1,
     "body": {
         "msg": "appraise success"
+    }
+}
+or
+{
+    "status": 6,
+    "body": {
+        "msg": "the order has appraised"
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid order id"
+    }
+}
+or
+{
+    "status": 9,
+    "body": {
+        "msg": "the order has been canceled"
+    }
+}
+```
+
+
+##**订单**
+
+#####撤销订单(status=1的订单才能使用)
+```
+POST /consumer/cancel_order
+```
+###**Parameters**
+* username(_Required_|string)-用户手机号
+* private_token(_Required_|string)-用户token
+* order_id(_Required_|string)-订单id
+
+###**Request**
+```
+{"username":"18215606355","private_token":"LpOrR6BxMiAYUalZXQH1yIbKFEnGtkvS","order_id":"201503300100000009"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "order cancel success"
+    }
+}
+or
+{
+    "status": 3,
+    "body": {
+        "msg": "the order can not be canceled",
+        "order_status": 5
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid order id"
+    }
+}
+```
+
+
+
+##**订单**
+
+#####获取所有订单
+```
+POST /consumer/get_all_orders
+```
+###**Parameters**
+* username(_Required_|string)-用户手机号
+* private_token(_Required_|string)-用户token
+
+###**Request**
+```
+{"username":"18215606355","private_token":"LpOrR6BxMiAYUalZXQH1yIbKFEnGtkvS"}
+
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "get order list success",
+        "order_list": [
+            {
+                "status": 1,
+                "refund": false,
+                "order_id": "201503300100000001",
+                "charge_id": "ch_j5y5e1yPKu105Wr9mTqjTyXH",
+                "paid": false,
+                "create_time": "2015-03-30 15:54:39.636990+08:00",
+                "address": "kb258",
+                "if_appraise": false,
+                "order_phone": "18215606355",
+                "goods_list": [
+                    {
+                        "real_price": 20,
+                        "repair_price": 4,
+                        "title": "生育水管维修",
+                        "origin_price": 30,
+                        "use_repair": false
+                    },
+                    {
+                        "real_price": 10,
+                        "repair_price": 5,
+                        "title": "屁股水管维修",
+                        "origin_price": 12,
+                        "use_repair": true
+                    }
+                ],
+                "send_type": 1,
+                "online_pay": true,
+                "name": "",
+                "order_type": 1,
+                "use_coupon": false,
+                "amount": 35,
+                "home_itmes": [
+                    {
+                        "item_name": " "
+                    }
+                ],
+                "request_refund": false,
+                "channel": "alipay"
+            }
+        ]
     }
 }
 or
@@ -1096,4 +1184,242 @@ or
         "msg": "invalid city number
     }
 }
+```
+
+
+##**优惠券**
+
+#####检查游戏小游戏是否可玩
+```
+POST /consumer/check_game
+```
+###**Parameters**
+* username(_Required_|string)-用户手机号
+* private_token(_Required_|string)-用户token
+###**Request**
+```
+{"username":"18215606355","private_token":"LpOrR6BxMiAYUalZXQH1yIbKFEnGtkvS"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "game status get success",
+        "have_game": true
+    }
+}
+or
+{
+    "status": 13,
+    "body": {
+        "msg": "login befor other action"
+    }
+}
+```
+
+
+##**优惠券**
+
+#####进行小游戏
+```
+POST /consumer/play_game
+```
+###**Parameters**
+* username(_Required_|string)-用户手机号
+* private_token(_Required_|string)-用户token
+###**Request**
+```
+{"username":"18215606355","private_token":"LpOrR6BxMiAYUalZXQH1yIbKFEnGtkvS"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "get coupon success",
+        "deadline": 1459229553,
+        "value": 3,
+        "cou_id": "20150330300001"
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "coupon send over number"
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "no game can play"
+    }
+}
+```
+
+
+##**优惠券**
+
+#####顾客兑换邀请码优惠券
+```
+POST /consumer/get_invite_coupon
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* private_token(_Required_|string)-token
+* invite_code(_Required|string)-邀请码
+###**Request**
+```
+{"username":"18215606355","private_token":"asdfasdfasqwe56","invite_code":"123455"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "invite code exchange success",
+        "deadline": 1459229781,
+        "value": 5,
+        "cou_id": "20150330100002"
+    }
+}
+or
+{
+    "status": 6,
+    "body": {
+        "msg": "you have exchanged this invite code"
+    }
+}
+or
+{"status": 7, "body": {"msg": "no invite code info"}}
+or
+{"status": 14, "body": {"msg": "you can not exchange your own invite code"}}
+```
+
+
+##**优惠券**
+
+#####顾客获取优惠券
+```
+POST /consumer/get_coupons
+```
+###**Parameters**
+* username(_Required_|string)-用户名，必须为手机号
+* private_token(_Required_|string)-用户token
+###**Request**
+```
+{"username":"18215606355","private_token":"123456"}
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "coupons": [
+            {
+                "owned_time": "2015-03-25 12:58:50+08:00",
+                "create_time": "2015-03-25 13:56:26.867416+08:00",
+                "cou_id": "20102101",
+                "deadline": 1427270400,
+                "type": 1,
+                "value": 5,
+                "if_use": true
+            },
+            {
+                "owned_time": "2015-03-30 13:32:33.560285+08:00",
+                "create_time": "2015-03-30 13:32:33.560626+08:00",
+                "cou_id": "20150330300001",
+                "deadline": 1459200753,
+                "type": 3,
+                "value": 3,
+                "if_use": false
+            },
+            {
+                "owned_time": "2015-03-30 13:32:47.135290+08:00",
+                "create_time": "2015-03-30 13:32:47.135509+08:00",
+                "cou_id": "20150330300002",
+                "deadline": 1459200767,
+                "type": 3,
+                "value": 8,
+                "if_use": false
+            },
+            {
+                "owned_time": "2015-03-30 13:32:48.579905+08:00",
+                "create_time": "2015-03-30 13:32:48.580116+08:00",
+                "cou_id": "20150330300003",
+                "deadline": 1459200768,
+                "type": 3,
+                "value": 8,
+                "if_use": false
+            },
+            {
+                "owned_time": "2015-03-30 13:32:49.874741+08:00",
+                "create_time": "2015-03-30 13:32:49.874962+08:00",
+                "cou_id": "20150330300004",
+                "deadline": 1459200769,
+                "type": 3,
+                "value": 8,
+                "if_use": false
+            },
+            {
+                "owned_time": "2015-03-30 13:32:50.778640+08:00",
+                "create_time": "2015-03-30 13:32:50.778853+08:00",
+                "cou_id": "20150330300005",
+                "deadline": 1459200770,
+                "type": 3,
+                "value": 1,
+                "if_use": false
+            },
+            {
+                "owned_time": "2015-03-30 13:32:51.665107+08:00",
+                "create_time": "2015-03-30 13:32:51.665324+08:00",
+                "cou_id": "20150330300006",
+                "deadline": 1459200771,
+                "type": 3,
+                "value": 2,
+                "if_use": false
+            },
+            {
+                "owned_time": "2015-03-30 13:32:52.738587+08:00",
+                "create_time": "2015-03-30 13:32:52.738792+08:00",
+                "cou_id": "20150330300007",
+                "deadline": 1459200772,
+                "type": 3,
+                "value": 9,
+                "if_use": false
+            },
+            {
+                "owned_time": "2015-03-30 13:32:53.882715+08:00",
+                "create_time": "2015-03-30 13:32:53.882936+08:00",
+                "cou_id": "20150330300008",
+                "deadline": 1459200773,
+                "type": 3,
+                "value": 4,
+                "if_use": false
+            },
+            {
+                "owned_time": "2015-03-30 13:32:54.756321+08:00",
+                "create_time": "2015-03-30 13:32:54.756538+08:00",
+                "cou_id": "20150330300009",
+                "deadline": 1459200774,
+                "type": 3,
+                "value": 9,
+                "if_use": false
+            },
+            {
+                "owned_time": "2015-03-30 13:36:21.236433+08:00",
+                "create_time": "2015-03-30 13:36:21.236651+08:00",
+                "cou_id": "20150330100002",
+                "deadline": 1459200981,
+                "type": 1,
+                "value": 5,
+                "if_use": false
+            }
+        ]
+    }
+}
+or
+{"status": 13, "body": {"msg": "login first before other action"}}
 ```
