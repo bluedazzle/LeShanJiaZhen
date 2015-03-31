@@ -29,6 +29,8 @@ urlpatterns = patterns('',
     url('^check_coupon$', check_coupon),
     url('^set_coupon$', set_coupon),
     url('^feed_back$', feed_back),
+    url('^set_game$', set_game),
+    url('^check_game_record$', game_record),
     #option
     url('^register_verify$', phone_verify),
     url('^f_register_verify$', f_phone_verify),

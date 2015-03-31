@@ -128,7 +128,7 @@
            </tbody>
        </table>
     {% else %}
-        {% if not owner_no %}
+        {% if coupon_count == 0 %}
         <h5 style="text-align: center;padding-top: 5%;color: red;">
            在{{ date_start }}到{{ date_end }}中，没有符合条件的维修基金
         </h5>

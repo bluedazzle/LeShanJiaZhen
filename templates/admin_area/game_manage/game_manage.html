@@ -1,0 +1,38 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+    {% if permission %}
+    {% else %}
+       <div class="col-md-12 col-lg-12" style="padding-right: 10%;padding-left: 10%">
+        <h5 style="margin-left: 35%;color: red">您没有操作权限</h5>
+      </div>
+    {% endif %}
+<script>
+        $('#page_title').text('游戏管理');
+        $('#message_manage').addClass('active');
+        $('#game_manage').addClass('active')
+</script>
+<div class="row col-md-12 col-lg-12" style="margin-top: 5%">
+  <div class="col-md-4 col-lg-4" style="float: left;margin-left: 5%">
+    <div class="thumbnail">
+      <div class="caption text-center">
+        <h5>游戏开放记录</h5>
+        <p>查看游戏开放详细记录</p>
+        <p>
+            <a href="check_game_record" class="btn btn-primary btn-lg" role="button">操作</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-4" style="float: right;margin-right: 15%">
+    <div class="thumbnail">
+      <div class="caption text-center">
+        <h5>游戏设置</h5>
+        <p>开放或关闭游戏操作，并设置相关游戏参数</p>
+        <p>
+            <a href="set_game" class="btn btn-primary btn-lg" role="button">操作</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
