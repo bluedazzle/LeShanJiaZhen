@@ -692,6 +692,7 @@ POST /consumer/create_appointment
 {
     "status": 1,
     "body": {
+        "new_id": "2011111111111111",
         "msg": "appointment create success"
     }
 }
@@ -717,6 +718,57 @@ or
     }
 }
 ```
+
+
+##**订单**
+
+#####预约订单上传图片
+```
+POST /consumer/upload_pircture
+```
+###**Parameters**
+* phone(_Required_|string)-用户手机号
+* private_token(_Required_|string)-consumer token or 用户token
+* login(_Required_|bool)-是否登陆用户
+* appointment_id(_Required_|bool)-预约单id
+* picindex(_Required_|string)-上传图片编号
+* file(_Required_|file)-上传的图片
+
+###**Request**
+```
+formdata, not json
+```
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "msg": "upload picture success"
+    }
+}
+or
+{
+    "status": 9,
+    "body": {
+        "msg": "token is not correct"
+    }
+}
+or
+{
+    "status": 9,
+    "body": {
+        "msg": "phone is not verified"
+    }
+}
+or
+{
+    "status": 7,
+    "body": {
+        "msg": "invalid appointment id"
+    }
+}
+```
+
 
 
 ##**订单**

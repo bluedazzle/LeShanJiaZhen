@@ -15,10 +15,11 @@ from django.utils.timezone import utc
 import copy
 import time
 import socket
+import os
 
 
-pathToStorePicture = r'/var/leshanjiazheng/uploadpicture/'
-pathToGetPicture = r'http://115.29.138.80/uploadpicture/'
+pathToStorePicture = os.path.dirname(os.path.dirname(__file__))
+# pathToGetPicture = r'http://www.kuailejujia.com/uploadpicture/'
 
 @csrf_exempt
 def send_reg_verify(req):
@@ -941,6 +942,7 @@ def create_appointment(req):
                                            origin_item=homeit)
                 new_order_item.save()
             body['msg'] = 'appointment create success'
+            body['new_id'] = newid
             return HttpResponse(encodejson(1, body), content_type='application/json')
         except Exception, e:
             print e
@@ -1310,6 +1312,69 @@ def play_game(req):
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
+
+@csrf_exempt
+def appointment_pic(request):
+    body = {}
+    if not request.method == 'POST':
+        raise Http404
+    req = request.POST
+    token = req['token']
+    phone = req['phone']
+    login = str(req['login']).lower()
+    print login
+    if login == 'true':
+        login = True
+    else:
+        login = False
+    picindex = req['picindex']
+    appointment_id = req['appointment_id']
+    pic = request.FILES.get('file')
+    appoint_list = Appointment.objects.filter(order_id=appointment_id)
+    if not appoint_list.exists():
+        body['msg'] = 'invalid appointment id'
+        return HttpResponse(encodejson(7, body), content_type='application/json')
+    curuser = None
+    if login:
+        if not if_legal(phone, token):
+            body['msg'] = 'login before other action'
+            return HttpResponse(encodejson(13, body), content_type='application/json')
+        curuser = Associator.objects.get(username=phone)
+    else:
+        consumer_list = Consumer.objects.filter(phone=phone)
+        if not consumer_list.exists():
+            newconsumer = Consumer(phone=phone)
+            newconsumer.save()
+            body['msg'] = 'phone is not verified'
+            return HttpResponse(encodejson(9, body), content_type='application/json')
+        consumer = consumer_list[0]
+        if not consumer.verified:
+            body['msg'] = 'phone is not verified'
+            return HttpResponse(encodejson(9, body), content_type='application/json')
+        consumer_list = Consumer.objects.filter(phone=phone, token=token)
+        if not consumer_list.exists():
+            body['msg'] = 'token is not correct'
+            return HttpResponse(encodejson(9, body), content_type='application/json')
+        curuser = consumer_list[0]
+    appoint = appoint_list[0]
+    if not pic:
+        body['msg'] = 'no picture'
+        return HttpResponse(encodejson(1, body), content_type='application/json')
+    pic_name = str(curuser)+str(int(time.time()))+str(random.randint(10000, 99999)) + '.png'
+    path = pathToStorePicture + '/upload/' + pic_name
+    img = Image.open(pic)
+    img.save(path, "png")
+    if picindex == '1':
+        appoint.photo1 = pic_name
+    elif picindex == '2':
+        appoint.photo2 = pic_name
+    elif picindex == '3':
+        appoint.photo3 = pic_name
+    elif picindex == '4':
+        appoint.photo4 = pic_name
+    appoint.save()
+    body['msg'] = 'upload picture success'
+    return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
 
