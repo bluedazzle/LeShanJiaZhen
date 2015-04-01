@@ -31,7 +31,7 @@
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
             <input type="text" class="form-control" id="online_money_low" name='online_money_low'
                    placeholder="请输入赠送金额" style="width: 150px;margin-top: 3%"
-                   {% if item.online_money_high %}
+                   {% if item.online_money_low %}
                    value="{{ item.online_money_low }}"
                    {% endif %}
                     onkeyup="this.value=this.value.replace(/\D/g,'')">

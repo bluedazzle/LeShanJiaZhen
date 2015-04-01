@@ -1,0 +1,65 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+<script xmlns="http://www.w3.org/1999/html">
+        $('#page_title').text('游戏开放记录');
+        $('#message_manage').addClass('active');
+        $('#game_manage').addClass('active')
+</script>
+    {% if permission %}
+<div class="col-md-12 col-lg-12">
+    <table class="table">
+           <thead>
+             <tr>
+                 <ol class="breadcrumb">
+                     <li><a href="game_manage">返回</a></li>
+                 </ol>
+             </tr>
+           </thead>
+           <tbody>
+              <tr style="background-color: #1abc9c; color: #ffffff">
+                  <th>游戏编号</th>
+                  <th>开始时间</th>
+                  <th>结束时间</th>
+                  <th>最高金额</th>
+                  <th>最低金额</th>
+                  <th>限定数量</th>
+                  <th>实际数量</th>
+                  <th>游戏状态</th>
+              </tr>
+              {% if game_newest %}
+              <tr>
+                  <td>{{ game_newest.game_sign }}</td>
+                  <td>{{ game_newest.game_start_time|date:'Y-m-d' }}</td>
+                  <td>
+                      {{ game_newest.game_end_time|date:'Y-m-d' }}
+                  </td>
+                  <td>{{ game_newest.game_money_high }}(元)</td>
+                  <td>{{ game_newest.game_money_low }}(元)</td>
+                  <td>{{ game_newest.game_coupon_num }}</td>
+                  <td>{{ game_newest.game_current_num }}</td>
+                  <td style="color: #1abc9c">进行中</td>
+              </tr>
+              {% endif %}
+              {% for item in games %}
+              <tr>
+                  <td>{{ item.game_id }}</td>
+                  <td>{{ item.start_time|date:'Y-m-d' }}</td>
+                  <td>
+                      {{ item.end_time|date:'Y-m-d' }}
+                  </td>
+                  <td>{{ item.money_high }}(元)</td>
+                  <td>{{ item.money_low }}(元)</td>
+                  <td>{{ item.origin_coupon_num }}</td>
+                  <td>{{ item.actually_coupon_num }}</td>
+                  <td style="color: red">已结束</td>
+              </tr>
+              {% endfor %}
+           </tbody>
+  </table>
+</div>
+    {% else %}
+       <div class="col-md-12 col-lg-12" style="padding-right: 10%;padding-left: 10%">
+        <h5 style="margin-left: 35%;color: red">您没有操作权限</h5>
+      </div>
+    {% endif %}
+{% endblock %}

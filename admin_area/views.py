@@ -10,6 +10,7 @@ from django.core.paginator import EmptyPage
 from django import forms
 from HomeApi.models import *
 from HomeApi.method import *
+import HomeApi.views
 import json
 import simplejson
 import hashlib
@@ -1274,7 +1275,7 @@ def coupon_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return check_permission(request, 'manage_coupon', 'admin_area/coupon_manage.html')
+        return check_permission(request, 'manage_coupon', 'admin_area/coupon_manage/coupon_manage.html')
 
 
 # 赠送维修基金
@@ -1282,7 +1283,7 @@ def give_coupon(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return check_permission(request, 'manage_coupon', 'admin_area/give_coupon.html')
+        return check_permission(request, 'manage_coupon', 'admin_area/coupon_manage/give_coupon.html')
     if request.method == 'POST':
         context = {}
         context.update(csrf(request))
@@ -1292,7 +1293,7 @@ def give_coupon(request):
         date_now = time.strftime("%Y%m%d", time.localtime())
         associators = Associator.objects.filter(username=phone)
         if associators.count() == 0:
-            return render_to_response('admin_area/give_coupon.html',
+            return render_to_response('admin_area/coupon_manage/give_coupon.html',
                                       {'phone': phone,
                                        'value': value,
                                        'content': content},
@@ -1325,7 +1326,7 @@ def give_coupon(request):
         message_new.content = "您获得了快乐居家赠送的%s元维修基金" %value
         message_new.own = associators[0]
         message_new.save()
-        return render_to_response('admin_area/give_coupon.html',
+        return render_to_response('admin_area/coupon_manage/give_coupon.html',
                                   {'give_success': True,
                                    'permission': True},
                                   context_instance=RequestContext(request))
@@ -1336,11 +1337,11 @@ def check_coupon(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return check_permission(request, 'manage_coupon', 'admin_area/check_coupon.html')
+        return check_permission(request, 'manage_coupon', 'admin_area/coupon_manage/check_coupon.html')
     if request.method == 'POST':
         user = HomeAdmin.objects.get(username=request.session['username'])
         if not user.manage_coupon:
-            return render_to_response('admin_area/check_coupon.html',
+            return render_to_response('admin_area/coupon_manage/check_coupon.html',
                                       context_instance=RequestContext(request))
         context = {}
         context.update(csrf(request))
@@ -1357,7 +1358,7 @@ def check_coupon(request):
         if owner:
             as_owner = Associator.objects.filter(username=owner)
             if as_owner.count() == 0:
-                return render_to_response('admin_area/check_coupon.html',
+                return render_to_response('admin_area/coupon_manage/check_coupon.html',
                                           {'permission': True,
                                            'owner_no': True,
                                            'date_start': start_date,
@@ -1405,7 +1406,7 @@ def check_coupon(request):
             coupons = paginator.page(paginator.num_pages)
         except:
             pass
-        return render_to_response('admin_area/check_coupon.html',
+        return render_to_response('admin_area/coupon_manage/check_coupon.html',
                                   {'coupons': coupons,
                                    'coupon_count': coupon_count,
                                    'date_start': start_date,
@@ -1463,7 +1464,7 @@ def check_owner_coupons(request, owner, end_time, start_time, if_use, type, star
         coupons = paginator.page(paginator.num_pages)
     except:
         pass
-    return render_to_response('admin_area/check_coupon.html',
+    return render_to_response('admin_area/coupon_manage/check_coupon.html',
                               {'coupons': coupons,
                                'coupon_count': coupon_count,
                                'date_start': start_date,
@@ -1485,18 +1486,18 @@ def set_coupon(request):
             new_coupon_control.save()
             return check_permission(request,
                                     'manage_coupon',
-                                    'admin_area/set_coupon.html',
+                                    'admin_area/coupon_manage/set_coupon.html',
                                     {'item': new_coupon_control})
         return check_permission(request,
                                 'manage_coupon',
-                                'admin_area/set_coupon.html',
+                                'admin_area/coupon_manage/set_coupon.html',
                                 {'item': coupon_control[0]})
     if request.method == 'POST':
         context = {}
         context.update(csrf(request))
         user_admin = HomeAdmin.objects.get(username=request.session['username'])
         if not user_admin.manage_coupon:
-            return render_to_response('admin_area/set_coupon.html')
+            return render_to_response('admin_area/coupon_manage/set_coupon.html')
         online_money_high = request.POST.get('online_money_high')
         online_money_low = request.POST.get('online_money_low')
         reg_money = request.POST.get('reg_money')
@@ -1509,17 +1510,107 @@ def set_coupon(request):
         coupon_control.reg_money = reg_money
         coupon_control.invite_money = invite_money
         coupon_control.save()
-        return render_to_response('admin_area/set_coupon.html',
+        return render_to_response('admin_area/coupon_manage/set_coupon.html',
                                   {'permission': True,
                                    'item': coupon_control,
                                    'set_success': True})
+
 
 # 游戏管理部分
 def game_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return check_permission(request, 'manage_game', 'admin_area/game_manage.html')
+        return check_permission(request, 'manage_game', 'admin_area/game_manage/game_manage.html')
+
+
+def set_game(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        control_id = request.GET.get('control_id')
+        close_game = request.GET.get('close_game')
+        if control_id and close_game:
+            coupon_control = CouponControl.objects.get(id=control_id)
+            coupon_control.game_active = False
+            coupon_control.game_end_time = datetime.datetime.utcnow()
+            coupon_control.save()
+            new_game_record = GameRecord()
+            new_game_record.game_id = coupon_control.game_sign
+            new_game_record.start_time = coupon_control.game_start_time
+            new_game_record.end_time = coupon_control.game_end_time
+            new_game_record.money_high = coupon_control.game_money_high
+            new_game_record.money_low = coupon_control.game_money_low
+            new_game_record.origin_coupon_num = coupon_control.game_coupon_num
+            new_game_record.actually_coupon_num = coupon_control.game_current_num
+            new_game_record.game_active = True
+            new_game_record.save()
+            return HttpResponseRedirect('set_game')
+        coupon_control = CouponControl.objects.all()
+        if coupon_control.count() == 0:
+            new_coupon_control = CouponControl()
+            new_coupon_control.save()
+            return check_permission(request,
+                                    'manage_game',
+                                    'admin_area/game_manage/set_game.html',
+                                    {'item': new_coupon_control})
+        return check_permission(request,
+                                'manage_game',
+                                'admin_area/game_manage/set_game.html',
+                                {'item': coupon_control[0]})
+    if request.method == 'POST':
+        context = {}
+        context.update(csrf(request))
+        user_admin = HomeAdmin.objects.get(username=request.session['username'])
+        if not user_admin.manage_game:
+            return render_to_response('admin_area/game_manage/set_game.html')
+        money_low = request.POST.get('money_low')
+        money_high = request.POST.get('money_high')
+        origin_coupon_num = request.POST.get('origin_coupon_num')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        control_id = request.POST.get('control_id')
+        if control_id and money_low and money_high and origin_coupon_num and start_date and end_date:
+            coupon_control = CouponControl.objects.get(id=control_id)
+            coupon_control.game_money_low = money_low
+            coupon_control.game_money_high = money_high
+            coupon_control.game_coupon_num = origin_coupon_num
+            end_time = time.strptime(end_date, "%Y-%m-%d")
+            start_time = time.strptime(start_date, "%Y-%m-%d")
+            end_time = datetime.datetime(*end_time[:6])
+            start_time = datetime.datetime(*start_time[:6])
+            coupon_control.game_start_time = start_time
+            coupon_control.game_end_time = end_time
+            if not coupon_control.game_active:
+                coupon_control.game_sign = HomeApi.views.createtoken(6)
+
+            coupon_control.game_active = True
+            coupon_control.save()
+
+            return render_to_response('admin_area/game_manage/set_game.html',
+                                      {'permission': True,
+                                       'item': coupon_control,
+                                       'set_success': True},
+                                      context_instance=RequestContext(request))
+        return HttpResponseRedirect('set_game')
+
+
+def game_record(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        user_admin = HomeAdmin.objects.get(username=request.session['username'])
+        if user_admin.manage_game:
+            content = dict()
+            content['permission'] = True
+            coupon_control = CouponControl.objects.filter(game_active=True)
+            if coupon_control.count() > 0:
+                content['game_newest'] = coupon_control[0]
+            game_records = GameRecord.objects.order_by('-id').all()
+            content['games'] = game_records
+            return render_to_response('admin_area/game_manage/game_record.html', content)
+        else:
+            return render_to_response('admin_area/game_manage/game_record.html')
 
 
 # 会员管理部分

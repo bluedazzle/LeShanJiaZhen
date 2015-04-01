@@ -254,12 +254,15 @@ class CouponControl(models.Model):
 class GameRecord(models.Model):
     game_id = models.CharField(max_length=20)
     start_time = models.DateTimeField(max_length=30)
-    end_time = models.DateTimeField(max_length=30)
-    money_high = models.DecimalField(max_digits=10, decimal_places=2)
-    money_low = models.DecimalField(max_digits=10, decimal_places=2)
+    end_time = models.DateTimeField(max_length=30, null=True, blank=True)
+    money_high = models.FloatField(max_length=5)
+    money_low = models.FloatField(max_length=5)
     origin_coupon_num = models.IntegerField(max_length=6)
-    actually_coupon_num = models.IntegerField(max_length=6)
+    actually_coupon_num = models.IntegerField(max_length=6, default=0)
     game_active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.game_id
 
 class Message(models.Model):
     content = models.CharField(max_length=200)
