@@ -252,13 +252,30 @@ POST /consumer/get_messages
 ###**Parameters**
 * username(_Required_|string)-用户名，必须为手机号
 * private_token(_Required_|string)-用户token
+* page(_Optional_|integer)-分页
 ###**Request**
 ```
 {"username":"18215606355","private_token":"123456"}
 ```
 ###**Return**
 ```
-{"status": 1, "body": {"messages": [{"content": "djdjdjd", "create_time": "2015-03-13 19:55:20.679150+08:00", "deadline": "2015-03-13 19:55:17+08:00"}, {"content": "\u5316\u971c\u5b9a\u65f6\u5668\uff08100L\u5185\uff09", "create_time": "2015-03-13 19:55:07.647434+08:00", "deadline": "2015-03-13 19:54:59+08:00"}]}}
+{
+    "status": 1,
+    "body": {
+        "total": 1,
+        "messages": [
+            {
+                "content": "化霜定时器（100L内）",
+                "read": true,
+                "create_time": "2015-03-28 16:59:43.519295+08:00",
+                "deadline": 1427504378,
+                "id": 3
+            }
+        ],
+        "page": 1,
+        "total_page": 1
+    }
+}
 or
 {"status": 13, "body": {"msg": "login first before other action"}}
 ```
@@ -876,6 +893,7 @@ POST /consumer/get_all_orders
 ###**Parameters**
 * username(_Required_|string)-用户手机号
 * private_token(_Required_|string)-用户token
+* page(_Optional_|integer)-分页
 
 ###**Request**
 ```
@@ -888,6 +906,9 @@ POST /consumer/get_all_orders
     "status": 1,
     "body": {
         "msg": "get order list success",
+        "total": 11,
+        "total_page": 1,
+        "page": 1,
         "order_list": [
             {
                 "status": 1,
@@ -984,11 +1005,11 @@ or
 POST /consumer/verify_consumer
 ```
 ###**Parameters**
-* username(_Required_|string)-用户名，必须为手机号
+* phone(_Required_|string)-用户名，必须为手机号
 * verify_code(_Required_|string)-验证码
 ###**Request**
 ```
-{"username":"18215606355","verify_code":"123456"}
+{"phone":"18215606355","verify_code":"123456"}
 ```
 ###**Return**
 ```
@@ -1360,15 +1381,19 @@ POST /consumer/get_coupons
 ###**Parameters**
 * username(_Required_|string)-用户名，必须为手机号
 * private_token(_Required_|string)-用户token
+* page(_Optional_|integer)-分页
 ###**Request**
 ```
-{"username":"18215606355","private_token":"123456"}
+{"username":"18215606355","private_token":"123456","page":1}
 ```
 ###**Return**
 ```
 {
     "status": 1,
     "body": {
+        "total": 11,
+        "total_page": 1,
+        "page": 1
         "coupons": [
             {
                 "owned_time": "2015-03-25 12:58:50+08:00",
