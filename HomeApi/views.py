@@ -12,10 +12,14 @@ from HomeApi.OnlinePay import *
 from HomeApi.location_process import *
 from django.core.serializers import serialize, deserialize
 from django.utils.timezone import utc
+from django.core.paginator import Paginator
+from django.core.paginator import PageNotAnInteger
+from django.core.paginator import EmptyPage
 import copy
 import time
 import socket
 import os
+import math
 
 
 pathToStorePicture = os.path.dirname(os.path.dirname(__file__))
@@ -238,6 +242,22 @@ def get_messages(req):
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
             message_list = Message.objects.filter(own=curuser)
+            total = message_list.count()
+            total_page = math.ceil(float(total) / 20.0)
+            paginator = Paginator(message_list, 20)
+            page_num = 1
+            try:
+                page_num = int(jsonres['page'])
+                if page_num > total_page:
+                    body['msg'] = 'upbond page number'
+                    return HttpResponse(encodejson(1, body), content_type='application/json')
+                message_list = paginator.page(page_num)
+            except PageNotAnInteger:
+                message_list = paginator.page(1)
+            except EmptyPage:
+                message_list = paginator.page(paginator.num_pages)
+            except:
+                pass
             messages = []
             for itm in message_list:
                 message = {}
@@ -248,6 +268,9 @@ def get_messages(req):
                 message['read'] = itm.read
                 messages.append(copy.copy(message))
             body['messages'] = messages
+            body['total_page'] = total_page
+            body['total'] = total
+            body['page'] = page_num
             return HttpResponse(encodejson(1, body), content_type='application/json')
         else:
             body['msg'] = 'login first before other action'
@@ -333,6 +356,22 @@ def get_coupon(req):
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
             coupon_list = Coupon.objects.filter(own=curuser)
+            total = coupon_list.count()
+            total_page = math.ceil(float(total) / 20.0)
+            paginator = Paginator(coupon_list, 20)
+            page_num = 1
+            try:
+                page_num = int(jsonres['page'])
+                if page_num > total_page:
+                    body['msg'] = 'upbond page number'
+                    return HttpResponse(encodejson(1, body), content_type='application/json')
+                coupon_list = paginator.page(page_num)
+            except PageNotAnInteger:
+                coupon_list = paginator.page(1)
+            except EmptyPage:
+                coupon_list = paginator.page(paginator.num_pages)
+            except:
+                pass
             coupons = []
             for itm in coupon_list:
                 coupon = {}
@@ -345,6 +384,9 @@ def get_coupon(req):
                 coupon['deadline'] = time.mktime(itm.deadline.timetuple())
                 coupons.append(copy.copy(coupon))
             body['coupons'] = coupons
+            body['total_page'] = total_page
+            body['total'] = total
+            body['page'] = page_num
             return HttpResponse(encodejson(1, body), content_type='application/json')
         else:
             body['msg'] = 'login first before other action'
@@ -1140,6 +1182,22 @@ def get_orders(req):
         return HttpResponse(encodejson(13, body), content_type='application/json')
     curuser = Associator.objects.get(username=username)
     order_list = Appointment.objects.filter(associator=curuser)
+    total = order_list.count()
+    total_page = math.ceil(float(total) / 20.0)
+    paginator = Paginator(order_list, 20)
+    page_num = 1
+    try:
+        page_num = int(jsonres['page'])
+        if page_num > total_page:
+            body['msg'] = 'upbond page number'
+            return HttpResponse(encodejson(1, body), content_type='application/json')
+        order_list = paginator.page(page_num)
+    except PageNotAnInteger:
+        order_list = paginator.page(1)
+    except EmptyPage:
+        order_list = paginator.page(paginator.num_pages)
+    except:
+        pass
     order_items = []
     for itm in order_list:
         order = {}
@@ -1205,6 +1263,9 @@ def get_orders(req):
         order['home_itmes'] = home_items
         order_items.append(copy.copy(order))
     body['order_list'] = order_items
+    body['total_page'] = total_page
+    body['total'] = total
+    body['page'] = page_num
     body['msg'] = 'get order list success'
     return HttpResponse(encodejson(1, body), content_type='aplication/json')
 
@@ -1249,8 +1310,17 @@ def cancel_order(req):
             print e
             pass
     order.save()
-    order.order_coupon.save()
-    order.chargeinfo.save()
+    if order.use_couposn:
+        try:
+            order.order_coupon.save()
+        except Exception, e:
+            print e
+    if order.order_type == 1:
+        try:
+            order.chargeinfo.save()
+        except Exception, e:
+            print e
+            pass
     body['msg'] = 'order cancel success'
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
