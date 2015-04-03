@@ -180,7 +180,8 @@ class Application(models.Model):
 
 class Associator(AbstractBaseUser):
     username = models.CharField(max_length=15, unique=True)
-    sex = models.IntegerField(max_length=1, null=True, blank=True)
+    # 1男2女默认3
+    sex = models.IntegerField(max_length=1, default=3)
     birthday = models.DateTimeField(max_length=30, null=True, blank=True)
     address = models.CharField(max_length=200, null=True, blank=True)
     invite_code = models.CharField(max_length=6, null=True, blank=True)
@@ -257,8 +258,8 @@ class GameRecord(models.Model):
     end_time = models.DateTimeField(max_length=30, null=True, blank=True)
     money_high = models.FloatField(max_length=5)
     money_low = models.FloatField(max_length=5)
-    origin_coupon_num = models.IntegerField(max_length=6)
-    actually_coupon_num = models.IntegerField(max_length=6, default=0)
+    origin_coupon_num = models.IntegerField(max_length=10)
+    actually_coupon_num = models.IntegerField(max_length=10, default=0)
     game_active = models.BooleanField(default=True)
 
     def __unicode__(self):

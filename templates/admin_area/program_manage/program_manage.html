@@ -7,13 +7,30 @@
   <table style="margin-bottom: 5%">
     <thead>
      <h6 style="border-bottom: 3px #1abc9c solid;padding-bottom: 1%">
-         项目分类
+         维修
      </h6>
     </thead>
     <tbody>
     {% for item in programs %}
+        {% if item.type == 1 %}
       <a role="button" href="?item_p_id={{ item.id }}" class="btn btn-lg btn-primary" style="margin-top: 1.5%;margin-right: 2%">{{ item.item_name }}</a>
-
+        {% endif %}
+    {% endfor %}
+      <a role="button" href="edit_program_p_detail" class="btn btn-lg btn-success" style="margin-top: 1.5%;margin-right: 2%">+</a>
+{#      <button class="btn btn-hg btn-success" style="margin-right: 2%">+</button>#}
+    </tbody>
+  </table>
+  <table style="margin-bottom: 5%">
+    <thead>
+     <h6 style="border-bottom: 3px #1abc9c solid;padding-bottom: 1%">
+         安装
+     </h6>
+    </thead>
+    <tbody>
+    {% for item in programs %}
+        {% if item.type == 2 %}
+      <a role="button" href="?item_p_id={{ item.id }}" class="btn btn-lg btn-primary" style="margin-top: 1.5%;margin-right: 2%">{{ item.item_name }}</a>
+        {% endif %}
     {% endfor %}
       <a role="button" href="edit_program_p_detail" class="btn btn-lg btn-success" style="margin-top: 1.5%;margin-right: 2%">+</a>
 {#      <button class="btn btn-hg btn-success" style="margin-right: 2%">+</button>#}

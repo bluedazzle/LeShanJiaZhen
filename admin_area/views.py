@@ -739,9 +739,92 @@ def advertisement_manage(request):
         Image.open(ad_file).save(file_full_path)
         new_advertisement = Advertisement()
         new_advertisement.content = file_name
-        new_advertisement.photo = 'http://115.29.138.80' + '/img/advertisement/'+file_name
+        new_advertisement.type = 1
+        new_advertisement.area = HomeAdmin.objects.get(username=request.session['username']).area
+        new_advertisement.photo = base_url + '/img/advertisement/'+file_name
         new_advertisement.save()
         return HttpResponseRedirect('advertisement_manage')
+
+
+def advertisement_edit(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        advertisement_id = request.GET.get('advertisement_id')
+        if advertisement_id:
+            advertisement = Advertisement.objects.filter(id=advertisement_id)
+            if advertisement.count() == 0:
+                return HttpResponseRedirect('advertisement_manage')
+            else:
+                return render_to_response('admin_area/advertisement_edit.html',
+                                          {'advertisement': advertisement[0]},
+                                          context_instance=RequestContext(request))
+        else:
+            return render_to_response('admin_area/advertisement_edit.html',
+                                      context_instance=RequestContext(request))
+    if request.method == 'POST':
+        context = {}
+        context.update(csrf(request))
+        advertisement_id = request.POST.get('advertisement_id')
+        title = request.POST.get('title')
+        type = request.POST.get('type')
+        advertisement_pic = request.FILES.get('advertisement_pic', None)
+        content = request.POST.get('content')
+        first_jump = request.POST.get('first_jump')
+        second_jump = request.POST.get('second_jump')
+        third_jump = request.POST.get('item_id')
+        ad_id = 0
+        if not title and not type and not first_jump and not second_jump and not content:
+            raise Http404
+        if advertisement_id:
+            advertisement = Advertisement.objects.filter(id=advertisement_id)
+            if advertisement.count() == 0:
+                raise Http404
+            advertisement = Advertisement.objects.get(id=advertisement_id)
+            advertisement.title = title
+            advertisement.type = int(type)
+            advertisement.first_jump = first_jump
+            advertisement.second_jump = second_jump
+            advertisement.content = content
+            if third_jump:
+                advertisement.third_jump = third_jump
+            else:
+                advertisement.third_jump = 0
+            advertisement.save()
+            if not advertisement_pic:
+                return render_to_response('admin_area/advertisement_edit.html',
+                                          {'advertisement': advertisement,
+                                           'success': True})
+            ad_id = advertisement.id
+        else:
+            if not advertisement_pic:
+                raise Http404
+            new_advertisement = Advertisement()
+            new_advertisement.title = title
+            new_advertisement.type = int(type)
+            new_advertisement.first_jump = first_jump
+            new_advertisement.second_jump = second_jump
+            new_advertisement.content = content
+            if third_jump:
+                new_advertisement.third_jump = third_jump
+            else:
+                new_advertisement.third_jump = 0
+            admin_user = HomeAdmin.objects.get(username=request.session['username'])
+            new_advertisement.area = admin_user.area
+            new_advertisement.save()
+            ad_id = new_advertisement.id
+        if advertisement_pic:
+            advertisement = Advertisement.objects.get(id=ad_id)
+            if advertisement.photo:
+                os.remove(BASE + '/static/img/advertisement/' + str(ad_id))
+            file_name = str(ad_id) + '.png'
+            file_full_path = BASE + '/static/img/advertisement/' + file_name
+            Image.open(advertisement_pic).save(file_full_path)
+            advertisement.photo = base_url + '/img/advertisement/'+file_name
+            advertisement.save()
+            return render_to_response('admin_area/advertisement_edit.html',
+                                      {'advertisement': advertisement,
+                                       'success': True})
 
 
 def delete_advertisement(request):
@@ -750,7 +833,7 @@ def delete_advertisement(request):
     if request.method == 'GET':
         ad_id = request.GET.get('advertisement_id')
         advertisement = Advertisement.objects.get(id=ad_id)
-        file_full_path = './static/img/advertisement/'+advertisement.content
+        file_full_path = BASE + '/static/img/advertisement/' + str(ad_id) + '.png'
         os.remove(file_full_path)
         advertisement.delete()
         return HttpResponseRedirect('advertisement_manage')
@@ -1618,7 +1701,35 @@ def vip_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        return check_permission(request, 'manage_check_vip', 'admin_area/vip_manage.html')
+        page_num = request.GET.get('page')
+        vips = Associator.objects.order_by('-id').all()
+        count = vips.count()
+        paginator = Paginator(vips, 30)
+        try:
+            vips = paginator.page(page_num)
+        except PageNotAnInteger:
+            vips = paginator.page(1)
+        except EmptyPage:
+            vips = paginator.page(paginator.num_pages)
+        except:
+            pass
+        return check_permission(request,
+                                'manage_check_vip',
+                                'admin_area/vip_manage.html',
+                                {'vips': vips,
+                                 'count': count})
+    if request.method == 'POST':
+        phone = request.POST.get('phone')
+        vips = Associator.objects.filter(username=phone)
+        if vips.count() == 0:
+            vip_one = None
+        else:
+            vip_one = vips[0]
+        return check_permission(request,
+                                'manage_check_vip',
+                                'admin_area/vip_manage.html',
+                                {'vip_one': vip_one,
+                                 'phone': phone})
 
 
 # 消息推送操作
@@ -1642,7 +1753,21 @@ def feed_back(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
+        page_num = request.GET.get('page')
+        feed_backs = Feedback.objects.order_by('-id').all()
+        count = feed_backs.count()
+        paginator = Paginator(feed_backs, 30)
+        try:
+            feed_backs = paginator.page(page_num)
+        except PageNotAnInteger:
+            feed_backs = paginator.page(1)
+        except EmptyPage:
+            feed_backs = paginator.page(paginator.num_pages)
+        except:
+            pass
         return render_to_response('admin_area/feed_back.html',
+                                  {'feedbacks': feed_backs,
+                                   'count': count},
                                   context_instance=RequestContext(request))
 
 

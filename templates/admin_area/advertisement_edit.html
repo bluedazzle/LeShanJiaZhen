@@ -1,0 +1,231 @@
+{% extends 'admin_area/base.html' %}
+{% block define %}
+    <script>
+        $('#page_title').text('广告编辑');
+        $('#message_manange').addClass('active');
+        $('#advertisement_manage').addClass('active')
+    </script>
+    {% if success %}
+        <script>
+          $(document).ready(function(){
+              alert("提交成功！");
+              window.location.href = 'advertisement_manage';
+          })
+        </script>
+    {% endif %}
+    {% if advertisement and advertisement.first_jump != 0 %}
+        <script>
+            $(document).ready(function(){
+                $('#select2').val('{{ advertisement.first_jump }}');
+                $('#select2').find("option[value='{{ advertisement.first_jump }}']").attr('selected','True');
+                $("#select2").select2({dropdownCssClass: 'dropdown-inverse'});
+                first_jump_change('{{ advertisement.first_jump }}');
+                {% if advertisement.second_jump != 0 %}
+                    $('#select3').val('{{ advertisement.second_jump }}');
+                    $('#select3').find("option[value='{{ advertisement.second_jump }}']").attr('selected','True');
+                    $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
+                    second_jump_change('{{ second_jump_change }}');
+                    {% if advertisement.third_jump != 0 %}
+                        $('#item_id').val('{{ advertisement.third_jump }}');
+                        third_jump_change('{{ advertisement.third_jump }}');
+                    {% endif %}
+                {% endif %}
+            })
+        </script>
+    {% endif %}
+<div class="col-lg-12 col-md-12 panel panel-default" style="margin-top: 5%;padding-left: 7%">
+ <div class="panel-body">
+       <div class="col-lg-4 col-md-4 text-right">
+            <h6>名称:</h6>
+            <h6 style="margin-top: 25px">广告位置:</h6>
+            <h6 style="margin-top: 40px">内容:</h6>
+            <h6 style="margin-top: 190px">图片:</h6>
+            <h6 style="margin-top: 280px">跳转选项:</h6>
+        </div>
+       <div class="col-lg-6 col-md-6" style="padding-top: 0.5%;padding-left: 0">
+          <form action="advertisement_edit" method="post" id="p_mes" enctype="multipart/form-data">
+              {% csrf_token %}
+              {% if advertisement.id %}
+            <input style="display: none" type="text" name="advertisement_id" value="{{ advertisement.id }}">
+              {% endif %}
+            <input type="text" class="form-control" id="title" name='title'
+                   placeholder="请输入广告名称" style="width: 300px;margin-top: 0.5%"
+                   value="{{ advertisement.title }}">
+            <select id="select1" name="type"  class="form-control select select-primary select-block mbl"
+                    style="border-bottom-right-radius: 0;margin-top: 13px;width: 100px;margin-bottom: 0">
+              <option value="1">上层</option>
+              <option value="2">下层</option>
+            </select>
+                {% if advertisement %}
+                    <script>
+                    $('#select1').val('{{ advertisement.type }}');
+                    $('#select1').find("option[value='{{ advertisement.type }}']").attr('selected','True');
+                    $("#select1").select2({dropdownCssClass: 'dropdown-inverse'});
+                    </script>
+                {% endif %}
+            <br/>
+            <textarea class="form-control" id="content" name="content" style="width: 400px;height: 200px;margin-top: 30px;margin-bottom: 20px;">{{ advertisement.content }}</textarea>
+            <input type="file" name="advertisement_pic" id="file0" multiple="multiple" style="margin-top:5px;line-height: 1;font-size: 16px;"/>
+              <p style="padding-left: 130px" id="warning">请上传400*200的PNG图片</p>
+              {% if advertisement %}
+                  <img style="width: 500px;height: 200px;" src="{{ advertisement.photo }}" id="img0" >
+              {% else %}
+                 <img style="width: 500px;height: 200px;" src="" id="img0" >
+              {% endif %}
+           <select id="select2" name="first_jump"  class="form-control select select-default select-block mbl"
+                      style="border-bottom-right-radius: 0;margin-top: 30px;margin-bottom: 2px;"
+                      onchange="first_jump_change(this.value)">
+                    <option value="0" selected>一级选项(可选)</option>
+                    <option value="1">首页</option>
+                    <option value="2">商品</option>
+                    <option value="3">个人中心</option>
+              </select>
+            <br/>
+            <select id="select3" name="second_jump"  class="form-control select select-default select-block mbl"
+                    style="border-bottom-right-radius: 0;margin-bottom: 2px;"
+                    onchange="second_jump_change(this.value)">
+                    <option value="0" selected>二级选项(可选)</option>
+            </select>
+            <input type="text" class="form-control input-sm" id="item_id" name='item_id'
+                   placeholder="请输入需要跳转的项目或者商品ID" style="width: 220px;margin-bottom: 15px;display: none"
+                   value="{{ advertisement.third_jump }}"
+                    onkeyup="this.value=this.value.replace(/\D/g,''), third_jump_change(this.value)">
+            <p id="jump_item" style="font-size: 12px;"></p>
+            <script>
+                $(document).ready(function(){
+                    $("#select1").select2({dropdownCssClass: 'dropdown-inverse'});
+                    $("#select2").select2({dropdownCssClass: 'dropdown-inverse'});
+                    $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
+                });
+            </script>
+          </form>
+       </div>
+    <div class="col-lg-12 col-md-12" style="margin-top: 2%">
+        <button id="submit" class="btn btn-success btn-lg" style="margin-left: 36%">提交</button>
+        <a href="advertisement_manage" role="button" class="btn btn-default btn-lg" style="margin-left: 5%">取消</a>
+    </div>
+<script>
+$("#file0").change(function(){
+    var file0 = this.files[0];
+	var objUrl = getObjectURL(file0);
+	console.log("objUrl = "+objUrl) ;
+    localStorage['image_url'] = objUrl;
+	if (objUrl) {
+		$("#img0").attr("src", objUrl);
+        $('#img0').load(function(){
+            var image = new Image();
+            image.src = $('#img0').attr('src');
+            var height = image.height;
+            var width = image.width;
+            var f = $('#img0').val();
+            if(!/(png|PNG)$/.test(file0.type)){
+                $('#warning').text('图像格式不正确，请上传PNG图片');
+                $('#warning').style('color: red');
+                return false
+            }
+            if(height==200&&width==400){
+                $('#warning').text('图片格式正确，可上传');
+            }
+            else{
+                $('#warning').text('图片像素不正确，请使用400 x 200像素的图片')
+            }
+        })
+	}
+});
+//建立一個可存取到該file的url
+function getObjectURL(file) {
+	var url = null ;
+	if (window.createObjectURL!=undefined) { // basic
+		url = window.createObjectURL(file) ;
+	} else if (window.URL!=undefined) { // mozilla(firefox)
+		url = window.URL.createObjectURL(file) ;
+	} else if (window.webkitURL!=undefined) { // webkit or chrome
+		url = window.webkitURL.createObjectURL(file) ;
+	}
+	return url ;
+}
+function could_submit(){
+    if($('#title').val() && $('#content').val()
+            && $('#img0').attr('src')){
+        var image = new Image();
+        image.src = $('#img0').attr('src');
+        var height = image.height;
+        var width = image.width;
+        if(localStorage['image_url'] || /(png|PNG)$/.test($('#img0').attr('src'))){
+            if(height==200&&width==400){
+                $('#p_mes').submit();
+            }
+            else{
+                alert("信息填写有误");
+            }
+        }
+        else{
+            alert("信息填写有误");
+        }
+    }
+    else{
+        alert("信息填写有误");
+    }
+}
+$('#submit').click(function(){
+    could_submit();
+});
+function first_jump_change(jump_id){
+    $('#select3').empty();
+    $('#item_id').hide();
+    $('#jump_item').text('');
+    $('#select3').append("<option value='0' selected>二级选项(可选)</option>");
+    if(jump_id == '1') {
+        $('#select3').append("<option value='1'>维修</option>" +
+        "<option value='2'>安装</option>");
+    }
+    else if(jump_id == '2'){
+        $('#select3').append("<option value='1'>商品或商品主页</option>");
+    }
+    else if(jump_id == '3'){
+        $('#select3').append("<option value='1'>订单详情页</option>" +
+        "<option value='2'>折扣券详情页</option>"+
+        "<option value='3'>消息中心页</option>");
+    }
+    $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
+}
+function second_jump_change(jump_id){
+    $('#item_id').val('');
+    $('#item_id').hide();
+    $('#jump_item').text('');
+    if($('#select2').val() == '1'){
+        if(jump_id != '0'){
+            $('#item_id').toggle();
+        }
+    }
+    else if($('#select2').val() == '2'){
+        if(jump_id != '0'){
+            $('#item_id').toggle();
+        }
+    }
+}
+function third_jump_change(jump_id){
+    if(jump_id == ''){
+        $('#jump_item').text('');
+        return "false"
+    }
+    $.ajax({
+        type: 'GET',
+        url: 'get_item_mes',
+        data: {'type1': $('#select2').val(),
+               'item_id': jump_id},
+        success: function(data){
+            if(data == 'None'){
+                $('#jump_item').text("没有相应的项目或商品");
+                $('#jump_item').css('color', 'red')
+            }
+            else{
+                $('#jump_item').text(data['one'] + '->' + data['two'] + '->' + data['three']);
+                $('#jump_item').css('color', '#1abc3c')
+            }
+        },
+        dataType: 'json'
+    });
+}
+</script>
+{% endblock %}
