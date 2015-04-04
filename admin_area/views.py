@@ -703,10 +703,30 @@ def program_manage(request):
                 return render_to_response('admin_area/program_manage/program_manage.html', {'programs': programs})
             else:
                 item_details = HomeItem.objects.order_by('sort_id').filter(parent_item=item_p)
-                return render_to_response('admin_area/program_manage/program_manage.html', {'programs': programs,
-                                                                             'item_details': item_details,
-                                                                             'item_p': item_p[0],
-                                                                             'flag0': 'T'})
+                return render_to_response('admin_area/program_manage/program_manage.html',
+                                          {'programs': programs,
+                                           'item_details': item_details,
+                                           'item_p': item_p[0],
+                                           'flag0': 'T'})
+
+
+def program_manage_two(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        program_p_id = request.GET.get('item_p_id')
+        if not program_p_id:
+            raise Http404
+        user_admin = HomeAdmin.objects.get(username=request.session['username'])
+        program_p = HomeItem_P.objects.filter(id=program_p_id, area=user_admin.area)
+        if program_p.count() == 0:
+            raise Http404
+        programs = HomeItem.objects.filter(parent_item=program_p[0])
+        return render_to_response('admin_area/program_manage/program_manage_two.html',
+                                  {'programs': programs,
+                                   'program_p': program_p[0]})
+
+
 
 
 def delete_program_detail(request):
@@ -900,12 +920,20 @@ def edit_program_p_detail(request):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
         item_id = request.GET.get('item_id')
+        type = request.GET.get('type')
         if item_id:
-            item_p = HomeItem_P.objects.get(id=item_id)
+            user_admin = HomeAdmin.objects.get(username=request.session['username'])
+            item_p = HomeItem_P.objects.get(id=item_id, area=user_admin.area)
+            if not item_p:
+                raise Http404
             return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
-                                      {'item_p': item_p},
+                                      {'item_p': item_p,
+                                       'type': item_p.type},
                                       context_instance=RequestContext(request))
+        if not type:
+            raise Http404
         return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
+                                  {'type': type},
                                   context_instance=RequestContext(request))
     if request.method == 'POST':
         context = {}
@@ -914,9 +942,12 @@ def edit_program_p_detail(request):
         item_p_id = request.POST.get('item_p_id')
         item_sort_id = request.POST.get('sort_id')
         item_name = request.POST.get('item_name')
+        type = request.POST.get('type')
         user = HomeAdmin.objects.get(username=request.session['username'])
         i_id = 1
-        item_p_have = HomeItem_P.objects.filter(sort_id=item_sort_id)
+        item_p_have = HomeItem_P.objects.filter(sort_id=item_sort_id,
+                                                area=user.area,
+                                                type=type)
 
         if item_p_id:
             item_p = HomeItem_P.objects.get(id=item_p_id)
@@ -924,7 +955,7 @@ def edit_program_p_detail(request):
                 if item_p_have.count() > 0:
                     return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
                                               {'sort_id_have': 'T',
-                                              'item_p': item_p},
+                                               'item_p': item_p},
                                               context_instance=RequestContext(request))
             item_p.item_name = item_name
             item_p.sort_id = item_sort_id
@@ -935,6 +966,7 @@ def edit_program_p_detail(request):
             new_item_p.item_name = item_name
             new_item_p.area = user.area
             new_item_p.sort_id = item_sort_id
+            new_item_p.type = int(type)
             if item_p_have.count() > 0:
                 return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
                                           {'sort_id_have': 'T',
@@ -943,10 +975,12 @@ def edit_program_p_detail(request):
             i_id = new_item_p.id
         if icon_file != None:
             print "OK"
-            file_name = str(int(time.time())) + '.png'
-            file_full_path = BASE + '/static/img/program_icons/' + file_name
-            Image.open(icon_file).save(file_full_path)
             item_p = HomeItem_P.objects.get(id=i_id)
+            file_name = 'p_g' + str(i_id) + '.png'
+            file_full_path = BASE + '/static/img/program_icons/' + file_name
+            if item_p.icon:
+                os.remove(file_full_path)
+            Image.open(icon_file).save(file_full_path)
             item_p.icon = base_url+'/img/program_icons/'+file_name
             item_p.save()
 
