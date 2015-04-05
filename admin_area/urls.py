@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 from appointment_detail import *
 from tests import *
+import method
 
 
 urlpatterns = patterns('',
@@ -19,6 +20,7 @@ urlpatterns = patterns('',
     url('^user_mes$', user_mes),
     url('^notice$', notice),
     url('^program_manage$', program_manage),
+    url('^program_manage_two$', program_manage_two),
     url('^advertisement_manage$', advertisement_manage),
     url('^push_message$', push_message),
     url('^goods_manage$', goods_manage),
@@ -31,6 +33,7 @@ urlpatterns = patterns('',
     url('^feed_back$', feed_back),
     url('^set_game$', set_game),
     url('^check_game_record$', game_record),
+    url('^advertisement_edit$', advertisement_edit),
     #option
     url('^register_verify$', phone_verify),
     url('^f_register_verify$', f_phone_verify),
@@ -58,7 +61,10 @@ urlpatterns = patterns('',
     url('^edit_goods_o$', edit_goods_o),
     url('^edit_goods$', edit_goods),
     url('^delete_goods$', delete_goods),
+    url('^get_item_mes$', method.get_item_mes),
     # test
     url('^create_coupons$', create_coupons),
     url('^create_appointments$', create_appointments),
+    url('^create_feed_backs$', create_feed_backs),
+    url('^create_vips$', create_vips),
 )

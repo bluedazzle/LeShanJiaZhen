@@ -16,6 +16,7 @@
               {% if item_p.id %}
             <input style="display: none" type="text" name="item_p_id" value="{{ item_p.id }}">
               {% endif %}
+            <input style="display: none" type="text" name="type" value="{{ type }}">
             <input type="text" class="form-control" id="item_name" name='item_name'
                    placeholder="请输入项目名称" style="width: 300px;margin-top: 0.5%" value="{{ item_p.item_name }}">
             <input type="text" class="form-control" id="sort_id" name='sort_id'

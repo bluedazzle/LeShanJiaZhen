@@ -130,3 +130,47 @@ def create_order_home_item(new_appointment):
     order_homeitem_new.belong = new_appointment
     order_homeitem_new.save()
     return True
+
+
+def create_feed_backs(request):
+    if request.method == 'GET':
+        for i in range(0, 800):
+            phone_numbers = []
+            phone = ''
+            for j in range(0, 11):
+                num = random.randint(1, 9)
+                phone_numbers.append(num)
+            for number in phone_numbers:
+                phone = str(number) + phone
+
+            new_feed_back = Feedback()
+            new_feed_back.phone = phone
+            new_feed_back.content = "对萨浪费空间拉萨大家法拉盛肯德基法律框架撒的浪费空间" \
+                                    "拉萨的克己复礼卡上的纠纷卢卡斯的距离放假啊谁来对抗肌肤"
+            new_feed_back.save()
+
+        return HttpResponse(json.dumps('OK'))
+
+
+def create_vips(request):
+    if request.method == 'GET':
+        for i in range(0, 400):
+            phone_numbers = []
+            phone = ''
+            for j in range(0, 11):
+                num = random.randint(1, 9)
+                phone_numbers.append(num)
+            for number in phone_numbers:
+                phone = str(number) + phone
+
+            new_vip = Associator()
+            new_vip.username = phone
+            bir_flag = random.randint(1, 2)
+            if bir_flag == 1:
+                new_vip.birthday = datetime.datetime.utcnow()
+            new_vip.sex = random.randint(1, 3)
+            new_vip.address = "大撒了狂风巨浪都是克己复礼开始打架dsf"
+            new_vip.invite_code = random.randint(111111, 999999)
+            new_vip.save()
+
+        return HttpResponse(json.dumps('OK'))
