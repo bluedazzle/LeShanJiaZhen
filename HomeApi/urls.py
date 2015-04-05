@@ -5,7 +5,7 @@ from HomeApi import OnlinePay
 urlpatterns = patterns('',
     url(r'^consumer/login$', views.login),
     url(r'^consumer/logout$', views.logout),
-    url(r'^consumer/send_verify$', views.send_reg_verify),
+    url(r'^consumer/send_verify$', views.send_consumer_verify),
     url(r'^consumer/verify_reg_code$', views.verify_reg),
     url(r'^consumer/register$', views.register),
     url(r'^consumer/change_password$', views.change_password),

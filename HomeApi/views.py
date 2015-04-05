@@ -48,6 +48,34 @@ def send_reg_verify(req):
         raise Http404
 
 
+
+@csrf_exempt
+def send_consumer_verify(req):
+    if req.method == 'POST':
+        jsonres = simplejson.loads(req.body)
+        phone = jsonres['phone']
+        verify_res = createverfiycode(phone)
+        verify_res = simplejson.loads(verify_res)
+        con_list = Consumer.objects.filter(phone=phone)
+        if not con_list.exists():
+            newcon = Consumer(phone=phone)
+            newcon.save()
+        if verify_res['success'] is True:
+            try:
+                verify = Verify.objects.get(phone=phone)
+                verify.verify = verify_res['verify_code']
+                verify.save()
+            except Exception:
+                newverify = Verify(phone=phone, verify=verify_res['verify_code'])
+                newverify.save()
+            return HttpResponse(encodejson(1, verify_res), content_type='application/json')
+        else:
+            return HttpResponse(encodejson(2, {}), content_type='application/json')
+    else:
+
+        raise Http404
+
+
 @csrf_exempt
 def register(req):
     body={}
@@ -1177,11 +1205,12 @@ def get_orders(req):
     resjson = simplejson.loads(req.body)
     username = resjson['username']
     token = resjson['private_token']
+    order_type = int(resjson['order_type'])
     if not if_legal(username, token):
         body['msg'] = 'login befor other action'
         return HttpResponse(encodejson(13, body), content_type='application/json')
     curuser = Associator.objects.get(username=username)
-    order_list = Appointment.objects.filter(associator=curuser)
+    order_list = Appointment.objects.filter(associator=curuser, order_type=order_type)
     total = order_list.count()
     total_page = math.ceil(float(total) / 20.0)
     paginator = Paginator(order_list, 20)
@@ -1267,7 +1296,7 @@ def get_orders(req):
     body['total'] = total
     body['page'] = page_num
     body['msg'] = 'get order list success'
-    return HttpResponse(encodejson(1, body), content_type='aplication/json')
+    return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
 @csrf_exempt
