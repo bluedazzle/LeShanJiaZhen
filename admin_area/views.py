@@ -737,7 +737,7 @@ def delete_program_detail(request):
         item_p_id = request.GET.get('item_p_id')
         item = HomeItem.objects.get(id=item_id)
         item.delete()
-        return HttpResponseRedirect('program_manage?item_p_id='+item_p_id)
+        return HttpResponseRedirect('program_manage_two?item_p_id='+item_p_id)
 
 
 def advertisement_manage(request):
@@ -876,43 +876,105 @@ def edit_program_detail(request):
                                    'item': item},
                                   context_instance=RequestContext(request))
     if request.method == 'POST':
+        context = {}
+        context.update(csrf(request))
         item_name = request.POST.get('item_name')
-        price = request.POST.get('price')
-        content = request.POST.get('content')
+        program_pic = request.FILES.get('home_item_pic', None)
         item_p_id = request.POST.get('item_p_id')
         item_sort_id = request.POST.get('sort_id')
         item_id = request.POST.get('item_id')
-        if item_name and price and content and item_p_id:
+        i_id = 0
+        if item_name and item_sort_id and item_p_id:
             if item_id:
                 item = HomeItem.objects.get(id=item_id)
-                item.title = item_name
-                item.price = price
-                item.content = content
-                item0 = HomeItem.objects.get(parent_item=item.parent_item, sort_id=item_sort_id)
-                if not item0:
-                    item.sort_id = item_sort_id
-                else:
-                    item0.sort_id = item.sort_id
-                    item0.save()
-                    item.sort_id = item_sort_id
+                item.item_name = item_name
+                if not item.sort_id == int(item_sort_id):
+                    item0 = HomeItem.objects.get(parent_item=item.parent_item, sort_id=item_sort_id)
+                    if not item0:
+                        item.sort_id = item_sort_id
+                    else:
+                        item0.sort_id = item.sort_id
+                        item0.save()
+                        item.sort_id = item_sort_id
 
                 item.save()
-                return HttpResponse(json.dumps('T'), content_type="application/json")
+                i_id = item.id
+            else:
+                item_p = HomeItem_P.objects.get(id=item_p_id)
+                item_have = HomeItem.objects.filter(parent_item=item_p, sort_id=item_sort_id)
+                if item_have.count() != 0:
+                    return render_to_response('admin_area/program_manage/edit_program_detail.html',
+                                              {'sort_id_have': True,
+                                               'item_p': item_p,
+                                               'item_sort_id': item_sort_id},
+                                              context_instance=RequestContext(request))
+                new_item = HomeItem()
+                new_item.item_name = item_name
+                new_item.parent_item = item_p
+                new_item.sort_id = item_sort_id
+                new_item.save()
+                i_id = new_item.id
+            home_item = HomeItem.objects.get(id=i_id)
+            if program_pic != None:
+                file_name = 'h_i' + str(i_id) + '.png'
+                file_full_path = BASE + '/static/img/home_item_pic/' + file_name
+                if home_item.pic_url:
+                    os.remove(file_full_path)
+                Image.open(program_pic).save(file_full_path)
+                home_item.pic_url = base_url+'/img/home_item_pic/'+file_name
+                home_item.save()
 
-            item_p = HomeItem_P.objects.get(id=item_p_id)
-            item_have = HomeItem.objects.filter(parent_item=item_p, sort_id=item_sort_id)
-            if item_have.count() != 0:
-                return HttpResponse(json.dumps('F'), content_type="application/json")
-            new_item = HomeItem()
-            new_item.title = item_name
-            new_item.price = price
-            new_item.content = content
-            new_item.parent_item = item_p
-            new_item.sort_id = item_sort_id
-            new_item.save()
-            return HttpResponse(json.dumps('T'), content_type="application/json")
+            return render_to_response('admin_area/program_manage/edit_program_detail.html',
+                                      {'success': True,
+                                       'item': home_item,
+                                       'item_p': home_item.parent_item},
+                                      context_instance=RequestContext(request))
         else:
-            return HttpResponse(json.dumps('F'), content_type="application/json")
+            raise Http404
+
+
+def check_home_item_sort_id(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        item_p_id = request.GET.get('item_p_id')
+        sort_id = request.GET.get('sort_id')
+        item_id = request.GET.get('item_id')
+        if item_p_id and sort_id:
+            if item_id:
+                home_item = HomeItem.objects.get(id=item_id)
+                if home_item.sort_id == int(sort_id):
+                    return HttpResponse(json.dumps('T'))
+            item_p = HomeItem_P.objects.get(id=item_p_id)
+            item_sort_id_have = HomeItem.objects.filter(parent_item=item_p, sort_id=sort_id)
+            if item_sort_id_have.count() > 0:
+                return HttpResponse(json.dumps('F'))
+            else:
+                return HttpResponse(json.dumps('T'))
+        else:
+            raise Http404
+
+
+def check_home_item_p_sort_id(request):
+    if not request.session.get('username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        p_type = request.GET.get('type')
+        sort_id = request.GET.get('sort_id')
+        item_p_id = request.GET.get('item_p_id')
+        if p_type and sort_id:
+            if item_p_id:
+                item_p = HomeItem_P.objects.get(id=item_p_id)
+                if item_p.sort_id == int(sort_id):
+                    return HttpResponse(json.dumps('T'))
+            user_admin = HomeAdmin.objects.get(username=request.session['username'])
+            item_sort_id_have = HomeItem_P.objects.filter(type=p_type, sort_id=sort_id, area=user_admin.area)
+            if item_sort_id_have.count() > 0:
+                return HttpResponse(json.dumps('F'))
+            else:
+                return HttpResponse(json.dumps('T'))
+        else:
+            raise Http404
 
 
 def edit_program_p_detail(request):
@@ -984,7 +1046,7 @@ def edit_program_p_detail(request):
             item_p.icon = base_url+'/img/program_icons/'+file_name
             item_p.save()
 
-        return HttpResponseRedirect('program_manage')
+        return HttpResponseRedirect('program_manage_two?item_p_id='+str(i_id))
 
 
 def delete_program_p(request):

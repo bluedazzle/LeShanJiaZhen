@@ -19,6 +19,7 @@
             <input style="display: none" type="text" name="type" value="{{ type }}">
             <input type="text" class="form-control" id="item_name" name='item_name'
                    placeholder="请输入项目名称" style="width: 300px;margin-top: 0.5%" value="{{ item_p.item_name }}">
+            <span id="sort_id_have" style="position: absolute;z-index: 99;margin-left: 45%;margin-top: 25px;font-size:14px;color: red"></span>
             <input type="text" class="form-control" id="sort_id" name='sort_id'
                    placeholder="请输入排序ID" style="width: 300px;margin-top: 3%" value="{{ item_p.sort_id }}"
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
@@ -39,7 +40,11 @@
 
     <div class="col-lg-12 col-md-12" style="margin-top: 2%">
         <button id="submit" class="btn btn-success btn-lg" style="margin-left: 36%">提交</button>
+        {% if item_p %}
+        <a href="program_manage_two?item_p_id={{ item_p.id }}" role="button" class="btn btn-default btn-lg" style="margin-left: 5%">取消</a>
+        {% else %}
         <a href="program_manage" role="button" class="btn btn-default btn-lg" style="margin-left: 5%">取消</a>
+        {% endif %}
     </div>
     <script>
         {% if sort_id_have %}
@@ -47,45 +52,57 @@
               alert("排序id已存在，请重新填写！")
         });
         {% endif %}
-        $("#file0").change(function(){
-    var file0 = this.files[0];
-	var objUrl = getObjectURL(file0);
-	console.log("objUrl = "+objUrl) ;
-	if (objUrl) {
-		$("#img0").attr("src", objUrl);
-        $('#img0').load(function(){
-            var image = new Image();
-            image.src = $('#img0').attr('src');
-            var height = image.height;
-            var width = image.width;
-            var f = $('#img0').val();
-            if(!/(png|PNG)$/.test(file0.type)){
-                $('#submit').addClass('disabled');
-                $('#warning').text('图像格式不正确，请上传PNG图片');
+        $('#sort_id').keyup(function(){
+            if(!$('#sort_id').val()){
                 return false
             }
-            if(height==64&&width==64){
-                $('#submit').removeClass('disabled')
-            }
-            else{
-                $('#submit').addClass('disabled');
-                $('#warning').text('图片像素不正确，请使用64 x 64像素的图片')
-            }
-        })
-	}
-});
-//建立一個可存取到該file的url
-function getObjectURL(file) {
-	var url = null ;
-	if (window.createObjectURL!=undefined) { // basic
-		url = window.createObjectURL(file) ;
-	} else if (window.URL!=undefined) { // mozilla(firefox)
-		url = window.URL.createObjectURL(file) ;
-	} else if (window.webkitURL!=undefined) { // webkit or chrome
-		url = window.webkitURL.createObjectURL(file) ;
-	}
-	return url ;
-}
+            $.ajax({
+                type: 'GET',
+                url: 'check_home_item_p_sort_id',
+                data: {'sort_id': $('#sort_id').val(),
+                       'type': '{{ type }}',
+                       'item_p_id': {{ item_p.id }}},
+                success: function(data){
+                    if(data == 'F'){
+                        $('#sort_id_have').text("排序ID已存在");
+                        $('#submit').addClass('disabled');
+                    }
+                    else {
+                        $('#sort_id_have').text('');
+                        $('#submit').removeClass('disabled');
+                    }
+                },
+                dataType: 'json'
+            })
+        });
+        $("#file0").change(function(){
+            var file0 = this.files[0];
+	        var objUrl = getObjectURL(file0);
+	        console.log("objUrl = "+objUrl) ;
+	        if (objUrl) {
+		        $("#img0").attr("src", objUrl);
+                $('#img0').load(function(){
+                    var image = new Image();
+                    image.src = $('#img0').attr('src');
+                    var height = image.height;
+                    var width = image.width;
+                    var f = $('#img0').val();
+                    if(!/(png|PNG)$/.test(file0.type)){
+                        $('#submit').addClass('disabled');
+                        $('#warning').text('图像格式不正确，请上传PNG图片');
+                        return false
+                    }
+                    if(height==64&&width==64){
+                        $('#submit').removeClass('disabled')
+                        $('#warning').text('');
+                    }
+                    else{
+                        $('#submit').addClass('disabled');
+                        $('#warning').text('图片像素不正确，请使用64 x 64像素的图片')
+                    }
+                })
+	        }
+        });
         $('#submit').click(function(){
             if($('#item_name').val()&&$('#sort_id').val()){
                 $('#p_mes').submit();
