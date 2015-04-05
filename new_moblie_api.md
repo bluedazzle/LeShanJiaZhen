@@ -1,4 +1,18 @@
 #家政手机客户端
+# API version
+
+**host: http://www.rapospectre.com**
+
+**api_version: v1**
+
+#概要
+
+1. API请求格式：host + "api" + api_version + 请求地址(eg:www.rapospectre.com/api/v1/xxx)
+2. API返回格式：
+```
+json:{"status":1,"body":{}}
+```
+
 
 ##**STATUS结果码对照表**
 |status结果码|状态|
@@ -692,6 +706,7 @@ POST /consumer/create_appointment
 ###**Parameters**
 * phone(_Required_|string)-用户手机号
 * private_token(_Required_|string)-consumer token or 用户token
+* order_phone(_Required_|string)-订单电话
 * address(_Required_|string)-用户地址
 * city_number(_Required_|string)-城市统一编码
 * login(_Required_|bool)-是否登陆用户
@@ -1005,11 +1020,11 @@ or
 POST /consumer/verify_consumer
 ```
 ###**Parameters**
-* phone(_Required_|string)-用户名，必须为手机号
+* username(_Required_|string)-用户名，必须为手机号
 * verify_code(_Required_|string)-验证码
 ###**Request**
 ```
-{"phone":"18215606355","verify_code":"123456"}
+{"username":"18215606355","verify_code":"123456"}
 ```
 ###**Return**
 ```
