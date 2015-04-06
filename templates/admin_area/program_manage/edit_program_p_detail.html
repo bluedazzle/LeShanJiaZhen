@@ -1,7 +1,11 @@
 {% extends 'admin_area/base.html' %}
 {% block define %}
     <script>
-        $('#page_title').text('编辑项目信息')
+        {% if type == '1' %}
+        $('#page_title').text('编辑维修项目信息')
+        {% elif type == '2' %}
+        $('#page_title').text('编辑安装项目信息')
+        {% endif %}
     </script>
 <div class="col-lg-12 col-md-12 panel panel-default" style="margin-top: 5%;padding-left: 7%">
  <div class="panel-body">
@@ -22,7 +26,7 @@
             <span id="sort_id_have" style="position: absolute;z-index: 99;margin-left: 45%;margin-top: 25px;font-size:14px;color: red"></span>
             <input type="text" class="form-control" id="sort_id" name='sort_id'
                    placeholder="请输入排序ID" style="width: 300px;margin-top: 3%" value="{{ item_p.sort_id }}"
-                    onkeyup="this.value=this.value.replace(/\D/g,'')">
+                    onkeyup="this.value=this.value.replace(/\D/g,''), check_item_p_sort_id()">
             <input type="file" name="icon_file" id="file0" multiple="multiple" style="margin-top:5%;line-height: 1;font-size: 16px;"/><br>
             <p>请上传64*64的PNG图片</p>
               {% if item_p %}
@@ -52,8 +56,8 @@
               alert("排序id已存在，请重新填写！")
         });
         {% endif %}
-        $('#sort_id').keyup(function(){
-            if(!$('#sort_id').val()){
+        function check_item_p_sort_id(){
+            if($('#sort_id').val() == ''){
                 return false
             }
             $.ajax({
@@ -61,7 +65,7 @@
                 url: 'check_home_item_p_sort_id',
                 data: {'sort_id': $('#sort_id').val(),
                        'type': '{{ type }}',
-                       'item_p_id': {{ item_p.id }}},
+                       'item_p_id': '{{ item_p.id }}' },
                 success: function(data){
                     if(data == 'F'){
                         $('#sort_id_have').text("排序ID已存在");
@@ -74,7 +78,7 @@
                 },
                 dataType: 'json'
             })
-        });
+        }
         $("#file0").change(function(){
             var file0 = this.files[0];
 	        var objUrl = getObjectURL(file0);
@@ -93,7 +97,7 @@
                         return false
                     }
                     if(height==64&&width==64){
-                        $('#submit').removeClass('disabled')
+                        $('#submit').removeClass('disabled');
                         $('#warning').text('');
                     }
                     else{

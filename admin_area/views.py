@@ -1017,7 +1017,8 @@ def edit_program_p_detail(request):
                 if item_p_have.count() > 0:
                     return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
                                               {'sort_id_have': 'T',
-                                               'item_p': item_p},
+                                               'item_p': item_p,
+                                               'type': type},
                                               context_instance=RequestContext(request))
             item_p.item_name = item_name
             item_p.sort_id = item_sort_id
@@ -1032,7 +1033,8 @@ def edit_program_p_detail(request):
             if item_p_have.count() > 0:
                 return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
                                           {'sort_id_have': 'T',
-                                           'item_p': new_item_p}, context_instance=RequestContext(request))
+                                           'item_p': new_item_p,
+                                           'type': type}, context_instance=RequestContext(request))
             new_item_p.save()
             i_id = new_item_p.id
         if icon_file != None:
