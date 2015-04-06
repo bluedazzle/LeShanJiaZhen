@@ -246,17 +246,17 @@
       <div class="pagination pagination-success">
           <ul>
               {% if items.has_previous %}
-            <li><a class="btn btn-info previous" href="?page={{ items.previous_page_number }}">上一页</a></li>
+            <li><a class="btn btn-info previous" href="#" onclick="turn_page('{{ items.previous_page_number }}')">上一页</a></li>
              {% endif %}
              {% for page in items.paginator.page_range %}
                {% if page == items.number %}
-            <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+            <li class="active"><a href="">{{ page }}</a></li>
                {% else %}
-            <li><a href="?page={{ page }}">{{ page }}</a></li>
+            <li><a href="#" onclick="turn_page('{{ page }}')">{{ page }}</a></li>
                {% endif %}
             {% endfor %}
             {% if items.has_next %}
-             <li><a class="btn btn-info next" href="?page={{ items.next_page_number }}">下一页</a></li>
+             <li><a class="btn btn-info next" href="#" onclick="turn_page('{{ items.next_page_number }}')">下一页</a></li>
 
             {% endif %}
           </ul>
@@ -280,9 +280,6 @@
      </select>
      <script>
          $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
-         function turn_page(page_num){
-             window.location.href = "find_appointment?start_date={{ date_start }}&end_date={{ date_end }}&type={{ status }}&area={{ area.city_num }}&page=" + page_num;
-         }
      </script>
      {% if items.has_next %}
          <a role="button" class="btn btn-success" href="?end_date={{ date_end }}&start_date={{ date_start }}&type={{ status }}&area={{ area.city_num }}&page={{ items.next_page_number }}">下一页</a>
@@ -291,5 +288,10 @@
      {% endif %}
   </div>
   {% endif %}
+  <script>
+     function turn_page(page_num){
+             window.location.href = "find_appointment?start_date={{ date_start }}&end_date={{ date_end }}&type={{ status }}&area={{ area.city_num }}&page=" + page_num;
+         }
+  </script>
 {% endif %}
 {% endblock %}
