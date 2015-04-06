@@ -735,6 +735,8 @@ def create_pay_order(req):
             city_num = resjson['city_number']
             pay = bool(resjson['online_pay'])
             send_type = resjson['send_type']
+            order_phone = resjson['order_phone']
+            name = resjson['name']
             use_coupon = bool(resjson['use_coupon'])
             coupon_id = ''
             print use_coupon
@@ -746,7 +748,17 @@ def create_pay_order(req):
                 return HttpResponse(encodejson(7, body), content_type='application/json')
             block = block_list[0]
             newid = create_order_id()
-            newappoint = Appointment(order_id=newid, status=1, order_phone=username, address=address, send_type=send_type, area=block, associator=curuser, order_type=1, online_pay=pay)
+            newappoint = Appointment(order_id=newid,
+                                     status=1,
+                                     order_phone=username,
+                                     address=address,
+                                     send_type=send_type,
+                                     area=block,
+                                     associator=curuser,
+                                     order_type=1,
+                                     online_pay=pay,
+                                     order_phone=order_phone,
+                                     name=name)
             newappoint.save()
             goodslist = resjson['goods_items']
             submit_price = float(resjson['submit_price'])
