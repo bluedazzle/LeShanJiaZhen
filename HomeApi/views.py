@@ -269,7 +269,7 @@ def get_messages(req):
         username = jsonres['username']
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
-            message_list = Message.objects.filter(own=curuser)
+            message_list = Message.objects.filter(own=curuser).order_by('-create_time')
             total = message_list.count()
             total_page = math.ceil(float(total) / 20.0)
             paginator = Paginator(message_list, 20)
@@ -383,7 +383,7 @@ def get_coupon(req):
         username = jsonres['username']
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
-            coupon_list = Coupon.objects.filter(own=curuser)
+            coupon_list = Coupon.objects.filter(own=curuser).order_by('-create_time')
             total = coupon_list.count()
             total_page = math.ceil(float(total) / 20.0)
             paginator = Paginator(coupon_list, 20)
@@ -947,7 +947,6 @@ def create_appointment(req):
             if not if_legal(phone, token):
                 body['msg'] = 'login first before other action'
                 return HttpResponse(encodejson(13, body), content_type='application/json')
-            consumer = Associator(username=phone)
         else:
             consum_list = Consumer.objects.filter(phone=phone)
             if not consum_list.exists():
@@ -986,7 +985,9 @@ def create_appointment(req):
             newid = create_order_id(pay=False)
             newappoint = Appointment(status=1, order_phone=order_phone, use_coupon=use_coupon, address=address, order_id=newid, order_type=2, online_pay=False, area=city)
             if login:
+                consumer = Associator.objects.get(username=phone)
                 newappoint.associator = consumer
+                newappoint.save()
             else:
                 newappoint.consumer = ve
             if use_coupon:
@@ -1208,7 +1209,7 @@ def get_orders(req):
         body['msg'] = 'login befor other action'
         return HttpResponse(encodejson(13, body), content_type='application/json')
     curuser = Associator.objects.get(username=username)
-    order_list = Appointment.objects.filter(associator=curuser, order_type=order_type)
+    order_list = Appointment.objects.filter(associator=curuser, order_type=order_type).order_by('-create_time')
     total = order_list.count()
     total_page = math.ceil(float(total) / 20.0)
     paginator = Paginator(order_list, 20)
