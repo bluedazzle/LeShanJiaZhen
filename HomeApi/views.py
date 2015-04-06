@@ -973,6 +973,8 @@ def create_appointment(req):
             if not login:
                 ve = Consumer.objects.get(phone=phone, token=token)
             address = resjson['address']
+            name = resjson['name']
+            note = resjson['note']
             city_num = resjson['city_number']
             use_coupon = bool(resjson['use_coupon'])
             try:
@@ -994,7 +996,16 @@ def create_appointment(req):
                     body['msg'] = 'the coupon has used, over due or is not belong you'
                     return HttpResponse(encodejson(21, body), content_type='application/json')
             newid = create_order_id(pay=False)
-            newappoint = Appointment(status=1, order_phone=order_phone, use_coupon=use_coupon, address=address, order_id=newid, order_type=2, online_pay=False, area=city)
+            newappoint = Appointment(status=1,
+                                     order_phone=order_phone,
+                                     use_coupon=use_coupon,
+                                     address=address,
+                                     order_id=newid,
+                                     order_type=2,
+                                     online_pay=False,
+                                     area=city,
+                                     name=name,
+                                     remark=note)
             if login:
                 consumer = Associator.objects.get(username=phone)
                 newappoint.associator = consumer
