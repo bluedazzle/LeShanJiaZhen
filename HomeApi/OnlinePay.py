@@ -8,23 +8,23 @@ from HomeApi.models import *
 
 APP_ID = 'app_DibTK09SavX9mHmH'
 TEST_KEY = 'sk_test_DKmjXPD8ij1GjPyvX9ynzzTG'
-LIVE_KEY = ''
+LIVE_KEY = 'sk_live_fBZKaXibpI0xkf6IIjdqkubL'
 
 def do_charge(req):
     jsonres = simplejson.loads(req.body)
-    response_charge = pingpp.Charge.create(api_key=TEST_KEY, **jsonres)
+    response_charge = pingpp.Charge.create(api_key=LIVE_KEY, **jsonres)
 
     return response_charge
 
 
 def retrieve(req):
-    pingpp.api_key = TEST_KEY
+    pingpp.api_key = LIVE_KEY
     ch = pingpp.Charge.retrieve('ch_L8qn10mLmr1GS8e5OODmHaL4')
 
 
 def test():
     ch = pingpp.Charge.create(
-    api_key=TEST_KEY,
+    api_key=LIVE_KEY,
     amount=1,
     app=dict(id=APP_ID),
     channel='upmp',
@@ -41,7 +41,7 @@ def test():
 def create_new_charge(new_id, form, curuser):
     # print form['amount']
     form['app'] = dict(id=APP_ID)
-    ch = pingpp.Charge.create(api_key=TEST_KEY, order_no=new_id, **form)
+    ch = pingpp.Charge.create(api_key=LIVE_KEY, order_no=new_id, **form)
     cur_appoint = Appointment.objects.get(order_id=new_id)
     newcharge = OnlineCharge()
     newcharge.pingpp_charge_id = ch.id
@@ -63,7 +63,6 @@ def create_new_charge(new_id, form, curuser):
 @csrf_exempt
 def charge_result(req):
     notify = simplejson.loads(req.body)
-    print
     if 'object' not in notify:
       return HttpResponse('fail')
     else:
@@ -93,7 +92,7 @@ def charge_result(req):
 
 
 def refund_order(order_id, description, amount):
-    pingpp.api_key = TEST_KEY
+    pingpp.api_key = LIVE_KEY
     ch = pingpp.Charge.retrieve(order_id)
     re = ch.refunds.create(description=description, amount=amount)
     # print '233333'
