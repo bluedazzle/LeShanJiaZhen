@@ -949,20 +949,18 @@ def create_appointment(req):
                 return HttpResponse(encodejson(13, body), content_type='application/json')
             consumer = Associator(username=phone)
         else:
-            consumer_list = Consumer.objects.filter(phone=phone)
-            if not consumer_list.exists():
+            consum_list = Consumer.objects.filter(phone=phone)
+            if not consum_list.exists():
                 newconsumer = Consumer(phone=phone)
                 newconsumer.save()
                 body['msg'] = 'phone is not verified'
                 return HttpResponse(encodejson(9, body), content_type='application/json')
-            consumer = consumer_list[0]
-            if not consumer.verified:
+            consum = consum_list[0]
+            if not consum.verified:
                 body['msg'] = 'phone is not verified'
                 return HttpResponse(encodejson(9, body), content_type='application/json')
         try:
-            if login:
-                ve = consumer
-            else:
+            if not login:
                 ve = Consumer.objects.get(phone=phone, token=token)
             address = resjson['address']
             city_num = resjson['city_number']
@@ -988,7 +986,7 @@ def create_appointment(req):
             newid = create_order_id(pay=False)
             newappoint = Appointment(status=1, order_phone=order_phone, use_coupon=use_coupon, address=address, order_id=newid, order_type=2, online_pay=False, area=city)
             if login:
-                newappoint.associator = ve
+                newappoint.associator = consumer
             else:
                 newappoint.consumer = ve
             if use_coupon:

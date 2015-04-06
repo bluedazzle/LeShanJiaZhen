@@ -57,6 +57,8 @@ def get_appointment(request):
                 return HttpResponseRedirect('operate_new')
         else:
             return HttpResponseRedirect('login_in')
+    else:
+        raise Http404
 
 
 def get_appointment_all(request):
