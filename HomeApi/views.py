@@ -1047,7 +1047,7 @@ def get_home_item_p(req):
         if itm.recommand:
             homeitem['recommand'] = itm.recommand.id
         else:
-            homeitem['recommand'] = None
+            homeitem['recommand'] = -1
         home_items_list.append(copy.copy(homeitem))
     body['parent_item_list'] = home_items_list
     body['msg'] = 'get home items success'
