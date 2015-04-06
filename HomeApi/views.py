@@ -1286,6 +1286,8 @@ def get_orders(req):
                 for item in itm.ordergoods.all():
                     goods = {}
                     goods['title'] = item.title
+                    goods['pid'] = item.origin_item.id
+                    goods['pic_url'] = item.origin_item.picture
                     goods['real_price'] = item.real_price
                     goods['repair_price'] = item.repair_price
                     goods['use_repair'] = item.use_repair
@@ -1299,6 +1301,8 @@ def get_orders(req):
             for item in itm.ordergoods.all():
                 goods = {}
                 goods['title'] = item.title
+                goods['pid'] = item.origin_item.id
+                goods['pic_url'] = item.origin_item.picture
                 goods['real_price'] = item.real_price
                 goods['repair_price'] = item.repair_price
                 goods['use_repair'] = item.use_repair
@@ -1309,6 +1313,8 @@ def get_orders(req):
         for item in itm.orderitem.all():
             home_item = {}
             home_item['item_name'] = item.item_name
+            home_item['hid'] = item.origin_item.id
+            home_item['pic_url'] = item.origin_item.parent_item.icon
             home_items.append(copy.copy(home_item))
         order['home_itmes'] = home_items
         order_items.append(copy.copy(order))
