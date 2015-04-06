@@ -93,10 +93,7 @@
        <div class="panel-heading" style="background-color: #bdc3c7;">
            预约号：{{ item.appointment_id }}
            <span style="margin-left: 5%">联系方式：
-               {% if item.consumer %}
-                   {{ item.consumer }}
-               {% else %}
-                   {{ item.associator }}
+               {{ item.order_phone }}
                {% endif %}
            </span>
            <span style="margin-left: 5%">地址：{{ item.address }}</span>

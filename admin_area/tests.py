@@ -65,6 +65,7 @@ def create_appointments(request):
             new_appointment.name = u"张全蛋"
             new_appointment.area = Block.objects.get(city_num='511100')
             new_appointment.associator = Associator.objects.get(username='15682513909')
+            new_appointment.order_phone = '15682513909'
             flag_type = random.randint(1, 2)
             if flag_type == 1:
                 new_appointment.order_type = 1

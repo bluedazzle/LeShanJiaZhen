@@ -19,6 +19,7 @@
             <h6 style="margin-top: 6%">在线支付赠送（最低）:</h6>
             <h6 style="margin-top: 6%">注册赠送:</h6>
             <h6 style="margin-top: 6%">邀请赠送:</h6>
+            <h6 style="margin-top: 6%">是否开启在线支付赠送:</h6>
         </div>
        <div class="col-lg-5 col-md-5" style="padding-top: 0.5%;padding-left: 0">
           <form action="set_coupon" method="post" id="p_mes" enctype="multipart/form-data">
@@ -47,6 +48,27 @@
                    value="{{ item.invite_money }}"
                    {% endif %}
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
+            <label style="margin-top: 5%" class="checkbox" for="checkbox1">
+                  <input type="checkbox" name="online_active" value={{ item.online_active }} id="checkbox1"
+                         {% if item.online_active %}
+                         checked="checked"
+                         {% endif %}
+                         data-toggle="checkbox" class="custom-checkbox">
+                  <span class="icons">
+                      <span class="icon-unchecked"></span>
+                      <span class="icon-checked"></span>
+                  </span>
+            </label>
+            <script>
+                $('input').click(function(){
+                    if($(this).val() == 'True'){
+                        $(this).val('False')
+                    }
+                    else{
+                        $(this).val('True')
+                    }
+                })
+            </script>
           </form>
        </div>
 

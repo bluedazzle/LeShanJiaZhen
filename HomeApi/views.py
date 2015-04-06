@@ -750,7 +750,6 @@ def create_pay_order(req):
             newid = create_order_id()
             newappoint = Appointment(order_id=newid,
                                      status=1,
-                                     order_phone=username,
                                      address=address,
                                      send_type=send_type,
                                      area=block,

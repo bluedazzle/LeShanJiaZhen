@@ -691,33 +691,16 @@ def find_appointment(request):
         phone = request.POST.get('phone')
         appointment = request.POST.get('appointment')
         page_num = request.POST.get('page_num')
-        appointments_return = []
         if phone:
             user = HomeAdmin.objects.get(username=username)
-            consumer = Consumer.objects.filter(phone=phone)
-            associator = Associator.objects.filter(username=phone)
-            if consumer.count() == 0 and associator.count() == 0:
-                return render_to_response('admin_area/find_appointment.html',
-                                          {'fault': 'T'},
-                                          context_instance=RequestContext(request))
-            if not consumer.count() == 0:
-                consumer1 = consumer[0]
-                appointments = Appointment.objects.order_by('-id').filter(consumer=consumer1, area=user.area)
-                for appointment_one in appointments:
-                    appointments_return.append(appointment_one)
+            appointments = Appointment.objects.filter(order_phone=phone)
 
-            if not associator.count() == 0:
-                associator1 = associator[0]
-                appointments = Appointment.objects.order_by('-id').filter(associator=associator1, area=user.area)
-                for appointment_one in appointments:
-                    appointments_return.append(appointment_one)
-
-            if len(appointments_return) == 0:
+            if appointments.count() == 0:
                 return render_to_response('admin_area/find_appointment.html',
                                           {'fault': 'T'},
                                           context_instance=RequestContext(request))
             else:
-                paginator = Paginator(appointments_return, 10)
+                paginator = Paginator(appointments, 10)
                 try:
                     appointments_return = paginator.page(page_num)
                 except PageNotAnInteger:
@@ -727,7 +710,7 @@ def find_appointment(request):
                 except:
                     pass
                 return render_to_response('admin_area/find_appointment.html',
-                                          {'items': appointments_return,
+                                          {'items': appointments,
                                            'phone': phone},
                                           context_instance=RequestContext(request))
 
@@ -1749,6 +1732,7 @@ def set_coupon(request):
         online_money_low = request.POST.get('online_money_low')
         reg_money = request.POST.get('reg_money')
         invite_money = request.POST.get('invite_money')
+        online_active = request.POST.get('online_active')
         coupon_control = CouponControl.objects.all()
         control_id = coupon_control[0].id
         coupon_control = CouponControl.objects.get(id=control_id)
@@ -1756,6 +1740,10 @@ def set_coupon(request):
         coupon_control.online_money_high = online_money_high
         coupon_control.reg_money = reg_money
         coupon_control.invite_money = invite_money
+        if online_active == 'True':
+            coupon_control.online_active = True
+        else:
+            coupon_control.online_active = False
         coupon_control.save()
         return render_to_response('admin_area/coupon_manage/set_coupon.html',
                                   {'permission': True,

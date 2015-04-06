@@ -140,11 +140,7 @@
         {% endif %}
            订单号：{{ item.order_id }}
            <span style="margin-left: 5%">联系方式：
-               {% if item.consumer %}
-                   {{ item.consumer }}
-               {% else %}
-                   {{ item.associator }}
-               {% endif %}
+               {{ item.order_phone }}
            </span>
            <span style="margin-left: 5%">地址：{{ item.address }}</span>
        </div>

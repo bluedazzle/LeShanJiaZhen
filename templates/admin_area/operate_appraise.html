@@ -103,11 +103,7 @@
        <div class="panel-heading" style="background-color: #1abc9c;color: #ffffff">
            订单号：{{ item.order_id }}
            <span style="margin-left: 5%">联系方式：
-               {% if item.consumer %}
-                 {{ item.consumer }}
-               {% else %}
-                 {{ item.associator }}
-               {% endif %}
+                 {{ item.order_phone }}
            </span>
            <span style="margin-left: 5%">地址：{{ item.address }}</span>
        </div>
@@ -165,6 +161,24 @@
            <div class="col-md-6 col-lg-6">
                <p id="rates{{ item.id }}">评价：</p>
                <p>评价选项：
+                   {% if item.rb1 %}
+                       上门及时&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb2 %}
+                       认真仔细&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb3 %}
+                       技术专业&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb4 %}
+                       收费公道&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb5 %}
+                       维修快速&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb6 %}
+                       态度良好&nbsp;&nbsp;
+                   {% endif %}
                </p>
            </div>
            <script>
