@@ -20,7 +20,7 @@ import os
 from PIL import Image
 import random
 BASE = os.path.dirname(os.path.dirname(__file__))
-base_url = 'http://localhost:8000'
+#base_url = 'http://localhost:8000'
 # base_url = 'http://115.29.138.80'
 
 
@@ -761,7 +761,7 @@ def advertisement_manage(request):
         new_advertisement.content = file_name
         new_advertisement.type = 1
         new_advertisement.area = HomeAdmin.objects.get(username=request.session['username']).area
-        new_advertisement.photo = base_url + '/img/advertisement/'+file_name
+        new_advertisement.photo = BASE + '/img/advertisement/'+file_name
         new_advertisement.save()
         return HttpResponseRedirect('advertisement_manage')
 
@@ -840,7 +840,7 @@ def advertisement_edit(request):
             file_name = str(ad_id) + '.png'
             file_full_path = BASE + '/static/img/advertisement/' + file_name
             Image.open(advertisement_pic).save(file_full_path)
-            advertisement.photo = base_url + '/img/advertisement/'+file_name
+            advertisement.photo = BASE + '/img/advertisement/'+file_name
             advertisement.save()
             return render_to_response('admin_area/advertisement_edit.html',
                                       {'advertisement': advertisement,
@@ -921,7 +921,7 @@ def edit_program_detail(request):
                 if home_item.pic_url:
                     os.remove(file_full_path)
                 Image.open(program_pic).save(file_full_path)
-                home_item.pic_url = base_url+'/img/home_item_pic/'+file_name
+                home_item.pic_url = BASE+'/img/home_item_pic/'+file_name
                 home_item.save()
 
             return render_to_response('admin_area/program_manage/edit_program_detail.html',
@@ -1045,7 +1045,7 @@ def edit_program_p_detail(request):
             if item_p.icon:
                 os.remove(file_full_path)
             Image.open(icon_file).save(file_full_path)
-            item_p.icon = base_url+'/img/program_icons/'+file_name
+            item_p.icon = BASE+'/img/program_icons/'+file_name
             item_p.save()
 
         return HttpResponseRedirect('program_manage_two?item_p_id='+str(i_id))
@@ -1159,7 +1159,7 @@ def edit_goods_p(request):
                 os.remove(file_full_path)
             Image.open(ad_file).save(file_full_path)
             item_p.have_advertisement = True
-            item_p.advertisement = base_url+'/img/goods_p_ads/'+file_name
+            item_p.advertisement = BASE+'/img/goods_p_ads/'+file_name
             item_p.save()
 
         return HttpResponseRedirect('goods_manage')
@@ -1394,7 +1394,7 @@ def edit_goods(request):
                 os.remove(BASE + '/static/img/goods_pics/'+file_name)
 
             Image.open(goods_pic).save(file_full_path)
-            goods_now.picture = base_url+'/img/goods_pics/'+file_name
+            goods_now.picture = BASE+'/img/goods_pics/'+file_name
             goods_now.save()
 
         goods_p_id = goods_o[0].parent_item.id
