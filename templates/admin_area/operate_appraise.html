@@ -1,34 +1,116 @@
 {% extends 'admin_area/base.html' %}
 {% block define %}
-    {% if count > 0 %}
-<div class="col-md-12 col-lg-12" style="padding-left: 10%">
-  共接受{{ count }}个订单
-  <button class="btn btn-large btn-default" style="float: right;margin-right: 3%" onclick="cancel_appointment_all_g()">
-   一键取消所有订单
-  </button>
-  <button class="btn btn-large btn-primary" style="float: right;margin-right: 3%" onclick="finish_all_appointment()">
-   一键完成所有订单
-  </button>
-</div>
-    {% else %}
-<div class="col-md-12 col-lg-12" style="padding-right: 10%;padding-left: 10%">
-   <h6 style="margin-left: 36%">暂时没有接受的订单</h6>
-</div>
-   {% endif %}
+    <script type="text/javascript" src="/js/mine.js" charset="UTF-8"></script>
+    <script>
+      $(document).ready(function(){
+          $('#page_title').text('已评价订单');
+          $('#appraise').addClass('active')
+      });
+    </script>
+    <div class="col-md-12 col-lg-12 text-left">
+    {% if flag %}
+       {% if count > 0 %}
+           {% if date_start == '2000-01-01' and date_end == '2999-11-11' %}
+           <h6>总共有{{ count }}个订单被评价</h6>
+            {% else %}
+           <h6>在{{ date_start }}到{{ date_end }}中的订单，共有{{ count }}个被评价</h6>
+            {% endif %}
+       {% else %}
+           <h6>该时间的订单没有被评价</h6>
+       {% endif %}
+    {% endif %}
+    {% if flag0 %}
+       {% if count > 0 %}
+           <h6>当天的订单共{{ count }}个被评价</h6>
+       {% else %}
+           <h6>当天的订单没有被评价</h6>
+       {% endif %}
+    {% endif %}
+    </div>
+    <div class="col-md-12 col-lg-12" style="margin-bottom: 1%">
+      <a role="button" class="btn btn-success" style="float: right;margin-right: 10%" href="?date_start=2000-01-01&date_end=2999-11-11">
+          查询所有
+      </a>
+      <div style="float: right;margin-left: 2%;margin-right: 2%">
+          <button class="btn btn-success" id="search">查询</button>
+      </div>
+        <form method="get" action="operate_finish" id="date_form">
+      <div class=" input-group has-success" style="float: right;width: 30%;max-width: 300px" >
+         <span class="input-group-addon">截止日期：</span>
+         <input type="text" id="date_end" name="date_end" class="form-control" style="margin-right: 10%" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
+      </div>
+      <div class=" input-group has-success" style="float: right;margin-right: 1%;width: 30%;max-width: 300px">
+         <span class="input-group-addon">起始日期：</span>
+         <input type="text" id="date_start" name="date_start" class="form-control" style="margin-right: 10%" onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" />
+      </div>
+         </form>
+      <script>
+          $('#search').click(function(){
+              if($('#date_start').val() && $('#date_end').val() && $('#date_start').val() <= $('#date_end').val()){
+                  $('#date_form').submit()
+              }
+              else{
+                  alert("请选择正确的查询时间段！")
+              }
+          })
+      </script>
+    </div>
+    <div class="col-md-12 col-lg-12" style="margin-bottom: 1%">
+      <div class="col-md-4 col-lg-4" style="float: right">
+          <button id="out_data" class="btn btn-primary" style="float: right;margin-right: 28.5%">数据导出</button>
+      </div>
+        {% if items %}
+      <script>
+          $('#out_data').click(function(){
+              {% if flag0 %}
+               var d = new Date();
+               var date_start = d.getFullYear()+"-"+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"-"+(d.getDate()<10?"0":"")+d.getDate();
+               var date_end = d.getFullYear()+"-"+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"-"+(d.getDate()<10?"0":"")+d.getDate();
+              {% else %}
+               var date_start = '{{ date_start }}';
+               var date_end = '{{ date_end }}';
+              {% endif %}
+              var message = {'status': 3,
+                             'date_start': date_start,
+                             'date_end': date_end,
+                             'if_appraise': 'T',
+                             'csrfmiddlewaretoken': getCookie('csrftoken')};
+              $.ajax({
+                  type: 'POST',
+                  url: 'out_appointment',
+                  data: message,
+                  success: function (data) {
+                      if (data) {
+                          window.location.href = data
+                      }
+                      else {
+                          alert("导出失败！")
+                      }
+                  },
+                  dataType: 'json'
+              });
+          })
+      </script>
+        {% else %}
+      <script>
+          $('#out_data').addClass('disabled')
+      </script>
+        {% endif %}
+    </div>
 <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
 {% for item in items %}
    <div class="panel panel-success">
-       <div class="panel-heading">
+       <div class="panel-heading" style="background-color: #1abc9c;color: #ffffff">
            订单号：{{ item.order_id }}
            <span style="margin-left: 5%">联系方式：
-                   {{ item.order_phone }}
+                 {{ item.order_phone }}
            </span>
            <span style="margin-left: 5%">地址：{{ item.address }}</span>
        </div>
        <div class="panel-body">
            <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
            <div class="col-md-12 col-lg-12">下单时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
-              {% if item.process_by %}
+               {% if item.process_by %}
             <div class="col-md-12 col-lg-12">操作员：{{ item.process_by.nick }}</div>
                {% endif %}
            {% if not item.ordergoods.all.count == 0 %}
@@ -67,6 +149,8 @@
                   {% endif %}
                </div>
            {% endif %}
+           <div class="col-md-12 col-lg-12">服务人员：{{ item.service_person }}</div>
+           <div class="col-md-12 col-lg-12">上门时间：{{ item.service_time }}</div>
            <div class="col-md-12 col-lg-12">
                {% if item.remark %}
                备注：{{ item.remark }}
@@ -74,28 +158,36 @@
                备注：无
                {% endif %}
            </div>
-           <form action="appointment_info_add" method="get">
-               <input type="hidden" name="aid" value="{{ item.id }}"/>
-           <div class="col-md-12 col-lg-12">
-               服务人员：<input type="text" id="w{{ item.id }}" name="service_person" value="{{ item.service_person }}"/>
-           </div>
-           <div class="col-md-12 col-lg-12">
-               上门时间：<input type="text" id="t{{ item.id }}" name="service_time" value="{{ item.service_time }}"/>
-           </div>
            <div class="col-md-6 col-lg-6">
-               <button class="btn btn-large btn-info" type="submit">
-                 保存修改
-               </button>
+               <p id="rates{{ item.id }}">评价：</p>
+               <p>评价选项：
+                   {% if item.rb1 %}
+                       上门及时&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb2 %}
+                       认真仔细&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb3 %}
+                       技术专业&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb4 %}
+                       收费公道&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb5 %}
+                       维修快速&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb6 %}
+                       态度良好&nbsp;&nbsp;
+                   {% endif %}
+               </p>
            </div>
-           </form>
+           <script>
+                for(var i=1;i<={{ item.rate }};i++){
+                   $('#rates{{ item.id }}').append("<span class='glyphicon glyphicon-star' style='color:#27ad60'></span>")
+               }
+           </script>
            <div class="col-md-6 col-lg-6">
-               <button class="btn btn-large btn-default" style="float: right;margin-right: 3%" onclick="cancel_appointment_g('{{ item.id }}')">
-                 取消订单
-               </button>
-               <button class="btn btn-large btn-info" style="float: right;margin-right: 3%" onclick="finish_appointment('{{ item.id }}')">
-                 完成订单
-               </button>
-               {% if item.photo1 or item.photo2 or item.photo3 or item.photo4 %}
+              {% if item.photo1 or item.photo2 or item.photo3 or item.photo4 %}
                    <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
                  查看照片
                </button>
@@ -124,7 +216,7 @@
                <script>
                $('#find_detail{{ item.id }}').click(function(){
                    $('#modal{{ item.id }}').modal('toggle')
-               })
+               });
            </script>
                {% endif %}
            </div>
@@ -158,7 +250,7 @@
      {% if items.has_previous %}
          <a role="button" class="btn btn-success" href="?page={{ items.previous_page_number }}">上一页</a>
      {% else %}
-         <button class="btn btn-success" disabled="disabled">上一页</button>
+         <button class="btn btn-success" disabled="disabled">下一页</button>
      {% endif %}
      <select id="select3" class="form-control select select-success select-block mbl" onchange="turn_page(this.value)">
          {% for page in items.paginator.page_range %}
@@ -172,7 +264,7 @@
      <script>
          $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
          function turn_page(page_num){
-             window.location.href = "operate_get?page=" + page_num;
+             window.location.href = "operate_finish?page=" + page_num;
          }
      </script>
      {% if items.has_next %}
@@ -184,10 +276,4 @@
   {% endif %}
 {% endif %}
 </div>
-    <script>
-       $(document).ready(function(){
-           $('#page_title').text('已接受订单');
-           $('#get').addClass("active")
-       })
-    </script>
 {% endblock %}

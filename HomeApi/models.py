@@ -398,11 +398,17 @@ class Appointment(models.Model):
     if_appraise = models.BooleanField(default=False)
     comment = models.CharField(max_length=200, null=True, blank=True)
     rate = models.IntegerField(max_length=2, null=True, blank=True)
+    # 上门及时
     rb1 = models.BooleanField(default=False)
+    # 认真仔细
     rb2 = models.BooleanField(default=False)
+    # 技术专业
     rb3 = models.BooleanField(default=False)
+    # 收费公道
     rb4 = models.BooleanField(default=False)
+    # 维修快速
     rb5 = models.BooleanField(default=False)
+    # 态度良好
     rb6 = models.BooleanField(default=False)
 
     def __unicode__(self):

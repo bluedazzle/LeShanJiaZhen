@@ -2,10 +2,12 @@
 {% block define %}
     <script>
         {% if type == '1' %}
-        $('#page_title').text('编辑维修项目信息')
+        $('#page_title').text('编辑维修项目信息');
         {% elif type == '2' %}
-        $('#page_title').text('编辑安装项目信息')
+        $('#page_title').text('编辑安装项目信息');
         {% endif %}
+        $('#message_manage').addClass('active');
+        $('#program_manage').addClass('active')
     </script>
 <div class="col-lg-12 col-md-12 panel panel-default" style="margin-top: 5%;padding-left: 7%">
  <div class="panel-body">

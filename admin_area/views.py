@@ -357,6 +357,72 @@ def find_sometime_appointment(page_num, date_start, date_end, all_appointments):
     return {'appointments': appointments, 'count': count}
 
 
+def operate_appraise(request):
+    if not request.session.get('username'):
+            return HttpResponseRedirect('login_in')
+
+    if request.method == 'GET':
+        username = request.session['username']
+        user = HomeAdmin.objects.get(username=username)
+        all_appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=3, if_appraise=True)
+        page_num = request.GET.get('page')
+        date_start = request.GET.get('date_start')
+        date_end = request.GET.get('date_end')
+        #检查是否是查询某段时间的操作
+        if date_start and date_end:
+            request.session['ap_date_start'] = date_start
+            request.session['ap_date_end'] = date_end
+        #查询首页
+        if not page_num:
+            #查看当天的预约
+            if not date_start and not date_end:
+                if request.session.get('ap_date_start') and request.session.get('ap_date_end'):
+                    del request.session['ap_date_start']
+                    del request.session['ap_date_end']
+                result = find_now_appointment(1, all_appointments)
+                appointments = result['appointments']
+                count = result['count']
+                return render_to_response('admin_area/operate_appraise.html',
+                                          {'items': appointments,
+                                           'count': count,
+                                           'flag0': 'T'}, context_instance=RequestContext(request))
+            #查看某段时间的预约
+            else:
+                result = find_sometime_appointment(1, date_start, date_end, all_appointments)
+                appointments = result['appointments']
+                count = result['count']
+                return render_to_response('admin_area/operate_appraise.html',
+                                          {'items': appointments,
+                                           'count': count,
+                                           'flag': 'T',
+                                           'date_start': date_start,
+                                           'date_end': date_end}, context_instance=RequestContext(request))
+        #查询某一页
+        else:
+            #查询某段时间预约的某一页
+            if request.session.get('ap_date_start') and request.session.get('ap_date_end'):
+                date_start = request.session['ap_date_start']
+                date_end = request.session['ap_date_end']
+                result = find_sometime_appointment(page_num, date_start, date_end, all_appointments)
+                appointments = result['appointments']
+                count = result['count']
+                return render_to_response('admin_area/operate_appraise.html',
+                                          {'items': appointments,
+                                           'count': count,
+                                           'flag': 'T',
+                                           'date_start': date_start,
+                                           'date_end': date_end}, context_instance=RequestContext(request))
+            #查询当天预约的某一页
+            else:
+                result = find_now_appointment(page_num, all_appointments)
+                appointments = result['appointments']
+                count = result['count']
+                return render_to_response('admin_area/operate_appraise.html',
+                                          {'items': appointments,
+                                           'count': count,
+                                           'flag0': 'T'}, context_instance=RequestContext(request))
+
+
 def operate_cancel(request):
     if not request.session.get('username'):
             return HttpResponseRedirect('login_in')
@@ -370,15 +436,15 @@ def operate_cancel(request):
         date_end = request.GET.get('date_end')
         #检查是否是查询某段时间的操作
         if date_start and date_end:
-            request.session['f_date_start'] = date_start
-            request.session['f_date_end'] = date_end
+            request.session['c_date_start'] = date_start
+            request.session['c_date_end'] = date_end
         #查询首页
         if not page_num:
             #查看当天的预约
             if not date_start and not date_end:
-                if request.session.get('f_date_start') and request.session.get('f_date_end'):
-                    del request.session['f_date_start']
-                    del request.session['f_date_end']
+                if request.session.get('c_date_start') and request.session.get('c_date_end'):
+                    del request.session['c_date_start']
+                    del request.session['c_date_end']
                 result = find_now_appointment(1, all_appointments)
                 appointments = result['appointments']
                 count = result['count']
@@ -400,9 +466,9 @@ def operate_cancel(request):
         #查询某一页
         else:
             #查询某段时间预约的某一页
-            if request.session.get('f_date_start') and request.session.get('f_date_end'):
-                date_start = request.session['f_date_start']
-                date_end = request.session['f_date_end']
+            if request.session.get('c_date_start') and request.session.get('c_date_end'):
+                date_start = request.session['c_date_start']
+                date_end = request.session['c_date_end']
                 result = find_sometime_appointment(page_num, date_start, date_end, all_appointments)
                 appointments = result['appointments']
                 count = result['count']
@@ -625,33 +691,16 @@ def find_appointment(request):
         phone = request.POST.get('phone')
         appointment = request.POST.get('appointment')
         page_num = request.POST.get('page_num')
-        appointments_return = []
         if phone:
             user = HomeAdmin.objects.get(username=username)
-            consumer = Consumer.objects.filter(phone=phone)
-            associator = Associator.objects.filter(username=phone)
-            if consumer.count() == 0 and associator.count() == 0:
-                return render_to_response('admin_area/find_appointment.html',
-                                          {'fault': 'T'},
-                                          context_instance=RequestContext(request))
-            if not consumer.count() == 0:
-                consumer1 = consumer[0]
-                appointments = Appointment.objects.order_by('-id').filter(consumer=consumer1, area=user.area)
-                for appointment_one in appointments:
-                    appointments_return.append(appointment_one)
+            appointments = Appointment.objects.filter(order_phone=phone)
 
-            if not associator.count() == 0:
-                associator1 = associator[0]
-                appointments = Appointment.objects.order_by('-id').filter(associator=associator1, area=user.area)
-                for appointment_one in appointments:
-                    appointments_return.append(appointment_one)
-
-            if len(appointments_return) == 0:
+            if appointments.count() == 0:
                 return render_to_response('admin_area/find_appointment.html',
                                           {'fault': 'T'},
                                           context_instance=RequestContext(request))
             else:
-                paginator = Paginator(appointments_return, 10)
+                paginator = Paginator(appointments, 10)
                 try:
                     appointments_return = paginator.page(page_num)
                 except PageNotAnInteger:
@@ -661,7 +710,7 @@ def find_appointment(request):
                 except:
                     pass
                 return render_to_response('admin_area/find_appointment.html',
-                                          {'items': appointments_return,
+                                          {'items': appointments,
                                            'phone': phone},
                                           context_instance=RequestContext(request))
 
@@ -1683,6 +1732,7 @@ def set_coupon(request):
         online_money_low = request.POST.get('online_money_low')
         reg_money = request.POST.get('reg_money')
         invite_money = request.POST.get('invite_money')
+        online_active = request.POST.get('online_active')
         coupon_control = CouponControl.objects.all()
         control_id = coupon_control[0].id
         coupon_control = CouponControl.objects.get(id=control_id)
@@ -1690,6 +1740,10 @@ def set_coupon(request):
         coupon_control.online_money_high = online_money_high
         coupon_control.reg_money = reg_money
         coupon_control.invite_money = invite_money
+        if online_active == 'True':
+            coupon_control.online_active = True
+        else:
+            coupon_control.online_active = False
         coupon_control.save()
         return render_to_response('admin_area/coupon_manage/set_coupon.html',
                                   {'permission': True,

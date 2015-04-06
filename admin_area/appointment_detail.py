@@ -223,44 +223,64 @@ def out_appointment(request):
         a_status = request.POST.get('status')
         a_date_start = request.POST.get('date_start')
         a_date_end = request.POST.get('date_end')
+        end_time = time.strptime(a_date_end, "%Y-%m-%d")
+        start_time = time.strptime(a_date_start, "%Y-%m-%d")
+        end_time = datetime.datetime(*end_time[:6])
+        start_time = datetime.datetime(*start_time[:6])
+        if_appraise = request.POST.get('if_appraise')
         user = HomeAdmin.objects.get(username=request.session['username'])
-        all_appointments = Appointment.objects.order_by('-id').filter(status=a_status, area=user.area)
-        appointments = []
-        print "OK1"
-        if all_appointments.count() > 0:
-            for item in all_appointments:
-                it_date = str(item.create_time)[0:10]
-                date_start = str(a_date_start)
-                date_end = str(a_date_end)
-                if date_start == date_end:
-                    if it_date == date_start:
-                        appointments.append(item)
-                else:
-                    if it_date >= date_start and it_date <= date_end:
-                        appointments.append(item)
-
-        print len(appointments)
-        print date_start
-        print date_end
-        if a_status == '3':
-            if date_start == '2000-01-01' and date_end == '2999-11-11':
-                file_name = user.area.area_name + unicode("所有完成的订单", 'utf-8')
+        if if_appraise:
+            if end_time == start_time:
+                all_appointments = Appointment.objects.order_by('-id').filter(status=a_status,
+                                                                              area=user.area,
+                                                                              if_appraise=True,
+                                                                              create_time__gte=start_time)
             else:
-                file_name = user.area.area_name + date_start + unicode("到", 'utf-8') + date_end + unicode("完成的订单", 'utf-8')
+                all_appointments = Appointment.objects.order_by('-id').filter(status=a_status,
+                                                                              area=user.area,
+                                                                              if_appraise=True,
+                                                                              create_time__lte=end_time,
+                                                                              create_time__gte=start_time)
         else:
-            if date_start == '2000-01-01' and date_end == '2999-11-11':
+            if end_time == start_time:
+                all_appointments = Appointment.objects.order_by('-id').filter(status=a_status,
+                                                                              area=user.area,
+                                                                              create_time__gte=start_time)
+            else:
+                all_appointments = Appointment.objects.order_by('-id').filter(status=a_status,
+                                                                              area=user.area,
+                                                                              create_time__lte=end_time,
+                                                                              create_time__gte=start_time)
+        print "OK1"
+
+        print all_appointments.count()
+        print start_time
+        print end_time
+        if a_status == '3':
+            if a_date_start == '2000-01-01' and a_date_end == '2999-11-11':
+                if if_appraise:
+                    file_name = user.area.area_name + unicode("所有评价的订单", 'utf-8')
+                else:
+                    file_name = user.area.area_name + unicode("所有完成的订单", 'utf-8')
+            else:
+                if if_appraise:
+                    file_name = user.area.area_name + a_date_start + unicode("到", 'utf-8') + a_date_end + unicode("评价的订单", 'utf-8')
+                else:
+                    file_name = user.area.area_name + a_date_start + unicode("到", 'utf-8') + a_date_end + unicode("完成的订单", 'utf-8')
+        else:
+            if a_date_start == '2000-01-01' and a_date_end == '2999-11-11':
                 file_name = user.area.area_name + unicode("所有取消的订单", 'utf-8')
             else:
-                file_name = user.area.area_name + date_start + unicode("到", 'utf-8') + date_end + unicode("取消的订单", 'utf-8')
+                file_name = user.area.area_name + a_date_start + unicode("到", 'utf-8') + a_date_end + unicode("取消的订单", 'utf-8')
         print file_name
-        req = out_excel(appointments, file_name)
+        req = out_excel(all_appointments, file_name)
         if req:
             return HttpResponse(json.dumps('/out_files/'+file_name+'.xls'))
 
 
 def out_excel(appointments, file_name):
     wb = xlwt.Workbook(encoding='utf-8')
-    now_time = time.clock()
+    now_time = time.time()
     ws = wb.add_sheet(str(now_time))
     style0 = xlwt.easyxf('font: name Times New Roman, color-index red, bold on')
     ws.write(0, 0, "订单号")
@@ -274,14 +294,13 @@ def out_excel(appointments, file_name):
     ws.write(0, 8, "操作员")
     ws.write(0, 9, "订单内容")
     ws.write(0, 10, "备注")
+    ws.write(0, 11, "评价")
+    ws.write(0, 12, "评价内容")
     i = 1
     for item in appointments:
         ws.write(i, 0, item.order_id, style0)
-        if item.consumer:
-            ws.write(i, 2, item.consumer.phone, style0)
-        else:
-            ws.write(i, 2, item.associator.username, style0)
-        if item.orderhomeitems.all().count() > 0:
+        ws.write(i, 2, item.order_phone, style0)
+        if item.orderitem.all().count() > 0:
             ws.write(i, 1, u"维修安装")
         else:
             ws.write(i, 1, u"商品购买")
@@ -299,18 +318,39 @@ def out_excel(appointments, file_name):
             status_text = u"已取消"
         ws.write(i, 6, status_text, style0)
         ws.write(i, 7, item.area.area_name)
-        ws.write(i, 8, item.process_by.nick)
+        if item.process_by:
+            ws.write(i, 8, item.process_by.nick)
+        else:
+            ws.write(i, 8, '')
         content = ''
         print 'ok'
-        if item.orderhomeitems.all().count() > 0:
-            for orderhomeitem in item.orderhomeitems.all():
-                content = content + orderhomeitem.title + '\t\t'
+        if item.orderitem.all().count() > 0:
+            for orderitem in item.orderitem.all():
+                content = content + orderitem.item_name + '\t\t'
         elif item.ordergoods.all().count > 0:
             for goods in item.ordergoods.all():
                 content = content + goods.title + '\t\t'
 
         ws.write(i, 9, content)
         ws.write(i, 10, item.remark)
+        content = ''
+        if item.if_appraise:
+            ws.write(i, 11, item.rate)
+            if item.rb1:
+                content += u"上门及时；"
+            if item.rb2:
+                content += u"认真仔细；"
+            if item.rb3:
+                content += u"技术专业；"
+            if item.rb4:
+                content += u"收费公道；"
+            if item.rb5:
+                content += u"维修快速；"
+            if item.rb6:
+                content += u"态度良好；"
+        else:
+            ws.write(i, 11, '')
+        ws.write(i, 12, content)
         i += 1
 
     wb.save("out_files/"+file_name+".xls")
