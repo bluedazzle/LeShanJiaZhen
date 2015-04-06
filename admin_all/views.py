@@ -436,3 +436,13 @@ def manage_calendar(request):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
         return render_to_response('admin_all/manage_calendar.html')
+
+
+def check_new_applications(request):
+    if not request.session.get('a_username'):
+        return HttpResponseRedirect('a_username')
+    if request.method == 'GET':
+        applications = Application.objects.all()
+        if applications.count() == 0:
+            return HttpResponse(json.dumps('None'))
+        return HttpResponse(json.dumps(applications.count()))
