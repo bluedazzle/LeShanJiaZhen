@@ -62,6 +62,8 @@ urlpatterns = patterns('',
     url('^edit_goods$', edit_goods),
     url('^delete_goods$', delete_goods),
     url('^get_item_mes$', method.get_item_mes),
+    url('^check_home_item_sort_id', check_home_item_sort_id),
+    url('^check_home_item_p_sort_id', check_home_item_p_sort_id),
     # test
     url('^create_coupons$', create_coupons),
     url('^create_appointments$', create_appointments),

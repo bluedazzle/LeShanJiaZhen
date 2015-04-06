@@ -336,7 +336,7 @@ class HomeItem(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     parent_item = models.ForeignKey(HomeItem_P)
     sort_id = models.IntegerField(max_length=10, blank=True, null=True)
-    pic_url = models.CharField(max_length=50, null=True, blank=True)
+    pic_url = models.CharField(max_length=100, null=True, blank=True)
 
     def __unicode__(self):
         return self.item_name
