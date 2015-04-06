@@ -715,11 +715,13 @@ POST /consumer/create_appointment
 * use_coupon(_Required_|bool)-是否使用优惠券
 * coupon_id(_Optional_|string)-优惠券id
 * home_items(_Required_|string)-维修服务列表
+* name(_Required_|string)-用户姓名
+* note(_Required_|string)-备注
 * ###hid(_Required_|string)-服务id
 
 ###**Request**
 ```
-{"phone":"18215606355","private_token":"LpOrR6BxMiAYUalZXQH1yIbKFEnGtkvS","address":"test","city_number":"511100","login":true,"order_phone":"1234567","use_coupon":true,"coupon_id":"20150330300008","home_items":[{"hid":"1"}]}
+{"phone":"18215606355","private_token":"LpOrR6BxMiAYUalZXQH1yIbKFEnGtkvS","address":"test","city_number":"511100","login":true,"order_phone":"1234567","name":"test","note":"note","use_coupon":true,"coupon_id":"20150330300008","home_items":[{"hid":"1"}]}
 ```
 ###**Return**
 ```
