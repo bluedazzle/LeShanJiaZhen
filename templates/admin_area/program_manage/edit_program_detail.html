@@ -2,9 +2,11 @@
 {% block define %}
     <script>
         $('#page_title').text('{{ item_p.item_name }}');
+        $('#message_manage').addClass('active');
+        $('#program_manage').addClass('active');
         {% if success %}
             $(document).ready(function(){
-                alert("操作成功")
+                alert("操作成功");
                 window.location.href = "program_manage_two?item_p_id={{ item_p.id }}"
             });
         {% endif %}

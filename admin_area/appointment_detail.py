@@ -221,8 +221,15 @@ def out_appointment(request):
         a_status = request.POST.get('status')
         a_date_start = request.POST.get('date_start')
         a_date_end = request.POST.get('date_end')
+        if_appraise = request.POST.get('if_appraise')
         user = HomeAdmin.objects.get(username=request.session['username'])
-        all_appointments = Appointment.objects.order_by('-id').filter(status=a_status, area=user.area)
+        if if_appraise:
+            if_appraise = True
+        else:
+            if_appraise = False
+        all_appointments = Appointment.objects.order_by('-id').filter(status=a_status,
+                                                                      area=user.area,
+                                                                      if_appraise=if_appraise)
         appointments = []
         print "OK1"
         if all_appointments.count() > 0:
@@ -242,9 +249,15 @@ def out_appointment(request):
         print date_end
         if a_status == '3':
             if date_start == '2000-01-01' and date_end == '2999-11-11':
-                file_name = user.area.area_name + unicode("所有完成的订单", 'utf-8')
+                if if_appraise:
+                    file_name = user.area.area_name + unicode("所有评价的订单", 'utf-8')
+                else:
+                    file_name = user.area.area_name + unicode("所有完成的订单", 'utf-8')
             else:
-                file_name = user.area.area_name + date_start + unicode("到", 'utf-8') + date_end + unicode("完成的订单", 'utf-8')
+                if if_appraise:
+                    file_name = user.area.area_name + date_start + unicode("到", 'utf-8') + date_end + unicode("评价的订单", 'utf-8')
+                else:
+                    file_name = user.area.area_name + date_start + unicode("到", 'utf-8') + date_end + unicode("完成的订单", 'utf-8')
         else:
             if date_start == '2000-01-01' and date_end == '2999-11-11':
                 file_name = user.area.area_name + unicode("所有取消的订单", 'utf-8')

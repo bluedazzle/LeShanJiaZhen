@@ -174,3 +174,59 @@ def create_vips(request):
             new_vip.save()
 
         return HttpResponse(json.dumps('OK'))
+
+
+def create_appointments_appraise(request):
+    if request.method == 'GET':
+        for i in range(0, 100):
+            new_appointment = Appointment()
+            new_appointment.order_id = str(int(time.time())) + str(i)
+            new_appointment.status = 3
+            new_appointment.address = u"科研楼B区258"
+            new_appointment.name = u"张全蛋"
+            new_appointment.area = Block.objects.get(city_num='511100')
+            new_appointment.associator = Associator.objects.get(username='15682513909')
+            new_appointment.if_appraise = True
+            rates = random.randint(1, 6)
+            new_appointment.rate = rates
+            if rates >= 1:
+                new_appointment.rb1 = True
+            if rates >= 2:
+                new_appointment.rb2 = True
+            if rates >= 3:
+                new_appointment.rb3 = True
+            if rates >= 4:
+                new_appointment.rb4 = True
+            if rates >= 5:
+                new_appointment.rb5 = True
+            if rates >= 6:
+                new_appointment.rb6 = True
+            pic_type = random.randint(1, 2)
+            if pic_type == 1:
+                new_appointment.photo1 = 'test2.png'
+            flag_type = random.randint(1, 2)
+            if flag_type == 1:
+                new_appointment.order_type = 1
+            else:
+                new_appointment.order_type = 2
+            new_appointment.amount = random.uniform(10, 100)
+            flag_coupon = random.randint(1, 2)
+            if flag_coupon == 1 and flag_type == 1:
+                new_appointment.use_coupon = True
+                coupons = Coupon.objects.order_by('id').filter(if_use=False)
+                if coupons.count() > 0:
+                    coupon_id = coupons[0].id
+                    coupon_use = Coupon.objects.get(id=coupon_id)
+                    new_appointment.use_coupon = True
+                    new_appointment.order_coupon = coupon_use
+                    coupon_use.if_use = True
+                    coupon_use.save()
+                    print "OK"
+
+            new_appointment.save()
+            if flag_type == 1:
+                create_order_goods(new_appointment)
+            else:
+                create_order_home_item(new_appointment)
+
+        return HttpResponse(json.dumps('OK'))

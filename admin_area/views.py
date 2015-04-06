@@ -357,6 +357,72 @@ def find_sometime_appointment(page_num, date_start, date_end, all_appointments):
     return {'appointments': appointments, 'count': count}
 
 
+def operate_appraise(request):
+    if not request.session.get('username'):
+            return HttpResponseRedirect('login_in')
+
+    if request.method == 'GET':
+        username = request.session['username']
+        user = HomeAdmin.objects.get(username=username)
+        all_appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=3, if_appraise=True)
+        page_num = request.GET.get('page')
+        date_start = request.GET.get('date_start')
+        date_end = request.GET.get('date_end')
+        #检查是否是查询某段时间的操作
+        if date_start and date_end:
+            request.session['ap_date_start'] = date_start
+            request.session['ap_date_end'] = date_end
+        #查询首页
+        if not page_num:
+            #查看当天的预约
+            if not date_start and not date_end:
+                if request.session.get('ap_date_start') and request.session.get('ap_date_end'):
+                    del request.session['ap_date_start']
+                    del request.session['ap_date_end']
+                result = find_now_appointment(1, all_appointments)
+                appointments = result['appointments']
+                count = result['count']
+                return render_to_response('admin_area/operate_appraise.html',
+                                          {'items': appointments,
+                                           'count': count,
+                                           'flag0': 'T'}, context_instance=RequestContext(request))
+            #查看某段时间的预约
+            else:
+                result = find_sometime_appointment(1, date_start, date_end, all_appointments)
+                appointments = result['appointments']
+                count = result['count']
+                return render_to_response('admin_area/operate_appraise.html',
+                                          {'items': appointments,
+                                           'count': count,
+                                           'flag': 'T',
+                                           'date_start': date_start,
+                                           'date_end': date_end}, context_instance=RequestContext(request))
+        #查询某一页
+        else:
+            #查询某段时间预约的某一页
+            if request.session.get('ap_date_start') and request.session.get('ap_date_end'):
+                date_start = request.session['ap_date_start']
+                date_end = request.session['ap_date_end']
+                result = find_sometime_appointment(page_num, date_start, date_end, all_appointments)
+                appointments = result['appointments']
+                count = result['count']
+                return render_to_response('admin_area/operate_appraise.html',
+                                          {'items': appointments,
+                                           'count': count,
+                                           'flag': 'T',
+                                           'date_start': date_start,
+                                           'date_end': date_end}, context_instance=RequestContext(request))
+            #查询当天预约的某一页
+            else:
+                result = find_now_appointment(page_num, all_appointments)
+                appointments = result['appointments']
+                count = result['count']
+                return render_to_response('admin_area/operate_appraise.html',
+                                          {'items': appointments,
+                                           'count': count,
+                                           'flag0': 'T'}, context_instance=RequestContext(request))
+
+
 def operate_cancel(request):
     if not request.session.get('username'):
             return HttpResponseRedirect('login_in')
@@ -370,15 +436,15 @@ def operate_cancel(request):
         date_end = request.GET.get('date_end')
         #检查是否是查询某段时间的操作
         if date_start and date_end:
-            request.session['f_date_start'] = date_start
-            request.session['f_date_end'] = date_end
+            request.session['c_date_start'] = date_start
+            request.session['c_date_end'] = date_end
         #查询首页
         if not page_num:
             #查看当天的预约
             if not date_start and not date_end:
-                if request.session.get('f_date_start') and request.session.get('f_date_end'):
-                    del request.session['f_date_start']
-                    del request.session['f_date_end']
+                if request.session.get('c_date_start') and request.session.get('c_date_end'):
+                    del request.session['c_date_start']
+                    del request.session['c_date_end']
                 result = find_now_appointment(1, all_appointments)
                 appointments = result['appointments']
                 count = result['count']
@@ -400,9 +466,9 @@ def operate_cancel(request):
         #查询某一页
         else:
             #查询某段时间预约的某一页
-            if request.session.get('f_date_start') and request.session.get('f_date_end'):
-                date_start = request.session['f_date_start']
-                date_end = request.session['f_date_end']
+            if request.session.get('c_date_start') and request.session.get('c_date_end'):
+                date_start = request.session['c_date_start']
+                date_end = request.session['c_date_end']
                 result = find_sometime_appointment(page_num, date_start, date_end, all_appointments)
                 appointments = result['appointments']
                 count = result['count']
