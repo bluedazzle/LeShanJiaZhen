@@ -557,6 +557,8 @@ POST /consumer/create_pay_order
 ```
 ###**Parameters**
 * username(_Required_|string)-用户名，必须为手机号
+* order_phone(_Required_|string)-下单手机号
+* name(_Required_|string)-用户姓名
 * private_token(_Required_|string)-token
 * address(_Required_|string)-用户地址
 * city_number(_Required_|string)-城市统一编码
@@ -574,7 +576,7 @@ POST /consumer/create_pay_order
 
 ###**Request**
 ```
-{"username":"18215606355","send_type":1,"private_token":"JKGVDnCIH7Ec+OuWPvNeRQtT4dwjoB0U","coupon_id":"20102101","use_coupon":false,"channel":"alipay","address":"kb258","online_pay":true,"city_number":"511000","submit_price":"35.0","goods_items":[{"sid":"1","use_repair":true},{"sid":"2","use_repair":false}],"home_items":[{"hid":"1"}]}
+{"username":"18215606355","send_type":1,"order_phone":"123123123","name":"test","private_token":"JKGVDnCIH7Ec+OuWPvNeRQtT4dwjoB0U","coupon_id":"20102101","use_coupon":false,"channel":"alipay","address":"kb258","online_pay":true,"city_number":"511000","submit_price":"35.0","goods_items":[{"sid":"1","use_repair":true},{"sid":"2","use_repair":false}],"home_items":[{"hid":"1"}]}
 ```
 ###**Return**
 ```
