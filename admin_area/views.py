@@ -892,7 +892,7 @@ def advertisement_edit(request):
             file_name = str(ad_id) + '.png'
             file_full_path = BASE + '/static/img/advertisement/' + file_name
             Image.open(advertisement_pic).save(file_full_path)
-            advertisement.photo = '/img/advertisement/'+file_name
+            advertisement.photo = BASE + '/img/advertisement/'+file_name
             advertisement.save()
             return render_to_response('admin_area/advertisement_edit.html',
                                       {'advertisement': advertisement,
