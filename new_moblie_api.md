@@ -391,6 +391,46 @@ or
 {"status": 1, "body": {"msg": "match resemble city success", "city": {"city_num": "511100", "city_name": "\u56db\u5ddd\u7701\u4e50\u5c71\u5e02", "city_address": "\u56db\u5ddd\u7701\u4e50\u5c71\u5e02\u4e00\u5768\u7fd4\u522b\u5885", "city_info": "\u56db\u5ddd\u7701\u4e50\u5c71\u5e02\u4e00\u5768\u7fd4\u522b\u5885", "city_tel": "61830000"}, "match": false}}
 ```
 
+
+##**定位**
+
+#####获取城市列表
+```
+GET /consumer/get_city_list
+```
+
+###**Return**
+```
+{
+    "status": 1,
+    "body": {
+        "block_list": [
+            {
+                "city_number": "511100",
+                "city_name": "四川省乐山市",
+                "city_address": "四川省乐山市一坨翔别墅",
+                "city_info": "四川省乐山市一坨翔别墅",
+                "city_tel": "61830000"
+            },
+            {
+                "city_number": "511000",
+                "city_name": "四川省内江市",
+                "city_address": "511000 ",
+                "city_info": "四川省乐山市一坨翔别墅",
+                "city_tel": "737373737"
+            },
+            {
+                "city_number": "511300",
+                "city_name": "四川省南充市",
+                "city_address": "511300 四川省南充市",
+                "city_info": "0000",
+                "city_tel": "74787384"
+            }
+        ]
+    }
+}
+```
+
 ##**更改个人信息**
 
 #####顾客更改个人信息
@@ -760,7 +800,7 @@ or
 
 #####预约订单上传图片
 ```
-POST /consumer/upload_pircture
+POST /consumer/upload_picture
 ```
 ###**Parameters**
 * phone(_Required_|string)-用户手机号
