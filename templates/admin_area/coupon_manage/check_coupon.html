@@ -1,12 +1,18 @@
 {% extends 'admin_area/base.html' %}
 {% block define %}
     {% if permission %}
-<div class="col-md-12 col-lg-12" style="padding-left: 10%;padding-right: 10%;">
+<form method="post" action="check_coupon" id="search_mes">
     <script type="text/javascript" src="/js/mine.js" charset="UTF-8"></script>
-    <form method="post" action="check_coupon" id="search_mes">
         {% csrf_token %}
+
     <div class="col-md-12 col-lg-12" style="margin-top: 1%">
-      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 32%;max-width: 320px;margin-right: 30px;float: left">
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 32%;max-width: 320px;margin-right:30%;float: right">
+         <span class="input-group-addon" style="width: 80px">截止日期:</span>
+         <input id="end_date" name="end_date" type="text" class="form-control" style="margin-right: 100px;"
+                onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly"
+                 value="{{ date_end }}"/>
+      </div>
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 32%;max-width: 320px;margin-right: 30px;float: right">
          <span class="input-group-addon">起始日期:</span>
          <input id="start_date" name="start_date" type="text" class="form-control" style="margin-right: 100px;"
                 onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly"
@@ -14,7 +20,7 @@
       </div>
     </div>
     <div class="col-md-12 col-lg-12" style="margin-top: 1%">
-      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 29%;max-width: 290px;float:left;padding-left: 0;margin-right: 10px;">
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 32%;max-width: 320px;float:right;padding-left: 0;margin-right: 30%;">
           <span class="input-group-addon" style="width: 101px">获得方式</span>
           <select id="select2" name="type" class="form-control select select-primary select-block mbl">
               <option value="0" selected>所有</option>
@@ -30,7 +36,7 @@
             $('#select2').val({{ type }})
             </script>
         {% endif %}
-      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 29%;max-width: 290px;float:left;padding-left: 0;margin-right: 240px">
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 32%;max-width: 320px;float:right;padding-left: 0;margin-right: 30px">
           <span class="input-group-addon">使用情况</span>
           <select id="select1" name="if_use"  class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0;">
               <option value="0" selected>所有</option>
@@ -47,15 +53,15 @@
               $("#select1").select2({dropdownCssClass: 'dropdown-inverse'});
               $("#select2").select2({dropdownCssClass: 'dropdown-inverse'});
       </script>
-      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 100%;max-width: 420px;margin-right: 467px;float: right;margin-top: 5px;">
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 100%;max-width: 670px;margin-right: 30%;float: right;margin-top: 10px;">
          <span class="input-group-addon">拥有者(可选):</span>
          <input id="owner" name="owner" type="text" class="form-control"
                 onkeyup="this.value=this.value.replace(/\D/g,'')"
                  value="{{ owner }}"/>
       </div>
     </div>
-    </form>
-   <div class="col-md-2 col-lg-2" style="float: right;margin-right: 10%;margin-top: -42px">
+</form>
+   <div class="col-md-2 col-lg-2" style="float: right;margin-right: 13%;margin-top: -42px">
           <button id="search" class="btn btn-success">查询</button>
       </div>
     <script>
@@ -128,7 +134,6 @@
         </h5>
          {% endif %}
     {% endif %}
-</div>
     {% else %}
        <div class="col-md-12 col-lg-12" style="padding-right: 10%;padding-left: 10%">
         <h5 style="margin-left: 35%;color: red">您没有操作权限</h5>
