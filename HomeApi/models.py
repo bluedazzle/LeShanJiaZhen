@@ -384,8 +384,8 @@ class Appointment(models.Model):
     process_by = models.ForeignKey(HomeAdmin, blank=True, null=True)
     consumer = models.ForeignKey(Consumer, null=True, blank=True)
     associator = models.ForeignKey(Associator, null=True, blank=True)
-    service_person = models.CharField(max_length=20, blank=True, null=True)
-    service_time = models.CharField(max_length=50, blank=True, null=True)
+    service_person = models.CharField(max_length=20, default='')
+    service_time = models.CharField(max_length=50, default='')
     # order_type = 1:goods, order_type = 2:homeitem
     order_type = models.IntegerField(max_length=4)
     online_pay = models.BooleanField(default=True)

@@ -22,7 +22,7 @@
             <h6>{{ admin.nick }}</h6>
             <h6 style="margin-top: 5%">{{ admin.area }}</h6>
             <h6 style="margin-top: 5%">{{ admin.username }}</h6>
-            <label style="margin-top: 3%" class="checkbox" for="checkbox1">
+            <label style="margin-top: 15px" class="checkbox" for="checkbox1">
                   <input type="checkbox" name="manage_game" value={{ admin.manage_game }} id="checkbox1"
                          {% if admin.manage_game %}
                          checked="checked"
@@ -33,7 +33,7 @@
                       <span class="icon-checked"></span>
                   </span>
             </label>
-            <label style="margin-top: 3.3%" class="checkbox" for="checkbox2">
+            <label style="margin-top: 16px" class="checkbox" for="checkbox2">
                   <input type="checkbox" name="manage_check_vip" value={{ admin.manage_check_vip }} id="checkbox2"
                          {% if admin.manage_check_vip %}
                          checked="checked"
@@ -44,7 +44,7 @@
                       <span class="icon-checked"></span>
                   </span>
             </label>
-            <label style="margin-top: 3.3%" class="checkbox" for="checkbox3">
+            <label style="margin-top: 16px" class="checkbox" for="checkbox3">
                   <input type="checkbox" name="manage_coupon" value={{ admin.manage_coupon }} id="checkbox3"
                          {% if admin.manage_coupon %}
                          checked="checked"
@@ -55,7 +55,7 @@
                       <span class="icon-checked"></span>
                   </span>
             </label>
-            <label style="margin-top: 3.3%" class="checkbox" for="checkbox4">
+            <label style="margin-top: 3%" class="checkbox" for="checkbox4">
                   <input type="checkbox" name="manage_send_message" value={{ admin.manage_send_message }} id="checkbox4"
                         {% if admin.manage_send_message %}
                          checked="checked"

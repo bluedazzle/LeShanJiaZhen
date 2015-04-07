@@ -9,18 +9,18 @@
  <div class="panel-body">
        <div class="col-lg-4 col-md-4 text-right">
             <h6>商品名称:</h6>
-            <h6 style="margin-top: 9%">排序ID:</h6>
-            <h6 style="margin-top: 9%">推荐权重(可选):</h6>
-            <h6 style="margin-top: 9%">品牌:</h6>
-            <h6 style="margin-top: 9%">材质:</h6>
-            <h6 style="margin-top: 9%">原价:</h6>
-            <h6 style="margin-top: 9%">折扣价（可选）:</h6>
-            <h6 style="margin-top: 9%">安装费（可选）:</h6>
-            <h6 style="margin-top: 9%">制造商:</h6>
-            <h6 style="margin-top: 9%">商品产地:</h6>
-            <h6 style="margin-top: 9%">说明:</h6>
-            <h6 style="margin-top: 34%">附加属性（可选）:</h6>
-            <h6 style="margin-top: 34%">商品图片:</h6>
+            <h6 style="margin-top: 30px">排序ID:</h6>
+            <h6 style="margin-top: 30px">推荐权重(可选):</h6>
+            <h6 style="margin-top: 30px">品牌:</h6>
+            <h6 style="margin-top: 30px">材质:</h6>
+            <h6 style="margin-top: 30px">原价:</h6>
+            <h6 style="margin-top: 30px">折扣价（可选）:</h6>
+            <h6 style="margin-top: 30px">安装费（可选）:</h6>
+            <h6 style="margin-top: 30px">制造商:</h6>
+            <h6 style="margin-top: 30px">商品产地:</h6>
+            <h6 style="margin-top: 30px">说明:</h6>
+            <h6 style="margin-top: 140px">附加属性（可选）:</h6>
+            <h6 style="margin-top: 150px">商品图片:</h6>
         </div>
        <div class="col-lg-6 col-md-6" style="padding-top: 0.5%;padding-left: 0">
           <form action="edit_goods" method="post" id="p_mes" enctype="multipart/form-data">
@@ -30,35 +30,35 @@
               {% endif %}
             <input style="display: none" type="text" name="goods_o_id" value="{{ goods_o.id }}">
             <input type="text" class="form-control" id="item_name" name='item_name'
-                   placeholder="请输入分类名称" style="width: 300px;margin-top: 0.5%" value="{{ goods.title }}">
+                   placeholder="请输入分类名称" style="width: 300px;margin-top: 2px" value="{{ goods.title }}">
             <input type="text" class="form-control" id="sort_id" name='sort_id'
-                   placeholder="请输入排序ID" style="width: 300px;margin-top: 3%" value="{{ goods.sort_id }}"
+                   placeholder="请输入排序ID" style="width: 300px;margin-top: 15px" value="{{ goods.sort_id }}"
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
             <input type="text" class="form-control" id="recommand" name='recommand'
-                   placeholder="请输入推荐权重" style="width: 300px;margin-top: 3.5%" value="{{ goods.recommand }}"
+                   placeholder="请输入推荐权重" style="width: 300px;margin-top: 13px" value="{{ goods.recommand }}"
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
             <input type="text" class="form-control" id="brand" name='brand'
-                   placeholder="请输入商品品牌" style="width: 300px;margin-top: 3.5%" value="{{ goods.brand }}">
+                   placeholder="请输入商品品牌" style="width: 300px;margin-top: 15px" value="{{ goods.brand }}">
             <input type="text" class="form-control" id="material" name='material'
-                   placeholder="请输入商品材质" style="width: 300px;margin-top: 3.5%" value="{{ goods.material }}">
+                   placeholder="请输入商品材质" style="width: 300px;margin-top: 14px" value="{{ goods.material }}">
             <input type="text" class="form-control" id="origin_price" name='origin_price'
-                   placeholder="请输入商品原价" style="width: 300px;margin-top: 3.5%" value="{{ goods.origin_price }}"
+                   placeholder="请输入商品原价" style="width: 300px;margin-top: 14px" value="{{ goods.origin_price }}"
                     onkeyup="onlyNumber(this)" onblur="onlyNumber(this)">
             <input type="text" class="form-control" id="preferential_price" name='preferential_price'
-                   placeholder="请输入商品折扣价" style="width: 300px;margin-top: 3.5%" value="{{ preferential_price }}"
+                   placeholder="请输入商品折扣价" style="width: 300px;margin-top: 14px" value="{{ preferential_price }}"
                     onkeyup="onlyNumber(this)" onblur="onlyNumber(this)" >
             <input type="text" class="form-control" id="repair_price" name='repair_price'
-                   placeholder="请输入商品安装费" style="width: 300px;margin-top: 3.5%" value="{{ goods.repair_price }}"
+                   placeholder="请输入商品安装费" style="width: 300px;margin-top: 14px" value="{{ goods.repair_price }}"
                     onkeyup="onlyNumber(this)" onblur="onlyNumber(this)" >
             <input type="text" class="form-control" id="made_by" name='made_by'
-                   placeholder="请输入制造商" style="width: 300px;margin-top: 3.5%" value="{{ goods.made_by }}">
+                   placeholder="请输入制造商" style="width: 300px;margin-top: 14px" value="{{ goods.made_by }}">
             <input type="text" class="form-control" id="made_in" name='made_in'
-                   placeholder="请输入产地" style="width: 300px;margin-top: 3.5%" value="{{ goods.made_in }}">
+                   placeholder="请输入产地" style="width: 300px;margin-top: 14px" value="{{ goods.made_in }}">
             <textarea class="form-control" id="content" name='content'
-                   placeholder="请输入附加说明" style="width: 300px;height:150px;margin-top: 3.5%">{{ goods.content }}</textarea>
+                   placeholder="请输入附加说明" style="width: 300px;height:150px;margin-top: 17px">{{ goods.content }}</textarea>
             <textarea class="form-control" id="plus" name='plus'
-                   placeholder="请输入附加属性,属性间用分号隔开，如“阀芯：金属；排量：200ml”" style="width: 300px;height:150px;margin-top: 3.5%">{{ goods.plus }}</textarea>
-            <input type="file" name="goods_pic" id="file0" multiple="multiple" style="margin-top:5%;line-height: 1;font-size: 16px;"/><br>
+                   placeholder="请输入附加属性,属性间用分号隔开，如“阀芯：金属；排量：200ml”" style="width: 300px;height:150px;margin-top: 17px">{{ goods.plus }}</textarea>
+            <input type="file" name="goods_pic" id="file0" multiple="multiple" style="margin-top:30px;line-height: 1;font-size: 16px;"/><br>
             <p>请上传400*200的PNG图片</p>
               {% if goods %}
                   <img style="width: 500px;height: 200px;" src="{{ goods.picture }}" id="img0" >

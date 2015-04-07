@@ -5,6 +5,8 @@
         $('#page_title').text('编辑维修项目信息');
         {% elif type == '2' %}
         $('#page_title').text('编辑安装项目信息');
+        {% elif type == '3' %}
+        $('#page_title').text('编辑其他项目信息');
         {% endif %}
         $('#message_manage').addClass('active');
         $('#program_manage').addClass('active')
