@@ -702,11 +702,11 @@ def find_appointment(request):
             else:
                 paginator = Paginator(appointments, 10)
                 try:
-                    appointments_return = paginator.page(page_num)
+                    appointments = paginator.page(page_num)
                 except PageNotAnInteger:
-                    appointments_return = paginator.page(1)
+                    appointments = paginator.page(1)
                 except EmptyPage:
-                    appointments_return = paginator.page(paginator.num_pages)
+                    appointments = paginator.page(paginator.num_pages)
                 except:
                     pass
                 return render_to_response('admin_area/find_appointment.html',

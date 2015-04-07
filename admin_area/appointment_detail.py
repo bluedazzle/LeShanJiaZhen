@@ -10,12 +10,7 @@ def send_get_message(appointments):
     apikey = 'e1ebef39f28c86fdb57808eb45ab713a'
     for appointment in appointments:
         content = "#order_num#=" + appointment.order_id
-        if appointment.associator:
-            res = tpl_send_sms(apikey, '669219', content, appointment.associator.username)
-        elif appointment.consumer:
-            res = tpl_send_sms(apikey, '669219', content, appointment.consumer.phone)
-        else:
-            return False
+        res = tpl_send_sms(apikey, '669219', content, appointment.order_phone)
         jsres = simplejson.loads(res)
         msg = jsres['code']
         print jsres
@@ -27,12 +22,7 @@ def send_cancel_message(appointments):
     apikey = 'e1ebef39f28c86fdb57808eb45ab713a'
     for appointment in appointments:
         content = "#order_num#=" + appointment.order_id
-        if appointment.associator:
-            res = tpl_send_sms(apikey, '719533', content, appointment.associator.username)
-        elif appointment.consumer:
-            res = tpl_send_sms(apikey, '719533', content, appointment.consumer.phone)
-        else:
-            return False
+        res = tpl_send_sms(apikey, '669219', content, appointment.order_phone)
         jsres = simplejson.loads(res)
         msg = jsres['code']
         print jsres
@@ -186,11 +176,12 @@ def appointment_add_info(request):
             id = request.GET.get('aid')
             s_person = request.GET.get('service_person')
             s_time = request.GET.get('service_time')
+            page = request.GET.get('page')
             appointment = Appointment.objects.get(id=id, status=2)
             appointment.service_person = s_person
             appointment.service_time = s_time
             appointment.save()
-            return HttpResponseRedirect('operate_get')
+            return HttpResponseRedirect('operate_get?page='+page)
         else:
             return HttpResponseRedirect('login_in')
 
