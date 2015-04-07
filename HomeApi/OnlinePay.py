@@ -7,8 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from HomeApi.models import *
 
 APP_ID = 'app_DibTK09SavX9mHmH'
-TEST_KEY = 'sk_test_DKmjXPD8ij1GjPyvX9ynzzTG'
-LIVE_KEY = 'sk_live_fBZKaXibpI0xkf6IIjdqkubL'
+LIVE_KEY = 'sk_test_DKmjXPD8ij1GjPyvX9ynzzTG'
+# LIVE_KEY = 'sk_live_fBZKaXibpI0xkf6IIjdqkubL'
 
 def do_charge(req):
     jsonres = simplejson.loads(req.body)
