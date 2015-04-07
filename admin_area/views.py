@@ -885,7 +885,10 @@ def advertisement_edit(request):
         if advertisement_pic:
             advertisement = Advertisement.objects.get(id=ad_id)
             if advertisement.photo:
-                os.remove(BASE + '/static/img/advertisement/' + str(ad_id))
+                try:
+                    os.remove(BASE + '/static/img/advertisement/' + str(ad_id))
+                except:
+                    pass
             file_name = str(ad_id) + '.png'
             file_full_path = BASE + '/static/img/advertisement/' + file_name
             Image.open(advertisement_pic).save(file_full_path)
@@ -903,7 +906,10 @@ def delete_advertisement(request):
         ad_id = request.GET.get('advertisement_id')
         advertisement = Advertisement.objects.get(id=ad_id)
         file_full_path = BASE + '/static/img/advertisement/' + str(ad_id) + '.png'
-        os.remove(file_full_path)
+        try:
+            os.remove(file_full_path)
+        except:
+            pass
         advertisement.delete()
         return HttpResponseRedirect('advertisement_manage')
 
@@ -968,7 +974,10 @@ def edit_program_detail(request):
                 file_name = 'h_i' + str(i_id) + '.png'
                 file_full_path = BASE + '/static/img/home_item_pic/' + file_name
                 if home_item.pic_url:
-                    os.remove(file_full_path)
+                    try:
+                        os.remove(file_full_path)
+                    except:
+                        pass
                 Image.open(program_pic).save(file_full_path)
                 home_item.pic_url = '/img/home_item_pic/'+file_name
                 home_item.save()
@@ -1092,7 +1101,10 @@ def edit_program_p_detail(request):
             file_name = 'p_g' + str(i_id) + '.png'
             file_full_path = BASE + '/static/img/program_icons/' + file_name
             if item_p.icon:
-                os.remove(file_full_path)
+                try:
+                    os.remove(file_full_path)
+                except:
+                    pass
             Image.open(icon_file).save(file_full_path)
             item_p.icon = '/img/program_icons/'+file_name
             item_p.save()
@@ -1205,7 +1217,10 @@ def edit_goods_p(request):
             file_name = str(i_id) + '.png'
             file_full_path = BASE + '/static/img/goods_p_ads/' + file_name
             if item_p.advertisement:
-                os.remove(file_full_path)
+                try:
+                    os.remove(file_full_path)
+                except:
+                    pass
             Image.open(ad_file).save(file_full_path)
             item_p.have_advertisement = True
             item_p.advertisement = '/img/goods_p_ads/'+file_name
@@ -1224,7 +1239,10 @@ def delete_goods_p_ad(request):
         try:
             file_name = str(goods_p.id) + '.png'
             file_full_path = BASE + '/static/img/goods_p_ads/' + file_name
-            os.remove(file_full_path)
+            try:
+                os.remove(file_full_path)
+            except:
+                pass
             goods_p.advertisement = ''
             goods_p.have_advertisement = False
             goods_p.save()
@@ -1264,7 +1282,7 @@ def edit_goods_o(request):
         goods_o_have = Goods_O.objects.filter(sort_id=sort_id, parent_item=goods_p)
 
         if goods_o_id:
-            goods_o = Goods_P.objects.get(id=goods_p_id)
+            goods_o = Goods_O.objects.get(id=goods_o_id)
             if goods_o.sort_id != int(sort_id):
                 if goods_o_have.count() > 0:
                     return render_to_response('admin_area/goods_manage/edit_goods_o.html',
@@ -1275,16 +1293,18 @@ def edit_goods_o(request):
             goods_o.item_name = goods_o_name
             goods_o.sort_id = sort_id
             goods_o.save()
+            print "OK"
         else:
-            if goods_o_have.count() > 0:
-                    return render_to_response('admin_area/goods_manage/edit_goods_o.html',
-                                              {'sort_id_have': 'T',
-                                               'item_p': goods_p},
-                                              context_instance=RequestContext(request))
             new_goods_o = Goods_O()
             new_goods_o.item_name = goods_o_name
             new_goods_o.parent_item = goods_p
             new_goods_o.sort_id = sort_id
+            if goods_o_have.count() > 0:
+                    return render_to_response('admin_area/goods_manage/edit_goods_o.html',
+                                              {'sort_id_have': 'T',
+                                               'item_p': goods_p,
+                                               'item_o': new_goods_o},
+                                              context_instance=RequestContext(request))
             if goods_o_have.count() > 0:
                 return render_to_response('admin_area/goods_manage/edit_goods_o.html',
                                           {'sort_id_have': 'T',
@@ -1440,8 +1460,10 @@ def edit_goods(request):
             file_name = str(i_id) + '.png'
             file_full_path = BASE + '/static/img/goods_pics/' + file_name
             if goods_now.picture:
-                os.remove(BASE + '/static/img/goods_pics/'+file_name)
-
+                try:
+                    os.remove(BASE + '/static/img/goods_pics/'+file_name)
+                except:
+                    pass
             Image.open(goods_pic).save(file_full_path)
             goods_now.picture = '/img/goods_pics/'+file_name
             goods_now.save()
