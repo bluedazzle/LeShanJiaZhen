@@ -276,14 +276,14 @@ def get_messages(req):
             page_num = 1
             try:
                 page_num = int(jsonres['page'])
-                if page_num > total_page:
-                    body['msg'] = 'upbond page number'
-                    return HttpResponse(encodejson(1, body), content_type='application/json')
+                # if page_num > total_page:
+                #     body['msg'] = 'upbond page number'
+                #     return HttpResponse(encodejson(1, body), content_type='application/json')
                 message_list = paginator.page(page_num)
             except PageNotAnInteger:
                 message_list = paginator.page(1)
             except EmptyPage:
-                message_list = paginator.page(paginator.num_pages)
+                message_list = []
             except:
                 pass
             messages = []
@@ -390,14 +390,11 @@ def get_coupon(req):
             page_num = 1
             try:
                 page_num = int(jsonres['page'])
-                if page_num > total_page:
-                    body['msg'] = 'upbond page number'
-                    return HttpResponse(encodejson(1, body), content_type='application/json')
                 coupon_list = paginator.page(page_num)
             except PageNotAnInteger:
                 coupon_list = paginator.page(1)
             except EmptyPage:
-                coupon_list = paginator.page(paginator.num_pages)
+                coupon_list = []
             except:
                 pass
             coupons = []
@@ -958,6 +955,7 @@ def create_appointment(req):
             if not if_legal(phone, token):
                 body['msg'] = 'login first before other action'
                 return HttpResponse(encodejson(13, body), content_type='application/json')
+            consumer = Associator.objects.get(username=phone)
         else:
             consum_list = Consumer.objects.filter(phone=phone)
             if not consum_list.exists():
@@ -969,76 +967,80 @@ def create_appointment(req):
             if not consum.verified:
                 body['msg'] = 'phone is not verified'
                 return HttpResponse(encodejson(9, body), content_type='application/json')
+        # try:
+        ve = None
+        if not login:
+            ve_list = Consumer.objects.filter(phone=phone, token=token)
+            if not ve_list.exists():
+                body['msg'] = 'consumer token not correct'
+                return HttpResponse(encodejson(9, body), content_type='application/json')
+            ve = ve_list[0]
+        address = resjson['address']
+        name = resjson['name']
+        note = resjson['note']
+        city_num = resjson['city_number']
+        use_coupon = bool(resjson['use_coupon'])
         try:
-            if not login:
-                ve = Consumer.objects.get(phone=phone, token=token)
-            address = resjson['address']
-            name = resjson['name']
-            note = resjson['note']
-            city_num = resjson['city_number']
-            use_coupon = bool(resjson['use_coupon'])
-            try:
-                city = Block.objects.get(city_num=city_num)
-            except Exception:
-                body['msg'] = 'invalid city number'
+            city = Block.objects.get(city_num=city_num)
+        except Exception:
+            body['msg'] = 'invalid city number'
+            return HttpResponse(encodejson(7, body), content_type='application/json')
+        coupon = None
+        if use_coupon:
+            cid = resjson['coupon_id']
+            cou_list = Coupon.objects.filter(cou_id=cid)
+            if not cou_list.exists():
+                body['msg'] = 'invalid coupon id'
                 return HttpResponse(encodejson(7, body), content_type='application/json')
-            coupon = None
-            if use_coupon:
-                cid = resjson['coupon_id']
-                cou_list = Coupon.objects.filter(cou_id=cid)
-                if not cou_list.exists():
-                    body['msg'] = 'invalid coupon id'
-                    return HttpResponse(encodejson(7, body), content_type='application/json')
-                coupon = cou_list[0]
-                print coupon.cou_id
-                print coupon.if_use
-                if not (coupon.if_use is False and coupon.own.username == ve.username and if_in_due(coupon.deadline)):
-                    body['msg'] = 'the coupon has used, over due or is not belong you'
-                    return HttpResponse(encodejson(21, body), content_type='application/json')
-            newid = create_order_id(pay=False)
-            newappoint = Appointment(status=1,
-                                     order_phone=order_phone,
-                                     use_coupon=use_coupon,
-                                     address=address,
-                                     order_id=newid,
-                                     order_type=2,
-                                     online_pay=False,
-                                     area=city,
-                                     name=name,
-                                     remark=note)
-            if login:
-                consumer = Associator.objects.get(username=phone)
-                newappoint.associator = consumer
-                newappoint.save()
-            else:
-                newappoint.consumer = ve
-            if use_coupon:
-                newappoint.use_coupon = True
-                newappoint.order_coupon = coupon
-                coupon.if_use = True
-                coupon.save()
+            coupon = cou_list[0]
+            print coupon.cou_id
+            print coupon.if_use
+            if not (coupon.if_use is False and coupon.own.username == consumer.username and if_in_due(coupon.deadline)):
+                body['msg'] = 'the coupon has used, over due or is not belong you'
+                return HttpResponse(encodejson(21, body), content_type='application/json')
+        newid = create_order_id(pay=False)
+        newappoint = Appointment(status=1,
+                                 order_phone=order_phone,
+                                 use_coupon=use_coupon,
+                                 address=address,
+                                 order_id=newid,
+                                 order_type=2,
+                                 online_pay=False,
+                                 area=city,
+                                 name=name,
+                                 remark=note)
+        if login:
+            newappoint.associator = consumer
             newappoint.save()
-            home_item_list = resjson['home_items']
-            for item in home_item_list:
-                hid = item['hid']
-                home_list = HomeItem.objects.filter(id=hid)
-                if not home_list.exists():
-                    body['msg'] = 'home item id:' + str(hid) + 'invalid'
-                    newappoint.delete()
-                    return HttpResponse(encodejson(7, body), content_type='application/json')
-                homeit = home_list[0]
-                new_order_item = OrderHomeItem(item_name=homeit.item_name,
-                                           create_time=datetime.datetime.now(),
-                                           belong=newappoint,
-                                           origin_item=homeit)
-                new_order_item.save()
-            body['msg'] = 'appointment create success'
-            body['new_id'] = newid
-            return HttpResponse(encodejson(1, body), content_type='application/json')
-        except Exception, e:
-            print e
-            body['msg'] = 'json value missing or consumer token not correct'
-            return HttpResponse(encodejson(2, body), content_type='application/json')
+        else:
+            newappoint.consumer = ve
+        if use_coupon:
+            newappoint.use_coupon = True
+            newappoint.order_coupon = coupon
+            coupon.if_use = True
+            coupon.save()
+        newappoint.save()
+        home_item_list = resjson['home_items']
+        for item in home_item_list:
+            hid = item['hid']
+            home_list = HomeItem.objects.filter(id=hid)
+            if not home_list.exists():
+                body['msg'] = 'home item id:' + str(hid) + 'invalid'
+                newappoint.delete()
+                return HttpResponse(encodejson(7, body), content_type='application/json')
+            homeit = home_list[0]
+            new_order_item = OrderHomeItem(item_name=homeit.item_name,
+                                       create_time=datetime.datetime.now(),
+                                       belong=newappoint,
+                                       origin_item=homeit)
+            new_order_item.save()
+        body['msg'] = 'appointment create success'
+        body['new_id'] = newid
+        return HttpResponse(encodejson(1, body), content_type='application/json')
+        # except Exception, e:
+        #     print e
+        #     body['msg'] = 'json value missing or consumer token not correct'
+        #     return HttpResponse(encodejson(2, body), content_type='application/json')
 
 
 
@@ -1237,15 +1239,15 @@ def get_orders(req):
     paginator = Paginator(order_list, 20)
     page_num = 1
     try:
-        page_num = int(jsonres['page'])
-        if page_num > total_page:
-            body['msg'] = 'upbond page number'
-            return HttpResponse(encodejson(1, body), content_type='application/json')
+        page_num = int(resjson['page'])
+        # if page_num > total_page:
+        #     body['msg'] = 'upbond page number'
+        #     return HttpResponse(encodejson(1, body), content_type='application/json')
         order_list = paginator.page(page_num)
     except PageNotAnInteger:
         order_list = paginator.page(1)
     except EmptyPage:
-        order_list = paginator.page(paginator.num_pages)
+        order_list = []
     except:
         pass
     order_items = []
@@ -1312,8 +1314,14 @@ def get_orders(req):
         home_items = []
         for item in itm.orderitem.all():
             home_item = {}
+            myrecommand = item.origin_item.parent_item.recommand
+            if myrecommand is not None:
+                home_item['recommand'] = myrecommand.id
+            else:
+                home_item['recommand'] = -1
             home_item['item_name'] = item.item_name
             home_item['hid'] = item.origin_item.id
+            home_item['note'] = item.origin_item.parent_item.note
             home_item['pic_url'] = item.origin_item.parent_item.icon
             home_items.append(copy.copy(home_item))
         order['home_itmes'] = home_items
@@ -1500,6 +1508,26 @@ def appointment_pic(request):
         appoint.photo4 = pic_name
     appoint.save()
     body['msg'] = 'upload picture success'
+    return HttpResponse(encodejson(1, body), content_type='application/json')
+
+
+
+@csrf_exempt
+def get_all_city(req):
+    body = {}
+    if not req.method == 'GET':
+        raise Http404
+    block_list = Block.objects.all()
+    block_lists = []
+    for itm in block_list:
+        block = {}
+        block['city_number'] = itm.city_num
+        block['city_name'] = itm.area_name
+        block['city_tel'] = itm.area_tel
+        block['city_address'] = itm.area_address
+        block['city_info'] = itm.area_info
+        block_lists.append(copy.copy(block))
+    body['block_list'] = block_lists
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
