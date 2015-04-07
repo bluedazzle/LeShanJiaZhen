@@ -694,8 +694,8 @@ def find_appointment(request):
         if phone:
             user = HomeAdmin.objects.get(username=username)
             appointments = Appointment.objects.filter(order_phone=phone)
-
-            if appointments.count() == 0:
+            count = appointments.count()
+            if count == 0:
                 return render_to_response('admin_area/find_appointment.html',
                                           {'fault': 'T'},
                                           context_instance=RequestContext(request))
@@ -711,7 +711,8 @@ def find_appointment(request):
                     pass
                 return render_to_response('admin_area/find_appointment.html',
                                           {'items': appointments,
-                                           'phone': phone},
+                                           'phone': phone,
+                                           'count': count},
                                           context_instance=RequestContext(request))
 
         if appointment:
@@ -733,7 +734,8 @@ def find_appointment(request):
                     pass
                 return render_to_response('admin_area/find_appointment.html',
                                           {'items': appointments,
-                                           'appiontment': appointment},
+                                           'appiontment': appointment,
+                                           'count': 1},
                                           context_instance=RequestContext(request))
 
 
@@ -793,7 +795,8 @@ def advertisement_manage(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
-        items = Advertisement.objects.all()
+        user_admin = HomeAdmin.objects.get(username=request.session['username'])
+        items = Advertisement.objects.all(area=user_admin.area)
         return render_to_response('admin_area/advertisement_manage.html',
                                   {'items': items},
                                   context_instance=RequestContext(request))
@@ -1041,19 +1044,22 @@ def edit_program_p_detail(request):
     if request.method == 'GET':
         item_id = request.GET.get('item_id')
         type = request.GET.get('type')
+        user_admin = HomeAdmin.objects.get(username=request.session['username'])
+        goods_ps = Goods_P.objects.filter(area=user_admin.area)
         if item_id:
-            user_admin = HomeAdmin.objects.get(username=request.session['username'])
             item_p = HomeItem_P.objects.get(id=item_id, area=user_admin.area)
             if not item_p:
                 raise Http404
             return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
                                       {'item_p': item_p,
-                                       'type': item_p.type},
+                                       'type': item_p.type,
+                                       'goods_ps': goods_ps},
                                       context_instance=RequestContext(request))
         if not type:
             raise Http404
         return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
-                                  {'type': type},
+                                  {'type': type,
+                                   'goods_ps': goods_ps},
                                   context_instance=RequestContext(request))
     if request.method == 'POST':
         context = {}
@@ -1063,7 +1069,10 @@ def edit_program_p_detail(request):
         item_sort_id = request.POST.get('sort_id')
         item_name = request.POST.get('item_name')
         type = request.POST.get('type')
+        relate_goods_id = request.POST.get('relate_goods')
         user = HomeAdmin.objects.get(username=request.session['username'])
+        if not item_name and not item_sort_id:
+            raise Http404
         i_id = 1
         item_p_have = HomeItem_P.objects.filter(sort_id=item_sort_id,
                                                 area=user.area,
@@ -1095,9 +1104,9 @@ def edit_program_p_detail(request):
                                            'type': type}, context_instance=RequestContext(request))
             new_item_p.save()
             i_id = new_item_p.id
+        item_p = HomeItem_P.objects.get(id=i_id)
         if icon_file != None:
             print "OK"
-            item_p = HomeItem_P.objects.get(id=i_id)
             file_name = 'p_g' + str(i_id) + '.png'
             file_full_path = BASE + '/static/img/program_icons/' + file_name
             if item_p.icon:
@@ -1107,6 +1116,12 @@ def edit_program_p_detail(request):
                     pass
             Image.open(icon_file).save(file_full_path)
             item_p.icon = '/img/program_icons/'+file_name
+            item_p.save()
+        if relate_goods_id != '0' and relate_goods_id:
+            relate_goods_p = Goods_P.objects.get(id=relate_goods_id)
+            if not relate_goods_p:
+                raise Http404
+            item_p.recommand = relate_goods_p
             item_p.save()
 
         return HttpResponseRedirect('program_manage_two?item_p_id='+str(i_id))
