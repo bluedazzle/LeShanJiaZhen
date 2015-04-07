@@ -1,6 +1,5 @@
 {% extends 'admin_area/base.html' %}
 {% block define %}
-    {% if permission %}
 <script>
         $('#page_title').text('游戏参数设置');
         $('#game_manage').addClass('active');
@@ -13,6 +12,7 @@
        {% endif %}
 </script>
 <script type="text/javascript" src="/js/mine.js" charset="UTF-8"></script>
+       {% if permission %}
 <div class="col-lg-12 col-md-12 panel panel-default" style="margin-top: 5%;padding-left: 7%">
  <div class="panel-body">
        <div class="col-lg-5 col-md-5 text-right">

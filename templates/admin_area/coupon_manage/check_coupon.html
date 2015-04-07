@@ -6,34 +6,21 @@
     <form method="post" action="check_coupon" id="search_mes">
         {% csrf_token %}
     <div class="col-md-12 col-lg-12" style="margin-top: 1%">
-      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 32%;max-width: 305px;margin-right:26.1%;float: right">
-         <span class="input-group-addon" style="width: 80px">截止日期:</span>
-         <input id="end_date" name="end_date" type="text" class="form-control" style="margin-right: 10%;"
-                onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly"
-                 value="{{ date_end }}"/>
-      </div>
-      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 32%;max-width: 305px;margin-right: 1%;float: right">
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 32%;max-width: 305px;margin-right: 10px;float: left">
          <span class="input-group-addon">起始日期:</span>
-         <input id="start_date" name="start_date" type="text" class="form-control" style="margin-right: 10%;"
+         <input id="start_date" name="start_date" type="text" class="form-control" style="margin-right: 100px;"
                 onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly"
                  value="{{ date_start }}"/>
       </div>
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 32%;max-width: 305px;margin-right:265px;float: left">
+         <span class="input-group-addon" style="width: 80px">截止日期:</span>
+         <input id="end_date" name="end_date" type="text" class="form-control" style="margin-right: 100px;"
+                onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly"
+                 value="{{ date_end }}"/>
+      </div>
     </div>
     <div class="col-md-12 col-lg-12" style="margin-top: 1%">
-      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 29%;max-width: 290px;float:right;padding-left: 0;margin-right: 26%">
-          <span class="input-group-addon">使用情况</span>
-          <select id="select1" name="if_use"  class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0;">
-              <option value="0" selected>所有</option>
-              <option value="1">未使用</option>
-              <option value="2">已使用</option>
-          </select>
-      </div>
-        {% if if_use %}
-            <script>
-            $('#select1').val({{ if_use }})
-            </script>
-        {% endif %}
-      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 29%;max-width: 290px;float:right;padding-left: 0;margin-right: 1%;">
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 29%;max-width: 290px;float:left;padding-left: 0;margin-right: 10px;">
           <span class="input-group-addon" style="width: 101px">获得方式</span>
           <select id="select2" name="type" class="form-control select select-primary select-block mbl">
               <option value="0" selected>所有</option>
@@ -49,11 +36,24 @@
             $('#select2').val({{ type }})
             </script>
         {% endif %}
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 29%;max-width: 290px;float:left;padding-left: 0;margin-right: 240px">
+          <span class="input-group-addon">使用情况</span>
+          <select id="select1" name="if_use"  class="form-control select select-primary select-block mbl" style="border-bottom-right-radius: 0;">
+              <option value="0" selected>所有</option>
+              <option value="1">未使用</option>
+              <option value="2">已使用</option>
+          </select>
+      </div>
+        {% if if_use %}
+            <script>
+            $('#select1').val({{ if_use }})
+            </script>
+        {% endif %}
       <script>
               $("#select1").select2({dropdownCssClass: 'dropdown-inverse'});
               $("#select2").select2({dropdownCssClass: 'dropdown-inverse'});
       </script>
-      <div class="col-md-8 col-lg-8 input-group has-success" style="width: 100%;max-width: 620px;margin-top: 4.5%;margin-left: 23%">
+      <div class="col-md-5 col-lg-5 input-group has-success" style="width: 100%;max-width: 420px;margin-right: 467px;float: right;margin-top: 5px;">
          <span class="input-group-addon">拥有者(可选):</span>
          <input id="owner" name="owner" type="text" class="form-control"
                 onkeyup="this.value=this.value.replace(/\D/g,'')"
