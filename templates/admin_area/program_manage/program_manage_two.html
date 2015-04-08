@@ -19,6 +19,9 @@
                      {% if program_p.icon %}
                      <img src="{{ program_p.icon }}" style="height: 40px;width: 40px;"/>
                  {% endif %}
+                     {% if program_p.recommand %}
+                         (关联商品类：{{ program_p.recommand.item_name }})
+                     {% endif %}
                      <button id="delete_p" class="btn btn-danger" style="float: right;margin-right: 2%">删除分类</button>
                      <a id="edit_p" role="button" href="edit_program_p_detail?item_id={{ program_p.id }}" class="btn btn-default" style="float: right;margin-left: 2%;margin-right: 1%">修改分类</a>
                  </h6>

@@ -164,16 +164,16 @@ function first_jump_change(jump_id){
     $('#jump_item').text('');
     $('#select3').append("<option value='0' selected>二级选项(可选)</option>");
     if(jump_id == '1') {
-        $('#select3').append("<option value='1'>维修</option>" +
-        "<option value='2'>安装</option>");
+        $('#select3').append("<option value='11'>维修</option>" +
+        "<option value='12'>安装</option>");
     }
     else if(jump_id == '2'){
-        $('#select3').append("<option value='1'>商品或商品主页</option>");
+        $('#select3').append("<option value='21'>商品或商品主页</option>");
     }
     else if(jump_id == '3'){
-        $('#select3').append("<option value='1'>订单详情页</option>" +
-        "<option value='2'>折扣券详情页</option>"+
-        "<option value='3'>消息中心页</option>");
+        $('#select3').append("<option value='31'>订单详情页</option>" +
+        "<option value='32'>折扣券详情页</option>"+
+        "<option value='33'>消息中心页</option>");
     }
     $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
 }

@@ -16,39 +16,39 @@
  <div class="panel-body">
        <div class="col-lg-5 col-md-5 text-right">
             <h6>在线支付赠送（最高）:</h6>
-            <h6 style="margin-top: 6%">在线支付赠送（最低）:</h6>
-            <h6 style="margin-top: 6%">注册赠送:</h6>
-            <h6 style="margin-top: 6%">邀请赠送:</h6>
-            <h6 style="margin-top: 6%">是否开启在线支付赠送:</h6>
+            <h6 style="margin-top: 30px">在线支付赠送（最低）:</h6>
+            <h6 style="margin-top: 30px">注册赠送:</h6>
+            <h6 style="margin-top: 30px">邀请赠送:</h6>
+            <h6 style="margin-top: 30px">是否开启在线支付赠送:</h6>
         </div>
        <div class="col-lg-5 col-md-5" style="padding-top: 0.5%;padding-left: 0">
           <form action="set_coupon" method="post" id="p_mes" enctype="multipart/form-data">
               {% csrf_token %}
             <input type="text" class="form-control" id="online_money_high" name='online_money_high'
-                   placeholder="请输入赠送金额" style="width: 150px;margin-top: 0.5%"
+                   placeholder="请输入赠送金额" style="width: 150px;margin-top: 5px"
                    {% if item.online_money_high %}
                    value="{{ item.online_money_high }}"
                    {% endif %}
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
             <input type="text" class="form-control" id="online_money_low" name='online_money_low'
-                   placeholder="请输入赠送金额" style="width: 150px;margin-top: 3%"
+                   placeholder="请输入赠送金额" style="width: 150px;margin-top: 15px"
                    {% if item.online_money_low %}
                    value="{{ item.online_money_low }}"
                    {% endif %}
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
             <input type="text" class="form-control" id="reg_money" name='reg_money'
-                   placeholder="请输入赠送金额" style="width: 150px;margin-top: 3%"
+                   placeholder="请输入赠送金额" style="width: 150px;margin-top: 15px"
                    {% if item.reg_money %}
                    value="{{ item.reg_money }}"
                    {% endif %}
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
             <input type="text" class="form-control" id="invite_money" name='invite_money'
-                   placeholder="请输入赠送金额" style="width: 150px;margin-top: 3%"
+                   placeholder="请输入赠送金额" style="width: 150px;margin-top: 15px"
                    {% if item.invite_money %}
                    value="{{ item.invite_money }}"
                    {% endif %}
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
-            <label style="margin-top: 5%" class="checkbox" for="checkbox1">
+            <label style="margin-top: 25px" class="checkbox" for="checkbox1">
                   <input type="checkbox" name="online_active" value={{ item.online_active }} id="checkbox1"
                          {% if item.online_active %}
                          checked="checked"
