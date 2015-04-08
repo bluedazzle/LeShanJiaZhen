@@ -9,7 +9,6 @@ import datetime
 from PIL import Image
 from HomeApi.HomeAdminManager import *
 from HomeApi.OnlinePay import *
-from HomeApi.location_process import *
 from django.core.serializers import serialize, deserialize
 from django.utils.timezone import utc
 from django.core.paginator import Paginator
