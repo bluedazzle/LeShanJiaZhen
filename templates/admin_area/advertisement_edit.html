@@ -38,9 +38,9 @@
        <div class="col-lg-4 col-md-4 text-right">
             <h6>名称:</h6>
             <h6 style="margin-top: 25px">广告位置:</h6>
-            <h6 style="margin-top: 40px">内容:</h6>
-            <h6 style="margin-top: 190px">图片:</h6>
+            <h6 style="margin-top: 30px">图片:</h6>
             <h6 style="margin-top: 280px">跳转选项:</h6>
+            <h6 style="margin-top: 90px;">内容:</h6>
         </div>
        <div class="col-lg-6 col-md-6" style="padding-top: 0.5%;padding-left: 0">
           <form action="advertisement_edit" method="post" id="p_mes" enctype="multipart/form-data">
@@ -64,8 +64,7 @@
                     </script>
                 {% endif %}
             <br/>
-            <textarea class="form-control" id="content" name="content" style="width: 400px;height: 200px;margin-top: 30px;margin-bottom: 20px;">{{ advertisement.content }}</textarea>
-            <input type="file" name="advertisement_pic" id="file0" multiple="multiple" style="margin-top:5px;line-height: 1;font-size: 16px;"/>
+            <input type="file" name="advertisement_pic" id="file0" multiple="multiple" style="margin-top:21px;line-height: 1;font-size: 16px;"/>
               <p style="padding-left: 130px" id="warning">请上传400*200的PNG图片</p>
               {% if advertisement %}
                   <img style="width: 500px;height: 200px;" src="{{ advertisement.photo }}" id="img0" >
@@ -87,7 +86,7 @@
                     <option value="0" selected>二级选项(可选)</option>
             </select>
             <input type="text" class="form-control input-sm" id="item_id" name='item_id'
-                   placeholder="请输入需要跳转的项目或者商品ID" style="width: 220px;margin-bottom: 15px;display: none"
+                   placeholder="请输入需要跳转的项目或者商品ID" style="width: 220px;margin-bottom: 15px;position: absolute;z-index: 99;margin-left: 240px;margin-top: -40px;display: none"
                    value="{{ advertisement.third_jump }}"
                     onkeyup="this.value=this.value.replace(/\D/g,''), third_jump_change(this.value)">
             <p id="jump_item" style="font-size: 12px;"></p>
@@ -98,6 +97,13 @@
                     $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
                 });
             </script>
+            <input type="file" name="content" id="file1" multiple="multiple" style="margin-top:35px;line-height: 1;font-size: 16px;"/>
+              <p style="padding-left: 130px" id="warning">请上传PNG图片</p>
+              {% if advertisement.content %}
+                  <img style="width: 500px;min-height: 150px;" src="{{ advertisement.content }}" id="img1" >
+              {% else %}
+                 <img style="width: 500px;min-height: 150px;" src="" id="img1" >
+              {% endif %}
           </form>
        </div>
     <div class="col-lg-12 col-md-12" style="margin-top: 2%">
@@ -132,8 +138,29 @@ $("#file0").change(function(){
         })
 	}
 });
+$("#file1").change(function(){
+    var file0 = this.files[0];
+	var objUrl = getObjectURL(file0);
+	console.log("objUrl = "+objUrl) ;
+    localStorage['image_url'] = objUrl;
+	if (objUrl) {
+		$("#img1").attr("src", objUrl);
+        $('#img1').load(function(){
+            var image = new Image();
+            image.src = $('#img1').attr('src');
+            var height = image.height;
+            var width = image.width;
+            var f = $('#img1').val();
+            if(!/(png|PNG)$/.test(file0.type)){
+                $('#warning').text('图像格式不正确，请上传PNG图片');
+                $('#warning').style('color: red');
+                return false
+            }
+        })
+	}
+});
 function could_submit(){
-    if($('#title').val() && $('#content').val()
+    if($('#title').val() && $('#img1').attr('src')
             && $('#img0').attr('src')){
         var image = new Image();
         image.src = $('#img0').attr('src');

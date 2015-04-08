@@ -796,7 +796,7 @@ def advertisement_manage(request):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
         user_admin = HomeAdmin.objects.get(username=request.session['username'])
-        items = Advertisement.objects.all(area=user_admin.area)
+        items = Advertisement.objects.filter(area=user_admin.area)
         return render_to_response('admin_area/advertisement_manage.html',
                                   {'items': items},
                                   context_instance=RequestContext(request))
@@ -841,7 +841,7 @@ def advertisement_edit(request):
         title = request.POST.get('title')
         type = request.POST.get('type')
         advertisement_pic = request.FILES.get('advertisement_pic', None)
-        content = request.POST.get('content')
+        content = request.FILES.get('content', None)
         first_jump = request.POST.get('first_jump')
         second_jump = request.POST.get('second_jump')
         third_jump = request.POST.get('item_id')
@@ -857,26 +857,19 @@ def advertisement_edit(request):
             advertisement.type = int(type)
             advertisement.first_jump = first_jump
             advertisement.second_jump = second_jump
-            advertisement.content = content
             if third_jump:
                 advertisement.third_jump = third_jump
             else:
                 advertisement.third_jump = 0
             advertisement.save()
-            if not advertisement_pic:
-                return render_to_response('admin_area/advertisement_edit.html',
-                                          {'advertisement': advertisement,
-                                           'success': True})
             ad_id = advertisement.id
+
         else:
-            if not advertisement_pic:
-                raise Http404
             new_advertisement = Advertisement()
             new_advertisement.title = title
             new_advertisement.type = int(type)
             new_advertisement.first_jump = first_jump
             new_advertisement.second_jump = second_jump
-            new_advertisement.content = content
             if third_jump:
                 new_advertisement.third_jump = third_jump
             else:
@@ -885,11 +878,12 @@ def advertisement_edit(request):
             new_advertisement.area = admin_user.area
             new_advertisement.save()
             ad_id = new_advertisement.id
+
+        advertisement = Advertisement.objects.get(id=ad_id)
         if advertisement_pic:
-            advertisement = Advertisement.objects.get(id=ad_id)
             if advertisement.photo:
                 try:
-                    os.remove(BASE + '/static/img/advertisement/' + str(ad_id))
+                    os.remove(BASE + '/static/img/advertisement/' + str(ad_id) + '.png')
                 except:
                     pass
             file_name = str(ad_id) + '.png'
@@ -897,9 +891,29 @@ def advertisement_edit(request):
             Image.open(advertisement_pic).save(file_full_path)
             advertisement.photo = '/img/advertisement/'+file_name
             advertisement.save()
-            return render_to_response('admin_area/advertisement_edit.html',
-                                      {'advertisement': advertisement,
-                                       'success': True})
+        else:
+            if not advertisement.photo:
+                return HttpResponseRedirect('advertisement_manage')
+
+        if content:
+            if advertisement.content:
+                try:
+                    os.remove(BASE + '/static/img/advertisement_content/' + str(ad_id) + '.png')
+                except:
+                    pass
+            file_name = str(ad_id) + '.png'
+            file_full_path_content = BASE + '/static/img/advertisement_content/' + file_name
+            Image.open(content).save(file_full_path_content)
+            advertisement.content = '/img/advertisement_content/'+file_name
+            advertisement.save()
+        else:
+            if not advertisement.content:
+                return HttpResponseRedirect('advertisement_manage')
+
+        return render_to_response('admin_area/advertisement_edit.html',
+                                  {'advertisement': advertisement,
+                                   'success': True},
+                                  context_instance=RequestContext(request))
 
 
 def delete_advertisement(request):
@@ -909,8 +923,10 @@ def delete_advertisement(request):
         ad_id = request.GET.get('advertisement_id')
         advertisement = Advertisement.objects.get(id=ad_id)
         file_full_path = BASE + '/static/img/advertisement/' + str(ad_id) + '.png'
+        file_full_path_content = BASE + '/static/img/advertisement_content/' + str(ad_id) + '.png'
         try:
             os.remove(file_full_path)
+            os.remove(file_full_path_content)
         except:
             pass
         advertisement.delete()
