@@ -244,9 +244,9 @@ class CouponControl(models.Model):
     online_money_high = models.IntegerField(max_length=5, null=True, blank=True)
     online_active = models.BooleanField(default=False)
 
-    reg_money = models.IntegerField(max_length=5, null=True, blank=True)
+    reg_money = models.IntegerField(max_length=5, default=0)
 
-    invite_money = models.IntegerField(max_length=5, null=True, blank=True)
+    invite_money = models.IntegerField(max_length=5, default=0)
 
     def __unicode__(self):
         return str(self.id)

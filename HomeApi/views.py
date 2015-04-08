@@ -102,7 +102,10 @@ def register(req):
         body['phone'] = username
         body['private_token'] = token
         body['invite_code'] = invite_code
-        return HttpResponse(encodejson(1,body), content_type='application/json')
+        couponc = CouponControl.objects.all()[0]
+        if couponc.reg_money > 0:
+            create_new_coupon(couponc.reg_money, 4, newass)
+        return HttpResponse(encodejson(1, body), content_type='application/json')
     else:
         raise Http404
 
@@ -516,7 +519,11 @@ def get_invite_coupon(req):
                         body['msg'] = 'you have exchanged this invite code'
                         return HttpResponse(encodejson(6, body), content_type='application/json')
                     else:
-                        newc = create_new_coupon(5, 1, curuser)
+                        couponc = CouponControl.objects.all()[0]
+                        if couponc.invite_money <= 0:
+                            body['msg'] = 'invite coupon off'
+                            return HttpResponse(encodejson(1, body), content_type='application/json')
+                        newc = create_new_coupon(int(couponc.invite_money), 1, curuser)
                         if curuser.invite_str == '' or curuser.invite_str is None:
                             curuser.invite_str = invite_code
                         else:

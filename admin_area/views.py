@@ -796,7 +796,7 @@ def advertisement_manage(request):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
         user_admin = HomeAdmin.objects.get(username=request.session['username'])
-        items = Advertisement.objects.all(area=user_admin.area)
+        items = Advertisement.objects.filter(area=user_admin.area)
         return render_to_response('admin_area/advertisement_manage.html',
                                   {'items': items},
                                   context_instance=RequestContext(request))
