@@ -879,6 +879,14 @@ def create_pay_order(req):
             body['msg'] = 'server create order success, but not sure ping++ create success'
             body['charge_detail'] = res
             body['order_id'] = newid
+            couponc = CouponControl.objects.all()[0]
+            if couponc.online_active:
+                value = random.randint(couponc.online_money_low, couponc.online_money_high)
+                newcoupon = create_new_coupon(value, 2, curuser)
+                body['have_coupon'] = True
+                body['coupon_value'] = value
+            else:
+                body['have_coupon'] = False
             return HttpResponse(encodejson(1, body), content_type='application/json')
         else:
             body['msg'] = 'login first before other action'
