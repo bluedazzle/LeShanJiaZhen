@@ -8,21 +8,21 @@
  <div class="panel-body">
        <div class="col-lg-5 col-md-5 text-right">
             <h6>管理员名称:</h6>
-            <h6 style="margin-top: 6%">管理地区:</h6>
-            <h6 style="margin-top: 6%">联系电话:</h6>
-            <h6 style="margin-top: 6%">游戏管理权限:</h6>
-            <h6 style="margin-top: 6%">会员管理权限:</h6>
-            <h6 style="margin-top: 6%">维修基金管理权限:</h6>
-            <h6 style="margin-top: 6%">消息推送权限:</h6>
+            <h6 style="margin-top: 25px">管理地区:</h6>
+            <h6 style="margin-top: 25px">联系电话:</h6>
+            <h6 style="margin-top: 25px">游戏管理权限:</h6>
+            <h6 style="margin-top: 25px">会员管理权限:</h6>
+            <h6 style="margin-top: 25px">维修基金管理权限:</h6>
+            <h6 style="margin-top: 25px">消息推送权限:</h6>
         </div>
        <div class="col-lg-6 col-md-6" style="padding-left: 0">
           <form action="edit_admin" method="post" id="p_mes" enctype="multipart/form-data">
               {% csrf_token %}
             <input style="display: none" type="text" name="admin_id" value="{{ admin.id }}">
             <h6>{{ admin.nick }}</h6>
-            <h6 style="margin-top: 5%">{{ admin.area }}</h6>
-            <h6 style="margin-top: 5%">{{ admin.username }}</h6>
-            <label style="margin-top: 15px" class="checkbox" for="checkbox1">
+            <h6 style="margin-top: 26px">{{ admin.area }}</h6>
+            <h6 style="margin-top: 26px">{{ admin.username }}</h6>
+            <label style="margin-top: 13px" class="checkbox" for="checkbox1">
                   <input type="checkbox" name="manage_game" value={{ admin.manage_game }} id="checkbox1"
                          {% if admin.manage_game %}
                          checked="checked"
@@ -33,7 +33,7 @@
                       <span class="icon-checked"></span>
                   </span>
             </label>
-            <label style="margin-top: 16px" class="checkbox" for="checkbox2">
+            <label style="margin-top: 13px" class="checkbox" for="checkbox2">
                   <input type="checkbox" name="manage_check_vip" value={{ admin.manage_check_vip }} id="checkbox2"
                          {% if admin.manage_check_vip %}
                          checked="checked"
@@ -55,7 +55,7 @@
                       <span class="icon-checked"></span>
                   </span>
             </label>
-            <label style="margin-top: 3%" class="checkbox" for="checkbox4">
+            <label style="margin-top: 14px" class="checkbox" for="checkbox4">
                   <input type="checkbox" name="manage_send_message" value={{ admin.manage_send_message }} id="checkbox4"
                         {% if admin.manage_send_message %}
                          checked="checked"
