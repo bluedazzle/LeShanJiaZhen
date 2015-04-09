@@ -34,6 +34,6 @@ urlpatterns = patterns('',
     url(r'^js/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.JS_DIR}),
     url(r'^fonts/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.FONTS_DIR}),
     url(r'^upload/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.UP_DIR}),
-    url(r'^apk/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.FILE_DIR}),
+    url(r'^apk/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.APK_DIR}),
     url(r'^out_files/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.OUT_FILES_DIR}),
 )
