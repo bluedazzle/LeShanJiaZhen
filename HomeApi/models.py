@@ -442,7 +442,7 @@ class OrderGoods(models.Model):
 class OrderHomeItem(models.Model):
     item_name = models.CharField(max_length=50)
     create_time = models.DateTimeField(auto_now_add=True)
-    origin_item = models.ForeignKey(HomeItem, related_name='actitem')
+    origin_item = models.ForeignKey(HomeItem_P, related_name='actitem')
     belong = models.ForeignKey(Appointment, related_name='orderitem')
 
     def __unicode__(self):

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from views import *
+from HomeApi.message import *
 import xlwt
 import sys
 import HomeApi.views
@@ -42,6 +43,9 @@ def get_appointment(request):
                 appointment.process_by = user
                 appointment.save()
                 appointments = [appointment]
+                if appointment.associator:
+                    mes = ACCEPT_MES % str(appointment.order_id)
+                    create_new_message(mes, appointment.associator)
                 if send_get_message(appointments):
                     return HttpResponseRedirect('operate_new')
             except:
@@ -64,6 +68,9 @@ def get_appointment_all(request):
                 item.status = 2
                 item.process_by = user
                 item.save()
+                mes = ACCEPT_MES % str(item.order_id)
+                if item.associator:
+                    create_new_message(mes, item.associator)
             # try:
             #     send_get_message(appointments)
             # except:
@@ -92,6 +99,9 @@ def cancel_appointment_n(request):
                     print res
                 appointments = [appointment]
                 send_cancel_message(appointments)
+                if appointment.associator:
+                    mes = CANCEL_MES % str(appointment.order_id)
+                    create_new_message(mes, appointment.associator)
             except:
                 return HttpResponseRedirect('operate_new')
             return HttpResponseRedirect('operate_new')
@@ -119,6 +129,9 @@ def cancel_appointment_all_n(request):
                                                      'test',
                                                      appointment.chargeinfo.price)
                     print res
+                if appointment.associator:
+                    mes = CANCEL_MES % str(appointment.order_id)
+                    create_new_message(mes, appointment.associator)
             # try:
             #     send_cancel_message(appointments)
             # except:
@@ -146,6 +159,9 @@ def cancel_appointment_g(request):
                                                      appointment.chargeinfo.price)
                     print res
                 send_cancel_message([appointment])
+                if appointment.associator:
+                    mes = CANCEL_MES % str(appointment.order_id)
+                    create_new_message(mes, appointment.associator)
             except:
                 pass
             return HttpResponseRedirect('operate_get')
@@ -171,6 +187,10 @@ def cancel_appointment_all_g(request):
                                                      'test',
                                                      appointment.chargeinfo.price)
                     print res
+
+                if appointment.associator:
+                    mes = CANCEL_MES % str(appointment.order_id)
+                    create_new_message(mes, appointment.associator)
 
             try:
                 send_cancel_message(appointments)
