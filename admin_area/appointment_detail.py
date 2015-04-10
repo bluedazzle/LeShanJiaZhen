@@ -89,8 +89,9 @@ def cancel_appointment_n(request):
                 appointment = Appointment.objects.get(id=id, status=1)
                 appointment.status = 5
                 appointment.process_by = user
-                appointment.order_coupon.if_use = False
-                appointment.order_coupon.save()
+                if appointment.order_coupon:
+                    appointment.order_coupon.if_use = False
+                    appointment.order_coupon.save()
                 appointment.save()
                 if appointment.online_pay:
                     res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
@@ -98,7 +99,7 @@ def cancel_appointment_n(request):
                                                      appointment.chargeinfo.price)
                     print res
                 appointments = [appointment]
-                send_cancel_message(appointments)
+                # send_cancel_message(appointments)
                 if appointment.associator:
                     mes = CANCEL_MES % str(appointment.order_id)
                     create_new_message(mes, appointment.associator)
@@ -121,14 +122,18 @@ def cancel_appointment_all_n(request):
             for appointment in appointments:
                 appointment.status = 5
                 appointment.process_by = user
-                appointment.order_coupon.if_use = False
-                appointment.order_coupon.save()
+                if appointment.order_coupon:
+                    appointment.order_coupon.if_use = False
+                    appointment.order_coupon.save()
                 appointment.save()
                 if appointment.online_pay:
-                    res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
-                                                     'test',
-                                                     appointment.chargeinfo.price)
-                    print res
+                    try:
+                        res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
+                                                         'test',
+                                                         appointment.chargeinfo.price)
+                        print res
+                    except:
+                        print "failed" + str(appointment.order_id)
                 if appointment.associator:
                     mes = CANCEL_MES % str(appointment.order_id)
                     create_new_message(mes, appointment.associator)
@@ -147,18 +152,19 @@ def cancel_appointment_g(request):
             id = request.GET.get('id')
             user = HomeAdmin.objects.get(username=request.session['username'])
             try:
-                appointment = Appointment.objects.get(id=id, status=1)
+                appointment = Appointment.objects.get(id=id, status=2)
                 appointment.status = 5
                 appointment.process_by = user
-                appointment.order_coupon.if_use = False
-                appointment.order_coupon.save()
+                if appointment.order_coupon:
+                    appointment.order_coupon.if_use = False
+                    appointment.order_coupon.save()
                 appointment.save()
                 if appointment.online_pay:
                     res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
                                                      'test',
                                                      appointment.chargeinfo.price)
                     print res
-                send_cancel_message([appointment])
+                # send_cancel_message([appointment])
                 if appointment.associator:
                     mes = CANCEL_MES % str(appointment.order_id)
                     create_new_message(mes, appointment.associator)
@@ -179,23 +185,27 @@ def cancel_appointment_all_g(request):
             for appointment in appointments:
                 appointment.status = 5
                 appointment.process_by = user
-                appointment.order_coupon.if_use = False
-                appointment.order_coupon.save()
+                if appointment.order_coupon:
+                    appointment.order_coupon.if_use = False
+                    appointment.order_coupon.save()
                 appointment.save()
                 if appointment.online_pay:
-                    res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
-                                                     'test',
-                                                     appointment.chargeinfo.price)
-                    print res
+                    try:
+                        res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
+                                                         'test',
+                                                         appointment.chargeinfo.price)
+                        print res
+                    except:
+                        print "failed" + str(appointment.order_id)
 
                 if appointment.associator:
                     mes = CANCEL_MES % str(appointment.order_id)
                     create_new_message(mes, appointment.associator)
 
-            try:
-                send_cancel_message(appointments)
-            except:
-                pass
+            # try:
+            #     send_cancel_message(appointments)
+            # except:
+            #     pass
             return HttpResponseRedirect('operate_get')
         else:
             return HttpResponseRedirect('login_in')
