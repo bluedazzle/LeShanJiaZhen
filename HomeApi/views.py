@@ -1480,6 +1480,7 @@ def play_game(req):
         curuser.save()
     else:
         if curuser.game_times >= coupon_control.game_times:
+            body['msg'] = 'game times upbound'
             return HttpResponse(encodejson(9, body), content_type='application/json')
     newc = create_new_coupon(value, 3, curuser, 365, coupon_control.game_sign)
     curuser.game_times += 1
@@ -1612,7 +1613,10 @@ def create_new_coupon(value, ctype, own, expire=365, gamesign=''):
         have_count = Coupon.objects.filter(type=ctype).count()
     odate = datetime.date.today()
     odate = str(odate).replace('-', '')
-    newcou_id = '%s%i%05i' % (odate, ctype, have_count+1)
+    if gamesign != '':
+        newcou_id = '%s%s%i%05i' % (odate, gamesign[0:2], ctype, have_count+1)
+    else:
+        newcou_id = '%s%i%05i' % (odate, ctype, have_count+1)
     owntime = datetime.datetime.now()
     expire_day = datetime.timedelta(expire)
     deadline = owntime + expire_day

@@ -218,7 +218,7 @@ class Associator(AbstractBaseUser):
         app_label = 'HomeApi'
 
 class Coupon(models.Model):
-    cou_id = models.CharField(max_length=15, unique=True)
+    cou_id = models.CharField(max_length=18, unique=True)
     value = models.IntegerField(max_length=3)
     if_use = models.BooleanField(default=False)
     # 1为好友邀请，2为在线支付，3为游戏获取，4为注册，5为系统赠送
