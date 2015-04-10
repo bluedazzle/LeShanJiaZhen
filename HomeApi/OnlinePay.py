@@ -71,6 +71,8 @@ def charge_result(req):
         charge_id = notify['id']
         paid = bool(notify['paid'])
         online_charge = OnlineCharge.objects.get(pingpp_charge_id=charge_id)
+        online_charge.order_with.valid = True
+        online_charge.order_with.save()
         if paid:
             online_charge.paid = True
             online_charge.save()
