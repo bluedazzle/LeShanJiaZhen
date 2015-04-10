@@ -889,6 +889,8 @@ def create_pay_order(req):
             body['msg'] = 'server create order success, but not sure ping++ create success'
             body['charge_detail'] = res
             body['order_id'] = newid
+            newappoint.valid = False
+            newappoint.save()
             couponc = CouponControl.objects.all()[0]
             if couponc.online_active:
                 value = random.randint(couponc.online_money_low, couponc.online_money_high)
