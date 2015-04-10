@@ -18,6 +18,7 @@
        <div class="col-lg-5 col-md-5 text-right">
             <h6>维修基金金额（最高）:</h6>
             <h6 style="margin-top: 25px">维修基金金额（最低）:</h6>
+            <h6 style="margin-top: 27px">游戏次数:</h6>
             <h6 style="margin-top: 25px">赠送数量:</h6>
             <h6 style="margin-top: 25px">开始时间:</h6>
             <h6 style="margin-top: 25px">结束时间:</h6>
@@ -30,17 +31,23 @@
                 <input type="text" name="control_id" value="{{ item.id }}" style="display: none"/>
             {% endif %}
             <input type="text" class="form-control" id="money_high" name='money_high'
-                   placeholder="请输入金额" style="width: 150px;margin-top: 2px" onchange="finish_form()"
+                   placeholder="请输入金额" style="width: 150px;margin-top: 2px"
                    {% if item.game_money_high %}
                    value="{{ item.game_money_high }}"
                    {% endif %}
-                    onkeyup="onlyNumber(this)" onblur="onlyNumber(this)">
+                    onkeyup="onlyNumber(this)" onblur="onlyNumber(this), finish_form()">
             <input type="text" class="form-control" id="money_low" name='money_low'
-                   placeholder="请输入金额" style="width: 150px;margin-top: 10px" onchange="finish_form()"
+                   placeholder="请输入金额" style="width: 150px;margin-top: 10px"
                    {% if item.game_money_low %}
                    value="{{ item.game_money_low }}"
                    {% endif %}
-                    onkeyup="onlyNumber(this)" onblur="onlyNumber(this)">
+                    onkeyup="onlyNumber(this)" onblur="onlyNumber(this), finish_form()">
+            <input type="text" class="form-control" id="game_times" name='game_times'
+                   placeholder="请输入游戏次数" style="width: 150px;margin-top: 10px"
+                   {% if item.game_times %}
+                   value="{{ item.game_times }}"
+                   {% endif %}
+                    onkeyup="this.value=this.value.replace(/\D/g,''), finish_form()">
             <input type="text" class="form-control" id="origin_coupon_num" name='origin_coupon_num'
                    placeholder="请输入赠送数量" style="width: 150px;margin-top: 10px" onchange="finish_form()"
                    {% if item.game_coupon_num %}
@@ -77,13 +84,13 @@
     <script>
         $(document).ready(function(){
             if($('#money_high').val() && $('#money_low').val() && $('#origin_coupon_num').val()
-            && $('#start_date').val() && $('#end_date').val()){
+            && $('#start_date').val() && $('#end_date').val() && $('#game_times').val()){
                 $('#submit').removeClass('disabled');
             }
         });
         function finish_form(){
             if($('#money_high').val() && $('#money_low').val() && $('#origin_coupon_num').val()
-            && $('#start_date').val() && $('#end_date').val()){
+            && $('#start_date').val() && $('#end_date').val() && $('#game_times').val()){
                 $('#submit').removeClass('disabled');
             }
             else{
