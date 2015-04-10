@@ -22,4 +22,5 @@ urlpatterns = patterns('',
                        url('^edit_admin$', edit_admin),
                        url('^check_new_applications$', check_new_applications),
                        url('^change_password$', change_password),
+                       url('^feed_back$', feed_back),
                        )
