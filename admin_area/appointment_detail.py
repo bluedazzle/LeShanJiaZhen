@@ -3,7 +3,7 @@ from views import *
 from HomeApi.message import *
 import xlwt
 import sys
-import HomeApi.views
+from HomeApi.OnlinePay import *
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -94,7 +94,7 @@ def cancel_appointment_n(request):
                     appointment.order_coupon.save()
                 appointment.save()
                 if appointment.online_pay:
-                    res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
+                    res = refund_order(appointment.chargeinfo.pingpp_charge_id,
                                                      'test',
                                                      appointment.chargeinfo.price)
                     print res
@@ -128,7 +128,7 @@ def cancel_appointment_all_n(request):
                 appointment.save()
                 if appointment.online_pay:
                     try:
-                        res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
+                        res = refund_order(appointment.chargeinfo.pingpp_charge_id,
                                                          'test',
                                                          appointment.chargeinfo.price)
                         print res
@@ -160,7 +160,7 @@ def cancel_appointment_g(request):
                     appointment.order_coupon.save()
                 appointment.save()
                 if appointment.online_pay:
-                    res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
+                    res = refund_order(appointment.chargeinfo.pingpp_charge_id,
                                                      'test',
                                                      appointment.chargeinfo.price)
                     print res
@@ -191,7 +191,7 @@ def cancel_appointment_all_g(request):
                 appointment.save()
                 if appointment.online_pay:
                     try:
-                        res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
+                        res = refund_order(appointment.chargeinfo.pingpp_charge_id,
                                                          'test',
                                                          appointment.chargeinfo.price)
                         print res
