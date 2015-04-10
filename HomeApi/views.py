@@ -1437,6 +1437,11 @@ def check_game(req):
         return HttpResponse(encodejson(13, body), content_type='application/json')
     coupon_control = CouponControl.objects.all()[0]
     if coupon_control.game_active:
+        curuser = Associator.objects.get(username=username)
+        if curuser.game_str == coupon_control.game_sign and curuser.game_str >= coupon_control.game_times:
+            body['can_game'] = False
+        else:
+            body['can_game'] = True
         body['have_game'] = True
         body['msg'] = 'game status get success'
         return HttpResponse(encodejson(1, body), content_type='application/json')
@@ -1469,7 +1474,16 @@ def play_game(req):
         return HttpResponse(encodejson(7, body), content_type='application/json')
     value = random.randint(coupon_control.game_money_low, coupon_control.game_money_high)
     curuser = Associator.objects.get(username=username)
+    if curuser.game_str != coupon_control.game_sign:
+        curuser.game_str = coupon_control.game_sign
+        curuser.game_times = 0
+        curuser.save()
+    else:
+        if curuser.game_times >= coupon_control.game_times:
+            return HttpResponse(encodejson(9, body), content_type='application/json')
     newc = create_new_coupon(value, 3, curuser, 365, coupon_control.game_sign)
+    curuser.game_times += 1
+    curuser.save()
     body['msg'] = 'get coupon success'
     body['value'] = value
     body['cou_id'] = newc.cou_id
