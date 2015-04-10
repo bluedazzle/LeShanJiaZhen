@@ -440,9 +440,34 @@ def manage_calendar(request):
 
 def check_new_applications(request):
     if not request.session.get('a_username'):
-        return HttpResponseRedirect('a_username')
+        return HttpResponseRedirect('login_in')
     if request.method == 'GET':
         applications = Application.objects.all()
         if applications.count() == 0:
             return HttpResponse(json.dumps('None'))
         return HttpResponse(json.dumps(applications.count()))
+
+
+def change_password(request):
+    if not request.session.get('a_username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        return render_to_response('admin_all/change_password.html',
+                                  content_type=RequestContext(request))
+    if request.method == 'POST':
+        origin_password = request.POST.get('origin_password')
+        new_password = request.POST.get('new_password')
+        password_again = request.POST.get('password_again')
+        if origin_password and new_password and password_again and new_password == password_again:
+            user_master = HomeAdmin.objects.get(type=2, username=request.session['a_username'])
+            if user_master.check_password(new_password):
+                password = hashlib.md5(new_password).hexdigest()
+                user_master.password = password
+                user_master.save()
+                return render_to_response('admin_all/change_password.html',
+                                          {'success': 'T'})
+            else:
+                return render_to_response('admin_all/change_password.html',
+                                          {'success': 'F'})
+        else:
+            raise Http404

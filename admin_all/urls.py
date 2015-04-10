@@ -21,4 +21,5 @@ urlpatterns = patterns('',
                        url('^manage_calendar$', manage_calendar),
                        url('^edit_admin$', edit_admin),
                        url('^check_new_applications$', check_new_applications),
+                       url('^change_password$', change_password),
                        )

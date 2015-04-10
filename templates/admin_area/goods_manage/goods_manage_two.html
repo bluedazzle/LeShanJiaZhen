@@ -34,7 +34,7 @@
               <tr>
                   <td>{{ item.sort_id }}</td>
                   <td>
-                      <a href="?goods_p=1&goods_o=1">{{ item.item_name }}(点击查看)</a>
+                      <a href="?goods_p={{ goods_p.id }}&goods_o={{ item.id }}">{{ item.item_name }}(点击查看)</a>
                   </td>
                   <td style="max-width: 60px;padding-right:0">
                      <a role="button" href="edit_goods_o?item_id={{ item.id }}&item_p_id={{ goods_p.id }}" class="btn btn-sm btn-default">修改</a>

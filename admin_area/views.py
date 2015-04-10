@@ -1086,7 +1086,7 @@ def edit_program_p_detail(request):
         item_p_id = request.POST.get('item_p_id')
         item_sort_id = request.POST.get('sort_id')
         item_name = request.POST.get('item_name')
-        item_note = request.POST.get('item_note')
+        item_note = request.POST.get('note')
         type = request.POST.get('type')
         relate_goods_id = request.POST.get('relate_goods')
         user = HomeAdmin.objects.get(username=request.session['username'])
