@@ -610,6 +610,7 @@ def get_goods(req):
                     sitem['real_price'] = item.real_price
                     sitem['repair_price'] = item.repair_price
                     sitem['picture'] = item.picture
+                    sitem['icon'] = item.icon
                     sitem['brand'] = item.brand
                     sitem['plus'] = item.plus
                     s_itemlist.append(copy.copy(sitem))
@@ -678,6 +679,7 @@ def get_goods_detail(req):
             body['repair_price'] = goods.repair_price
             body['picture'] = goods.picture
             body['brand'] = goods.brand
+            body['icon'] = goods.icon
             body['plus'] = goods.plus
             body['msg'] = 'goods detail get success'
             return HttpResponse(encodejson(1, body), content_type='application/json')
@@ -714,7 +716,7 @@ def get_goods_o_item(req):
                     # sitem['origin_price'] = item.origin_price
                     # sitem['real_price'] = item.real_price
                     # sitem['repair_price'] = item.repair_price
-                    sitem['picture'] = item.picture
+                    sitem['picture'] = item.icon
                     # sitem['brand'] = item.brand
                     # sitem['plus'] = item.plus
                     s_itemlist.append(copy.copy(sitem))
@@ -800,6 +802,7 @@ def create_pay_order(req):
                                            repair_price=goods.repair_price,
                                            use_repair=userepair,
                                            picture=goods.picture,
+                                           icon=goods.icon,
                                            origin_item=goods,
                                            belong=newappoint)
                 newordergoods.save()
@@ -1159,17 +1162,19 @@ def get_recommmand_list(req):
         body['msg'] = 'no recommand list'
         body['recommand_list'] = []
         return HttpResponse(encodejson(1, body), content_type='application/json')
-    recommand_list = gooditems_all.order_by('-recommand')
+    recommand_list = gooditems_all.order_by('recommand')
     rec_list = []
     for item in recommand_list:
         rec = {}
+        if int(item.recommand) == 0:
+            continue
         rec['title'] = item.title
         rec['recommand'] = item.recommand
         rec['real_price'] = item.real_price
         rec['origin_price'] = item.origin_price
         rec['repair_price'] = item.repair_price
         rec['sid'] = item.id
-        rec['picture'] = item.picture
+        rec['picture'] = item.icon
         rec_list.append(copy.copy(rec))
     body['recommand_list'] = rec_list
     body['msg'] = 'recommand list get success'
@@ -1297,7 +1302,7 @@ def get_orders(req):
             order['coupon_value'] = itm.order_coupon.value
         order['if_appraise'] = itm.if_appraise
         if itm.if_appraise:
-            order['comment'] = itm.comment8
+            order['comment'] = itm.comment
             order['rate'] = itm.rate
             order['rb1'] = itm.rb1
             order['rb2'] = itm.rb2
@@ -1317,7 +1322,7 @@ def get_orders(req):
                     goods = {}
                     goods['title'] = item.title
                     goods['pid'] = item.origin_item.id
-                    goods['pic_url'] = item.origin_item.picture
+                    goods['pic_url'] = item.origin_item.icon
                     goods['real_price'] = item.real_price
                     goods['repair_price'] = item.repair_price
                     goods['use_repair'] = item.use_repair
@@ -1332,7 +1337,7 @@ def get_orders(req):
                 goods = {}
                 goods['title'] = item.title
                 goods['pid'] = item.origin_item.id
-                goods['pic_url'] = item.origin_item.picture
+                goods['pic_url'] = item.origin_item.icon
                 goods['real_price'] = item.real_price
                 goods['repair_price'] = item.repair_price
                 goods['use_repair'] = item.use_repair

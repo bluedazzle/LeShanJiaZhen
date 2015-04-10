@@ -189,6 +189,9 @@ class Associator(AbstractBaseUser):
     private_token = models.CharField(max_length=32, null=True, blank=True)
     reg_time = models.DateTimeField(auto_now_add=True)
     invite_str = models.CharField(max_length=1000, null=True, blank=True)
+    game_str = models.CharField(max_length=1000, null=True, blank=True)
+    game_times = models.IntegerField(max_length=10, default=0)
+
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['username']
@@ -239,6 +242,7 @@ class CouponControl(models.Model):
     game_current_num = models.IntegerField(max_length=10, null=True, blank=True)
     game_sign = models.CharField(max_length=6, null=True, blank=True)
     game_active = models.BooleanField(default=False)
+    game_times = models.IntegerField(max_length=10, default=3)
 
     online_money_low = models.IntegerField(max_length=5, null=True, blank=True)
     online_money_high = models.IntegerField(max_length=5, null=True, blank=True)
@@ -426,6 +430,7 @@ class OrderGoods(models.Model):
     made_in = models.CharField(max_length=20, null=True, blank=True)
     content = models.CharField(max_length=100, null=True, blank=True)
     plus = models.CharField(max_length=200, null=True, blank=True)
+    icon = models.CharField(max_length=100, null=True, blank=True)
     origin_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     real_price = models.DecimalField(max_digits=10, decimal_places=2)
     repair_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
