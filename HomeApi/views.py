@@ -8,6 +8,7 @@ import simplejson
 import datetime
 from PIL import Image
 from HomeApi.HomeAdminManager import *
+from HomeApi.message import *
 from HomeApi.OnlinePay import *
 from django.core.serializers import serialize, deserialize
 from django.utils.timezone import utc
@@ -105,6 +106,8 @@ def register(req):
         couponc = CouponControl.objects.all()[0]
         if couponc.reg_money > 0:
             create_new_coupon(couponc.reg_money, 4, newass)
+            mes = REG_MES % str(couponc.reg_money)
+            create_new_message(mes, newass)
         return HttpResponse(encodejson(1, body), content_type='application/json')
     else:
         raise Http404
@@ -514,6 +517,7 @@ def get_invite_coupon(req):
             else:
                 invite = Associator.objects.filter(invite_code=invite_code)
                 if invite.count() > 0:
+                    inv = invite[0]
                     exchanged_list = str(curuser.invite_str).split(',')
                     if invite_code in exchanged_list:
                         body['msg'] = 'you have exchanged this invite code'
@@ -535,6 +539,11 @@ def get_invite_coupon(req):
                         body['cou_id'] = newc.cou_id
                         body['deadline'] = datetime_to_timestamp(newc.deadline)
                         body['value'] = newc.value
+                        mes = IN_MES % str(couponc.invite_money)
+                        create_new_message(mes, curuser)
+                        create_new_coupon(int(couponc.invite_money), 1, inv)
+                        mes = INV_MES % str(couponc.invite_money)
+                        create_new_message(mes, inv)
                         return HttpResponse(encodejson(1, body), content_type='application/json')
                 else:
                     body['msg'] = 'no invite code info'
@@ -883,6 +892,8 @@ def create_pay_order(req):
             if couponc.online_active:
                 value = random.randint(couponc.online_money_low, couponc.online_money_high)
                 newcoupon = create_new_coupon(value, 2, curuser)
+                mes = PAY_MES % str(value)
+                create_new_message(mes, curuser)
                 body['have_coupon'] = True
                 body['coupon_value'] = value
             else:
@@ -1037,7 +1048,7 @@ def create_appointment(req):
         home_item_list = resjson['home_items']
         for item in home_item_list:
             hid = item['hid']
-            home_list = HomeItem.objects.filter(id=hid)
+            home_list = HomeItem_P.objects.filter(id=hid)
             if not home_list.exists():
                 body['msg'] = 'home item id:' + str(hid) + 'invalid'
                 newappoint.delete()
@@ -1328,15 +1339,15 @@ def get_orders(req):
         home_items = []
         for item in itm.orderitem.all():
             home_item = {}
-            myrecommand = item.origin_item.parent_item.recommand
+            myrecommand = item.origin_item.recommand
             if myrecommand is not None:
                 home_item['recommand'] = myrecommand.id
             else:
                 home_item['recommand'] = -1
             home_item['item_name'] = item.item_name
             home_item['hid'] = item.origin_item.id
-            home_item['note'] = item.origin_item.parent_item.note
-            home_item['pic_url'] = item.origin_item.parent_item.icon
+            home_item['note'] = item.origin_item.note
+            home_item['pic_url'] = item.origin_item.icon
             home_items.append(copy.copy(home_item))
         order['home_itmes'] = home_items
         order_items.append(copy.copy(order))
@@ -1457,6 +1468,8 @@ def play_game(req):
     body['deadline'] = datetime_to_timestamp(newc.deadline)
     coupon_control.game_current_num += 1
     coupon_control.save()
+    mes = GAME_MES % str(value)
+    create_new_message(mes, curuser)
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
