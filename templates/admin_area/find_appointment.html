@@ -60,6 +60,7 @@
     {% endif %}
    <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
     {% for item in items %}
+    {% if not item.online_pay or item.chargeinfo.paid %}
     <div class="panel" id="head{{ item.id }}">
        <div class="panel-heading" id="heading{{ item.id }}">
            订单号：{{ item.order_id }}
@@ -219,6 +220,7 @@
            {% endif %}
        })
    </script>
+     {% endif %}
     {% endfor %}
    </div>
 {% if items.has_previous or items.has_next %}

@@ -19,6 +19,7 @@
 
 <div class="col-md-10 col-lg-10" style="float: right;margin-top: 2%;margin-right: 10%">
 {% for item in items %}
+    {% if not item.online_pay or item.chargeinfo.paid %}
    <div class="panel panel-primary">
        <div class="panel-heading">
            订单号：{{ item.order_id }}
@@ -49,7 +50,7 @@
            <div class="col-md-12 col-lg-12">
                <strong style="color: #1abc9c">
                    金额：{{ item.amount }}元
-                   {% if item.chargeinfo.paid %}
+                   {% if item.online_pay %}
                        （在线支付)
                    {% endif %}
            </strong>
@@ -118,6 +119,7 @@
            </div>
        </div>
    </div>
+    {% endif %}
 {% endfor %}
 {% if items.has_previous or items.has_next %}
     {% if items.paginator.num_pages < 15 %}
