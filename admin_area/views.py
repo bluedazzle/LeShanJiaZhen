@@ -1400,7 +1400,7 @@ def edit_goods(request):
         repair_price = request.POST.get('repair_price')
         plus = request.POST.get('plus')
         goods_pic = request.FILES.get('goods_pic', None)
-        goods_icon = request.FILES.get('goods_icon', None)
+        goods_icon = request.FILES.get('icon_file', None)
         i_id = 1
         if title and sort_id and brand and material and origin_price and made_by and made_in and content:
             pass
@@ -1504,6 +1504,7 @@ def edit_goods(request):
             Image.open(goods_pic).save(file_full_path)
             goods_now.picture = '/img/goods_pics/'+file_name
             goods_now.save()
+
         if goods_icon != None:
             file_name = str(i_id) + str(int(time.time())) + '.png'
             file_full_path = BASE + '/static/img/goods_icons/' + file_name
@@ -1512,7 +1513,7 @@ def edit_goods(request):
                     os.remove(BASE + '/static/img/goods_icons/'+file_name)
                 except:
                     pass
-            Image.open(goods_pic).save(file_full_path)
+            Image.open(goods_icon).save(file_full_path)
             goods_now.icon = '/img/goods_icons/'+file_name
             goods_now.save()
 

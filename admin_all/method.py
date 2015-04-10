@@ -33,7 +33,7 @@ def out_appointment(request):
                 date_start = str(a_date_start)
                 date_end = str(a_date_end)
                 if date_start == date_end:
-                    if it_date == date_start:
+                    if it_date >= date_start:
                         appointments.append(item)
                 else:
                     if it_date >= date_start and it_date <= date_end:
