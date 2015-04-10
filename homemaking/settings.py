@@ -63,7 +63,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 DB_ENGINE = 'django.db.backends.postgresql_psycopg2'
-DB_NAME = 'LSHM'
+DB_NAME = 'homemaking'
 DB_USER = 'postgres'                      # Not used with sqlite3.
 DB_PASSWORD = 'GDBDYL886'                  # Not used with sqlite3.
 DB_HOST = 'localhost'                      # Set to empty string for localhost. Not used with sqlite3.

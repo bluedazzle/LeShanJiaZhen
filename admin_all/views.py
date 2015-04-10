@@ -471,3 +471,25 @@ def change_password(request):
                                           {'success': 'F'})
         else:
             raise Http404
+
+
+def feed_back(request):
+    if not request.session.get('a_username'):
+        return HttpResponseRedirect('login_in')
+    if request.method == 'GET':
+        page_num = request.GET.get('page')
+        feed_backs = Feedback.objects.order_by('-id').all()
+        count = feed_backs.count()
+        paginator = Paginator(feed_backs, 30)
+        try:
+            feed_backs = paginator.page(page_num)
+        except PageNotAnInteger:
+            feed_backs = paginator.page(1)
+        except EmptyPage:
+            feed_backs = paginator.page(paginator.num_pages)
+        except:
+            pass
+        return render_to_response('admin_all/feed_back.html',
+                                  {'feedbacks': feed_backs,
+                                   'count': count},
+                                  context_instance=RequestContext(request))
