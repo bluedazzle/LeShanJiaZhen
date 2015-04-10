@@ -65,16 +65,16 @@
                   <td style="max-width: 100px">{{ item.plus }}</td>
                   <td style="max-width: 80px;padding-right:0">
                      <a role="button" href="edit_goods?goods_id={{ item.id }}&goods_o_id={{ goods_o.id }}" class="btn btn-xs btn-default">修改</a>
-                     <button class="btn btn-xs btn-danger" onclick="">删除</button>
+                     <button class="btn btn-xs btn-danger" onclick="delete_goods('{{ item.id }}')">删除</button>
                   </td>
               </tr>
               {% endfor %}
            </tbody>
            <script>
-               function delete_item_detail(item_id, item_p_id){
+               function delete_goods(item_id){
                    r = confirm("确定删除该项目?");
                    if(r == true){
-                       window.location.href = "";
+                       window.location.href = "delete_goods?item_id=" + item_id;
                    }
                }
            </script>
