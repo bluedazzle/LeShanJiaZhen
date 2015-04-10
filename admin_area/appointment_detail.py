@@ -279,6 +279,7 @@ def out_appointment(request):
         start_time = datetime.datetime(*start_time[:6])
         if_appraise = request.POST.get('if_appraise')
         user = HomeAdmin.objects.get(username=request.session['username'])
+        file_name = u''
         if if_appraise:
             if end_time == start_time:
                 all_appointments = Appointment.objects.order_by('-id').filter(status=a_status,

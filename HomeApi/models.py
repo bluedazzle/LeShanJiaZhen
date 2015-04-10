@@ -303,7 +303,7 @@ class GoodsItem(models.Model):
     made_by = models.CharField(max_length=15, null=True, blank=True)
     made_in = models.CharField(max_length=20, null=True, blank=True)
     content = models.CharField(max_length=100, null=True, blank=True)
-    plus = models.CharField(max_length=200, null=True, blank=True)
+    plus = models.CharField(max_length=200, default='')
     origin_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     real_price = models.DecimalField(max_digits=10, decimal_places=2)
     repair_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
