@@ -21,6 +21,7 @@
             <h6 style="margin-top: 30px">说明:</h6>
             <h6 style="margin-top: 140px">附加属性（可选）:</h6>
             <h6 style="margin-top: 150px">商品图片:</h6>
+            <h6 style="margin-top: 300px;">商品图标:</h6>
         </div>
        <div class="col-lg-6 col-md-6" style="padding-top: 0.5%;padding-left: 0">
           <form action="edit_goods" method="post" id="p_mes" enctype="multipart/form-data">
@@ -71,6 +72,14 @@
                   </script>
               {% endif %}
             <p style="color: red" id="warning"></p>
+             <input type="file" name="icon_file" id="file1" multiple="multiple" style="margin-top:30px;line-height: 1;font-size: 16px;"/><br>
+            <p>请上传64*64的PNG图片</p>
+              {% if goods %}
+                   <img style="width: 50px;height: 50px;margin-left: 18%" src="{{ goods.icon }}" id="img1" >
+              {% else %}
+                 <img style="width: 50px;height: 50px;margin-left: 18%" src="" id="img1" >
+              {% endif %}
+            <p style="color: red" id="warning"></p>
           </form>
        </div>
 
@@ -111,6 +120,33 @@
         })
 	}
 });
+        $("#file1").change(function(){
+    var file1 = this.files[0];
+	var objUrl = getObjectURL(file1);
+	console.log("objUrl = "+objUrl) ;
+	if (objUrl) {
+		$("#img1").attr("src", objUrl);
+        $('#img1').load(function(){
+            var image = new Image();
+            image.src = $('#img1').attr('src');
+            var height = image.height;
+            var width = image.width;
+            var f = $('#img1').val();
+            if(!/(png|PNG)$/.test(file1.type)){
+                $('#submit').addClass('disabled');
+                $('#warning').text('图像格式不正确，请上传PNG图片');
+                return false
+            }
+            if(height==64&&width==64){
+                $('#submit').removeClass('disabled')
+            }
+            else{
+                $('#submit').addClass('disabled');
+                $('#warning').text('图片像素不正确，请使用64 x 64像素的图片')
+            }
+        })
+	}
+});
 //建立一個可存取到該file的url
 function getObjectURL(file) {
 	var url = null ;
@@ -126,7 +162,7 @@ function getObjectURL(file) {
         $('#submit').click(function(){
             if($('#item_name').val()&&$('#sort_id').val()&&$('#brand').val()
             &&$('#material')&&$('#origin_price')&&$('#made_by')&&$('#made_in')
-            &&$('#content')){
+            &&$('#content')&&$('#img0').attr('src')&&$('#img1').attr('src')){
                 $('#p_mes').submit();
             }
             else{

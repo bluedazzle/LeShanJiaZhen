@@ -308,6 +308,7 @@ class GoodsItem(models.Model):
     real_price = models.DecimalField(max_digits=10, decimal_places=2)
     repair_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     picture = models.CharField(max_length=100, null=True, blank=True)
+    icon = models.CharField(max_length=100, null=True, blank=True)
     selled = models.IntegerField(max_length=10, default=0)
     #推荐权重
     recommand = models.IntegerField(max_length=10, null=True, blank=True, default=0)

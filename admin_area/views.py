@@ -1399,7 +1399,8 @@ def edit_goods(request):
         content = request.POST.get('content')
         repair_price = request.POST.get('repair_price')
         plus = request.POST.get('plus')
-        goods_pic = request.FILES.get('goods_pic')
+        goods_pic = request.FILES.get('goods_pic', None)
+        goods_icon = request.FILES.get('goods_icon', None)
         i_id = 1
         if title and sort_id and brand and material and origin_price and made_by and made_in and content:
             pass
@@ -1491,8 +1492,8 @@ def edit_goods(request):
                                           context_instance=RequestContext(request))
             new_goods.save()
             i_id = new_goods.id
+        goods_now = GoodsItem.objects.get(id=i_id)
         if goods_pic != None:
-            goods_now = GoodsItem.objects.get(id=i_id)
             file_name = str(i_id) + str(int(time.time())) + '.png'
             file_full_path = BASE + '/static/img/goods_pics/' + file_name
             if goods_now.picture:
@@ -1502,6 +1503,17 @@ def edit_goods(request):
                     pass
             Image.open(goods_pic).save(file_full_path)
             goods_now.picture = '/img/goods_pics/'+file_name
+            goods_now.save()
+        if goods_icon != None:
+            file_name = str(i_id) + str(int(time.time())) + '.png'
+            file_full_path = BASE + '/static/img/goods_icons/' + file_name
+            if goods_now.icon:
+                try:
+                    os.remove(BASE + '/static/img/goods_icons/'+file_name)
+                except:
+                    pass
+            Image.open(goods_pic).save(file_full_path)
+            goods_now.icon = '/img/goods_icons/'+file_name
             goods_now.save()
 
         goods_p_id = goods_o[0].parent_item.id
@@ -1528,6 +1540,16 @@ def delete_goods(request):
                 p_id = goods_o[0].parent_item.id
                 goods_o[0].delete()
                 return HttpResponseRedirect('goods_manage?goods_p=' + str(p_id))
+        if item_id:
+            goods = GoodsItem.objects.filter(id=item_id)
+            if goods.count() != 0:
+                o_id = goods[0].parent_item.id
+                p_id = goods[0].parent_item.parent_item.id
+                goods[0].delete()
+                return HttpResponseRedirect('goods_manage?goods_p=' + str(p_id)
+                                            + '&goods_o=' + str(o_id))
+
+
 
 
 # 检查用户是否有相应的操作权限，并返回相应的GET请求
