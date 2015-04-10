@@ -883,10 +883,11 @@ def advertisement_edit(request):
         if advertisement_pic:
             if advertisement.photo:
                 try:
-                    os.remove(BASE + '/static/img/advertisement/' + str(ad_id) + '.png')
+                    os.remove(BASE + '/static/img/advertisement/' + str(ad_id) +
+                              str(int(time.time())) + '.png')
                 except:
                     pass
-            file_name = str(ad_id) + '.png'
+            file_name = str(ad_id) + str(int(time.time())) + '.png'
             file_full_path = BASE + '/static/img/advertisement/' + file_name
             Image.open(advertisement_pic).save(file_full_path)
             advertisement.photo = '/img/advertisement/'+file_name
@@ -898,10 +899,11 @@ def advertisement_edit(request):
         if content:
             if advertisement.content:
                 try:
-                    os.remove(BASE + '/static/img/advertisement_content/' + str(ad_id) + '.png')
+                    os.remove(BASE + '/static/img/advertisement_content/' + str(ad_id) +
+                              str(int(time.time())) + '.png')
                 except:
                     pass
-            file_name = str(ad_id) + '.png'
+            file_name = str(ad_id) + str(int(time.time())) + '.png'
             file_full_path_content = BASE + '/static/img/advertisement_content/' + file_name
             Image.open(content).save(file_full_path_content)
             advertisement.content = '/img/advertisement_content/'+file_name
@@ -922,8 +924,8 @@ def delete_advertisement(request):
     if request.method == 'GET':
         ad_id = request.GET.get('advertisement_id')
         advertisement = Advertisement.objects.get(id=ad_id)
-        file_full_path = BASE + '/static/img/advertisement/' + str(ad_id) + '.png'
-        file_full_path_content = BASE + '/static/img/advertisement_content/' + str(ad_id) + '.png'
+        file_full_path = BASE + '/static/img/advertisement/' + str(ad_id) + str(int(time.time())) + '.png'
+        file_full_path_content = BASE + '/static/img/advertisement_content/' + str(ad_id) + str(int(time.time())) + '.png'
         try:
             os.remove(file_full_path)
             os.remove(file_full_path_content)
@@ -990,7 +992,7 @@ def edit_program_detail(request):
                 i_id = new_item.id
             home_item = HomeItem.objects.get(id=i_id)
             if program_pic != None:
-                file_name = 'h_i' + str(i_id) + '.png'
+                file_name = 'h_i' + str(i_id) + str(int(time.time())) + '.png'
                 file_full_path = BASE + '/static/img/home_item_pic/' + file_name
                 if home_item.pic_url:
                     try:
@@ -1126,7 +1128,7 @@ def edit_program_p_detail(request):
         item_p = HomeItem_P.objects.get(id=i_id)
         if icon_file != None:
             print "OK"
-            file_name = 'p_g' + str(i_id) + '.png'
+            file_name = 'p_g' + str(i_id) + str(int(time.time())) + '.png'
             file_full_path = BASE + '/static/img/program_icons/' + file_name
             if item_p.icon:
                 try:
@@ -1248,7 +1250,7 @@ def edit_goods_p(request):
         if ad_file != None:
             print "OK"
             item_p = Goods_P.objects.get(id=i_id)
-            file_name = str(i_id) + '.png'
+            file_name = str(i_id) + str(int(time.time())) + '.png'
             file_full_path = BASE + '/static/img/goods_p_ads/' + file_name
             if item_p.advertisement:
                 try:
@@ -1271,7 +1273,7 @@ def delete_goods_p_ad(request):
         goods_p_id = request.GET.get('item_p')
         goods_p = Goods_P.objects.get(id=goods_p_id)
         try:
-            file_name = str(goods_p.id) + '.png'
+            file_name = str(goods_p.id) + str(int(time.time())) + '.png'
             file_full_path = BASE + '/static/img/goods_p_ads/' + file_name
             try:
                 os.remove(file_full_path)
@@ -1491,7 +1493,7 @@ def edit_goods(request):
             i_id = new_goods.id
         if goods_pic != None:
             goods_now = GoodsItem.objects.get(id=i_id)
-            file_name = str(i_id) + '.png'
+            file_name = str(i_id) + str(int(time.time())) + '.png'
             file_full_path = BASE + '/static/img/goods_pics/' + file_name
             if goods_now.picture:
                 try:
