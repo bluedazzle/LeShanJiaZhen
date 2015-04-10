@@ -230,6 +230,7 @@ def reset_password(req):
                 ver.delete()
                 body['username'] = phone
                 body['private_token'] = newtoken
+                body['invite_code'] = user.invite_code
                 body['msg'] = 'reset password success'
                 return HttpResponse(encodejson(1, body), content_type='application/json')
             else:
