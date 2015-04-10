@@ -19,7 +19,6 @@
 
 <div class="col-md-10 col-lg-10" style="float: right;margin-top: 2%;margin-right: 10%">
 {% for item in items %}
-    {% if not item.online_pay or item.chargeinfo.paid %}
    <div class="panel panel-primary">
        <div class="panel-heading">
            订单号：{{ item.order_id }}
@@ -44,7 +43,9 @@
                    <strong style="color: #27ad60">(有照片)</strong>
                   {% endif %}
                   {% if item.use_coupon %}
-                      <strong style="color: #27ad60">(维修基金:{{ item.order_coupon.value }}元)</strong>
+                      <span style="color: #1abc9c">
+                          (维修基金:<strong style="color: red">{{ item.order_coupon.value }}元</strong>)
+                      </span>
                    {% endif %}
            </div>
            <div class="col-md-12 col-lg-12">
@@ -66,7 +67,9 @@
                    <strong style="color: #27ad60">(有照片)</strong>
                   {% endif %}
                   {% if item.use_coupon %}
-                      <strong style="color: #27ad60">(维修基金:{{ item.order_coupon.value }}元)</strong>
+                      <span style="color: #1abc9c">
+                          (维修基金:<strong style="color: red">{{ item.order_coupon.value }}元</strong>)
+                      </span>
                    {% endif %}
            </div>
            {% endif %}
@@ -119,7 +122,6 @@
            </div>
        </div>
    </div>
-    {% endif %}
 {% endfor %}
 {% if items.has_previous or items.has_next %}
     {% if items.paginator.num_pages < 15 %}
