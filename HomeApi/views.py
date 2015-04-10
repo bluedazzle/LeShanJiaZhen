@@ -588,14 +588,14 @@ def get_goods(req):
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         goods_id = resjson['pid']
-        goods_id_list = Goods_P.objects.filter(id=goods_id)
+        goods_id_list = Goods_P.objects.filter(id=goods_id).order_by('sort_id')
         if goods_id_list.count() > 0:
             goodpitem = goods_id_list[0]
-            goods_o_list = Goods_O.objects.filter(parent_item=goodpitem)
+            goods_o_list = Goods_O.objects.filter(parent_item=goodpitem).order_by('sort_id')
             goodslist = []
             for itm in goods_o_list:
                 oitem= {}
-                itemlist = GoodsItem.objects.filter(parent_item=itm)
+                itemlist = GoodsItem.objects.filter(parent_item=itm).order_by('sort_id')
                 s_itemlist = []
                 for item in itemlist:
                     sitem = {}
@@ -637,7 +637,7 @@ def get_goods_p_item(req):
         block_list = Block.objects.filter(city_num=city_num)
         if block_list.count() > 0:
             block = block_list[0]
-            goods_p_list = Goods_P.objects.filter(area=block)
+            goods_p_list = Goods_P.objects.filter(area=block).order_by('sort_id')
             goodslist = []
             for itm in goods_p_list:
                 goodsp={}
@@ -663,7 +663,7 @@ def get_goods_detail(req):
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         sid = resjson['sid']
-        goods_list = GoodsItem.objects.filter(id=sid)
+        goods_list = GoodsItem.objects.filter(id=sid).order_by('sort_id')
         if goods_list.count() > 0:
             goods = goods_list[0]
             body['title'] = goods.title
@@ -693,14 +693,14 @@ def get_goods_o_item(req):
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         goods_id = resjson['pid']
-        goods_id_list = Goods_P.objects.filter(id=goods_id)
+        goods_id_list = Goods_P.objects.filter(id=goods_id).order_by('sort_id')
         if goods_id_list.count() > 0:
             goodpitem = goods_id_list[0]
-            goods_o_list = Goods_O.objects.filter(parent_item=goodpitem)
+            goods_o_list = Goods_O.objects.filter(parent_item=goodpitem).order_by('sort_id')
             goodslist = []
             for itm in goods_o_list:
                 oitem= {}
-                itemlist = GoodsItem.objects.filter(parent_item=itm)
+                itemlist = GoodsItem.objects.filter(parent_item=itm).order_by('sort_id')
                 s_itemlist = []
                 for item in itemlist:
                     sitem = {}
@@ -1082,7 +1082,7 @@ def get_home_item_p(req):
         body['msg'] = 'invalid city number'
         return HttpResponse(encodejson(7, body), content_type='application/json')
     block = Block.objects.get(city_num=city_num)
-    homeitemp_list = HomeItem_P.objects.filter(area=block)
+    homeitemp_list = HomeItem_P.objects.filter(area=block).order_by('sort_id')
     home_items_list = []
     for itm in homeitemp_list:
         homeitem = {}
@@ -1115,7 +1115,7 @@ def get_home_item(req):
         body['msg'] = 'invalid pid'
         return HttpResponse(encodejson(7, body), content_type='application/json')
     pitem = pitems[0]
-    homeitem_list = HomeItem.objects.filter(parent_item=pitem)
+    homeitem_list = HomeItem.objects.filter(parent_item=pitem).order_by('sort_id')
     home_list=[]
     for itm in homeitem_list:
         homeitem = {}
