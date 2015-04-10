@@ -43,15 +43,15 @@
                   {% if item.photo1 %}
                    <strong style="color: #27ad60">(有照片)</strong>
                   {% endif %}
+                  {% if item.use_coupon %}
+                      <strong style="color: #27ad60">(维修基金:{{ item.order_coupon.value }}元)</strong>
+                   {% endif %}
            </div>
            <div class="col-md-12 col-lg-12">
                <strong style="color: #1abc9c">
                    金额：{{ item.amount }}元
                    {% if item.chargeinfo.paid %}
                        （在线支付)
-                   {% endif %}
-                   {% if item.use_coupon %}
-                        (维修基金，{{ item.order_coupon.value }}元)
                    {% endif %}
            </strong>
 
@@ -65,6 +65,9 @@
                   {% if item.photo1 %}
                    <strong style="color: #27ad60">(有照片)</strong>
                   {% endif %}
+                  {% if item.use_coupon %}
+                      <strong style="color: #27ad60">(维修基金:{{ item.order_coupon.value }}元)</strong>
+                   {% endif %}
                </div>
            {% endif %}
            <div class="col-md-12 col-lg-12">
