@@ -60,8 +60,8 @@
     {% endif %}
    <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
     {% for item in items %}
-    <div class="panel panel-primary" id="head{{ item.id }}">
-       <div class="panel-heading">
+    <div class="panel" id="head{{ item.id }}">
+       <div class="panel-heading" id="heading{{ item.id }}">
            订单号：{{ item.order_id }}
            <span style="margin-left: 5%">联系方式：
                    {{ item.order_phone }}
@@ -73,10 +73,12 @@
             <div class="col-md-12 col-lg-12">状态：未接受</div>
         {% elif item.status == 2 %}
             <div class="col-md-12 col-lg-12">状态：已接受</div>
-        {% elif item.status == 3 %}
-            <div class="col-md-12 col-lg-12">状态：已完成</div>
         {% elif item.status == 4 %}
+            <div class="col-md-12 col-lg-12">状态：已完成</div>
+        {% elif item.status == 5 %}
             <div class="col-md-12 col-lg-12">状态：已取消</div>
+        {% elif item.status == 6 %}
+            <div class="col-md-12 col-lg-12">状态：已评价</div>
         {% endif %}
            <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
            <div class="col-md-12 col-lg-12">下单时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
@@ -129,7 +131,36 @@
            <div class="col-md-12 col-lg-12">
                上门时间：{{ item.service_time }}
            </div>
-
+           {% if item.status == 6 %}
+           <div class="col-md-6 col-lg-6">
+               <p id="rates{{ item.id }}">评价：</p>
+               <p>评价选项：
+                   {% if item.rb1 %}
+                       上门及时&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb2 %}
+                       认真仔细&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb3 %}
+                       技术专业&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb4 %}
+                       收费公道&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb5 %}
+                       维修快速&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb6 %}
+                       态度良好&nbsp;&nbsp;
+                   {% endif %}
+               </p>
+           </div>
+           <script>
+                for(var i=1;i<={{ item.rate }};i++){
+                   $('#rates{{ item.id }}').append("<span class='glyphicon glyphicon-star' style='color:#27ad60'></span>")
+               }
+           </script>
+           {% endif %}
            <div class="col-md-12 col-lg-12">
                {% if item.photo1 or item.photo2 or item.photo3 or item.photo4 %}
                    <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
@@ -172,10 +203,14 @@
                $('#head{{ item.id }}').addClass('panel-primary');
            {% elif item.status == 2 %}
                $('#head{{ item.id }}').addClass('panel-success');
-           {% elif item.status == 3 %}
-               $('#head{{ item.id }}').addClass('panel-success');
            {% elif item.status == 4 %}
+               $('#head{{ item.id }}').addClass('panel-success');
+               $('#heading{{ item.id }}').css({'background-color': '#1abc9c', 'color': '#ffffff'});
+           {% elif item.status == 5 %}
                $('#head{{ item.id }}').addClass('panel-default');
+           {% elif item.status == 6 %}
+               $('#head{{ item.id }}').addClass('panel-success');
+               $('#heading{{ item.id }}').css({'background-color': '#1abc9c', 'color': '#ffffff'});
            {% endif %}
        })
    </script>

@@ -182,7 +182,7 @@ def create_appointments_appraise(request):
         for i in range(0, 100):
             new_appointment = Appointment()
             new_appointment.order_id = str(int(time.time())) + str(i)
-            new_appointment.status = 3
+            new_appointment.status = 6
             new_appointment.address = u"科研楼B区258"
             new_appointment.name = u"张全蛋"
             new_appointment.area = Block.objects.get(city_num='511100')
