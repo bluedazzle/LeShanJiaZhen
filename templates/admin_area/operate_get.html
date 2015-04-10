@@ -10,6 +10,17 @@
    一键完成所有订单
   </button>
 </div>
+<div class="col-md-12 col-lg-12" style="padding-left: 10%;margin-top: 1%">
+  {% if type_name %}
+      共有{{ type_count }}个{{ type_name }}订单
+  {% endif %}
+  <a role="button" class="btn btn-large btn-success" style="float: right;margin-right: 3%" href="operate_get?order_type=2">
+   安装维修订单
+  </a>
+  <a role="button" class="btn btn-large btn-success" style="float: right;margin-right: 3%" href="operate_get?order_type=1">
+   商品购买订单
+  </a>
+</div>
     {% else %}
 <div class="col-md-12 col-lg-12" style="padding-right: 10%;padding-left: 10%">
    <h6 style="margin-left: 36%">暂时没有接受的订单</h6>
@@ -147,17 +158,17 @@
       <div class="pagination pagination-success">
           <ul>
               {% if items.has_previous %}
-            <li><a class="btn btn-info previous" href="?page={{ items.previous_page_number }}">上一页</a></li>
+            <li><a class="btn btn-info previous" href="?page={{ items.previous_page_number }}&order_type={{ order_type }}">上一页</a></li>
              {% endif %}
              {% for page in items.paginator.page_range %}
                {% if page == items.number %}
-            <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+            <li class="active"><a href="?page={{ page }}&order_type={{ order_type }}">{{ page }}</a></li>
                {% else %}
-            <li><a href="?page={{ page }}">{{ page }}</a></li>
+            <li><a href="?page={{ page }}&order_type={{ order_type }}">{{ page }}</a></li>
                {% endif %}
             {% endfor %}
             {% if items.has_next %}
-             <li><a class="btn btn-info next" href="?page={{ items.next_page_number }}">下一页</a></li>
+             <li><a class="btn btn-info next" href="?page={{ items.next_page_number }}&order_type={{ order_type }}">下一页</a></li>
 
             {% endif %}
           </ul>
@@ -166,7 +177,7 @@
      {% else %}
   <div class="text-center">
      {% if items.has_previous %}
-         <a role="button" class="btn btn-success" href="?page={{ items.previous_page_number }}">上一页</a>
+         <a role="button" class="btn btn-success" href="?page={{ items.previous_page_number }}&order_type={{ order_type }}">上一页</a>
      {% else %}
          <button class="btn btn-success" disabled="disabled">上一页</button>
      {% endif %}
@@ -182,11 +193,11 @@
      <script>
          $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
          function turn_page(page_num){
-             window.location.href = "operate_get?page=" + page_num;
+             window.location.href = "operate_get?page=" + page_num + "&order_type={{ order_type }}";
          }
      </script>
      {% if items.has_next %}
-         <a role="button" class="btn btn-success" href="?page={{ items.next_page_number }}">下一页</a>
+         <a role="button" class="btn btn-success" href="?page={{ items.next_page_number }}&order_type={{ order_type }}">下一页</a>
      {% else %}
          <button class="btn btn-success" disabled="disabled">下一页</button>
      {% endif %}

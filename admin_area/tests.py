@@ -123,9 +123,9 @@ def create_order_goods(new_appointment):
 
 def create_order_home_item(new_appointment):
     order_homeitem_new = OrderHomeItem()
-    home_items = HomeItem.objects.all()
+    home_items = HomeItem_P.objects.all()
     home_items_flag = random.randint(0, home_items.count()-1)
-    home_item_origin = home_items[home_items_flag]
+    home_item_origin = home_items[1]
     order_homeitem_new.item_name = home_item_origin.item_name
     order_homeitem_new.origin_item = home_item_origin
     order_homeitem_new.belong = new_appointment

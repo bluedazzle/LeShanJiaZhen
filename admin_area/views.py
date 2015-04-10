@@ -223,24 +223,47 @@ def operate_get(request):
             return HttpResponseRedirect('login_in')
         username = request.session['username']
         user = HomeAdmin.objects.get(username=username)
+        order_type = request.GET.get('order_type')
+        type_name = False
+        type_count = False
         appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=2)
         count = appointments.count()
-        # appointments = []
-        # for i in range(0, 10):
-        #     for item in appointments:
-        #         appointments.append(item)
 
-        paginator = Paginator(appointments, 10)
+        if order_type:
+            appointments_return = []
+            for appointment in appointments:
+                if appointment.order_type == int(order_type):
+                    appointments_return.append(appointment)
+            type_count = len(appointments_return)
+            if order_type == '1':
+                type_name = "安装维修订单"
+            elif order_type == '2':
+                type_name = "商品购买订单"
+        else:
+            appointments_return = appointments
+
+        paginator = Paginator(appointments_return, 10)
         try:
             page_num = request.GET.get('page')
-            appointments = paginator.page(page_num)
+            appointments_return = paginator.page(page_num)
         except PageNotAnInteger:
-            appointments = paginator.page(1)
+            appointments_return = paginator.page(1)
         except EmptyPage:
-            appointments = paginator.page(paginator.num_pages)
+            appointments_return = paginator.page(paginator.num_pages)
         except:
             pass
-        return render_to_response('admin_area/operate_get.html', {'items': appointments, 'count': count})
+        if order_type:
+            content = {'items': appointments_return,
+                       'count': count,
+                       'type_name': type_name,
+                       'type_count': type_count,
+                       'order_type': order_type}
+        else:
+            content = {'items': appointments_return,
+                       'count': count,
+                       'type_name': type_name}
+        return render_to_response('admin_area/operate_get.html',
+                                  content)
 
 
 def operate_finish(request):
