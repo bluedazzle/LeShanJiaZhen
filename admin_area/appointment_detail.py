@@ -86,7 +86,7 @@ def cancel_appointment_n(request):
             user = HomeAdmin.objects.get(username=request.session['username'])
             try:
                 appointment = Appointment.objects.get(id=id, status=1)
-                appointment.status = 4
+                appointment.status = 5
                 appointment.process_by = user
                 appointment.save()
                 appointments = [appointment]
@@ -111,7 +111,7 @@ def cancel_appointment_all_n(request):
                 return HttpResponseRedirect('operate_get')
 
             for item in appointments:
-                item.status = 4
+                item.status = 5
                 item.area = user.area
                 item.save()
                 if item.associator:
@@ -133,7 +133,7 @@ def cancel_appointment_g(request):
             user = HomeAdmin.objects.get(username=request.session['username'])
             try:
                 appointment = Appointment.objects.get(id=id, status=2)
-                appointment.status = 4
+                appointment.status = 5
                 appointment.process_by = user
                 appointment.save()
                 send_cancel_message([appointment])
@@ -155,7 +155,7 @@ def cancel_appointment_all_g(request):
                 return HttpResponseRedirect('operate_get')
 
             for item in appointments:
-                item.status = 4
+                item.status = 5
                 item.process_by = user
                 item.save()
                 if item.associator:
@@ -178,7 +178,7 @@ def finish_appointment(request):
             id = request.GET.get('id')
             try:
                 appointment = Appointment.objects.get(id=id, status=2)
-                appointment.status = 3
+                appointment.status = 4
                 appointment.process_by = user
                 appointment.save()
             except:
@@ -215,7 +215,7 @@ def finish_appointment_all(request):
                 return HttpResponseRedirect('operate_get')
 
             for item in appointments:
-                item.status = 3
+                item.status = 4
                 item.process_by = user
                 item.save()
             return HttpResponseRedirect('operate_get')
@@ -266,22 +266,22 @@ def out_appointment(request):
         print all_appointments.count()
         print start_time
         print end_time
-        if a_status == '3':
+        if a_status == '4':
             if a_date_start == '2000-01-01' and a_date_end == '2999-11-11':
-                if if_appraise:
-                    file_name = user.area.area_name + unicode("所有评价的订单", 'utf-8')
-                else:
-                    file_name = user.area.area_name + unicode("所有完成的订单", 'utf-8')
+                file_name = user.area.area_name + unicode("所有完成的订单", 'utf-8')
             else:
-                if if_appraise:
-                    file_name = user.area.area_name + a_date_start + unicode("到", 'utf-8') + a_date_end + unicode("评价的订单", 'utf-8')
-                else:
-                    file_name = user.area.area_name + a_date_start + unicode("到", 'utf-8') + a_date_end + unicode("完成的订单", 'utf-8')
-        else:
+                file_name = user.area.area_name + a_date_start + unicode("到", 'utf-8') + a_date_end + unicode("完成的订单", 'utf-8')
+        elif a_status == '5':
             if a_date_start == '2000-01-01' and a_date_end == '2999-11-11':
                 file_name = user.area.area_name + unicode("所有取消的订单", 'utf-8')
             else:
                 file_name = user.area.area_name + a_date_start + unicode("到", 'utf-8') + a_date_end + unicode("取消的订单", 'utf-8')
+        elif a_status == '6':
+            if a_date_start == '2000-01-01' and a_date_end == '2999-11-11':
+                file_name = user.area.area_name + unicode("所有已评价的订单", 'utf-8')
+            else:
+                file_name = user.area.area_name + a_date_start + unicode("到", 'utf-8') + a_date_end + unicode("已评价订单", 'utf-8')
+
         print file_name
         req = out_excel(all_appointments, file_name)
         if req:
@@ -322,10 +322,15 @@ def out_excel(appointments, file_name):
             status_text = u"未接受"
         elif item.status == 2:
             status_text = u"已接受"
-        elif item.status == 3:
+        elif item.status == 4:
             status_text = u"已完成"
-        else:
+        elif item.status == 5:
             status_text = u"已取消"
+        elif item.status == 6:
+            status_text = u"已评价"
+        else:
+            status_text = u"未知"
+
         ws.write(i, 6, status_text, style0)
         ws.write(i, 7, item.area.area_name)
         if item.process_by:

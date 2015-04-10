@@ -4,8 +4,9 @@
  <div class="panel-body">
        <div class="col-lg-4 col-md-4 text-right">
             <h6>项目名称:</h6>
-            <h6 style="margin-top: 38px;">排序ID:</h6>
-            <h6 style="margin-top: 38px;">(可选)项目图标:</h6>
+            <h6 style="margin-top: 38px;">排序ID：</h6>
+            <h6 style="margin-top: 38px;">说明：</h6>
+            <h6 style="margin-top: 38px;">(可选)项目图标：</h6>
             <h6 style="margin-top: 180px;">商品关联：</h6>
         </div>
        <div class="col-lg-6 col-md-6" style="padding-top: 0.5%;padding-left: 0">
@@ -16,12 +17,14 @@
               {% endif %}
             <input style="display: none" type="text" name="type" value="{{ type }}">
             <input type="text" class="form-control" id="item_name" name='item_name'
-                   placeholder="请输入项目名称" style="width: 300px;margin-top: 0.5%" value="{{ item_p.item_name }}">
+                   placeholder="请输入项目名称" style="width: 300px;margin-top: 2px" value="{{ item_p.item_name }}">
             <span id="sort_id_have" style="position: absolute;z-index: 99;margin-left: 45%;margin-top: 25px;font-size:14px;color: red"></span>
             <input type="text" class="form-control" id="sort_id" name='sort_id'
-                   placeholder="请输入排序ID" style="width: 300px;margin-top: 3%" value="{{ item_p.sort_id }}"
+                   placeholder="请输入排序ID" style="width: 300px;margin-top: 25px" value="{{ item_p.sort_id }}"
                     onkeyup="this.value=this.value.replace(/\D/g,''), check_item_p_sort_id()">
-            <input type="file" name="icon_file" id="file0" multiple="multiple" style="margin-top:5%;line-height: 1;font-size: 16px;"/><br>
+            <input type="text" class="form-control" id="note" name='note'
+                   placeholder="请输入项目名称" style="width: 300px;margin-top: 23px" value="{{ item_p.note }}">
+            <input type="file" name="icon_file" id="file0" multiple="multiple" style="margin-top:30px;line-height: 1;font-size: 16px;"/><br>
             <p>请上传64*64的PNG图片</p>
               {% if item_p %}
                 {% if item_p.icon %}
@@ -127,7 +130,7 @@
 	        }
         });
         $('#submit').click(function(){
-            if($('#item_name').val()&&$('#sort_id').val()){
+            if($('#item_name').val()&&$('#sort_id').val()&&$('#note').val()){
                 $('#p_mes').submit();
             }
             else{

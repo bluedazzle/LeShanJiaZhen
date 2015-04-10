@@ -17,11 +17,11 @@
  <div class="panel-body">
        <div class="col-lg-5 col-md-5 text-right">
             <h6>维修基金金额（最高）:</h6>
-            <h6 style="margin-top: 6%">维修基金金额（最低）:</h6>
-            <h6 style="margin-top: 6%">赠送数量:</h6>
-            <h6 style="margin-top: 6%">开始时间:</h6>
-            <h6 style="margin-top: 6%">结束时间:</h6>
-            <h6 style="margin-top: 6%">游戏状态:</h6>
+            <h6 style="margin-top: 25px">维修基金金额（最低）:</h6>
+            <h6 style="margin-top: 25px">赠送数量:</h6>
+            <h6 style="margin-top: 25px">开始时间:</h6>
+            <h6 style="margin-top: 25px">结束时间:</h6>
+            <h6 style="margin-top: 25px">游戏状态:</h6>
         </div>
        <div class="col-lg-5 col-md-5" style="padding-top: 0.5%;padding-left: 0">
           <form action="set_game" method="post" id="p_mes" enctype="multipart/form-data">
@@ -30,36 +30,36 @@
                 <input type="text" name="control_id" value="{{ item.id }}" style="display: none"/>
             {% endif %}
             <input type="text" class="form-control" id="money_high" name='money_high'
-                   placeholder="请输入金额" style="width: 150px;margin-top: 0.5%" onchange="finish_form()"
+                   placeholder="请输入金额" style="width: 150px;margin-top: 2px" onchange="finish_form()"
                    {% if item.game_money_high %}
                    value="{{ item.game_money_high }}"
                    {% endif %}
                     onkeyup="onlyNumber(this)" onblur="onlyNumber(this)">
             <input type="text" class="form-control" id="money_low" name='money_low'
-                   placeholder="请输入金额" style="width: 150px;margin-top: 3%" onchange="finish_form()"
+                   placeholder="请输入金额" style="width: 150px;margin-top: 10px" onchange="finish_form()"
                    {% if item.game_money_low %}
                    value="{{ item.game_money_low }}"
                    {% endif %}
                     onkeyup="onlyNumber(this)" onblur="onlyNumber(this)">
             <input type="text" class="form-control" id="origin_coupon_num" name='origin_coupon_num'
-                   placeholder="请输入赠送数量" style="width: 150px;margin-top: 3%" onchange="finish_form()"
+                   placeholder="请输入赠送数量" style="width: 150px;margin-top: 10px" onchange="finish_form()"
                    {% if item.game_coupon_num %}
                    value="{{ item.game_coupon_num }}"
                    {% endif %}
                     onkeyup="this.value=this.value.replace(/\D/g,'')">
-            <input id="start_date" name="start_date" type="text" class="form-control" style="margin-top: 3%;width: 150px;color: #1abc9c;"
+            <input id="start_date" name="start_date" type="text" class="form-control" style="margin-top: 10px;width: 150px;color: #1abc9c;"
                 onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" onchange="finish_form()"
                    {% if item.game_start_time %}
                 value="{{ item.game_start_time|date:'Y-m-d' }}"
                     {% endif %}
                        />
-            <input id="end_date" name="end_date" type="text" class="form-control" style="margin-top: 3%;width: 150px;color: #1abc9c"
+            <input id="end_date" name="end_date" type="text" class="form-control" style="margin-top: 10px;width: 150px;color: #1abc9c"
                 onclick="fPopCalendar(event,this,this)" onfocus="this.select()" readonly="readonly" onchange="finish_form()"
                    {% if item.game_end_time %}
                 value="{{ item.game_end_time|date:'Y-m-d' }}"
                     {% endif %}
                        />
-            <h6 style="margin-top: 3.8%">
+            <h6 style="margin-top: 12px">
                 {% if item.game_active %}
                     <span style="color: #1abc9c">开启</span>
                     <a role="button" href="set_game?close_game=True&control_id={{ item.id }}" class="btn btn-danger btn-sm" style="margin-left: 5%">结束活动</a>

@@ -250,7 +250,7 @@ def operate_finish(request):
     if request.method == 'GET':
         username = request.session['username']
         user = HomeAdmin.objects.get(username=username)
-        all_appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=3)
+        all_appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=4)
         page_num = request.GET.get('page')
         date_start = request.GET.get('date_start')
         date_end = request.GET.get('date_end')
@@ -364,7 +364,7 @@ def operate_appraise(request):
     if request.method == 'GET':
         username = request.session['username']
         user = HomeAdmin.objects.get(username=username)
-        all_appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=3, if_appraise=True)
+        all_appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=6, if_appraise=True)
         page_num = request.GET.get('page')
         date_start = request.GET.get('date_start')
         date_end = request.GET.get('date_end')
@@ -430,7 +430,7 @@ def operate_cancel(request):
     if request.method == 'GET':
         username = request.session['username']
         user = HomeAdmin.objects.get(username=username)
-        all_appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=4)
+        all_appointments = Appointment.objects.order_by('-id').filter(area=user.area, status=5)
         page_num = request.GET.get('page')
         date_start = request.GET.get('date_start')
         date_end = request.GET.get('date_end')
@@ -1084,6 +1084,7 @@ def edit_program_p_detail(request):
         item_p_id = request.POST.get('item_p_id')
         item_sort_id = request.POST.get('sort_id')
         item_name = request.POST.get('item_name')
+        item_note = request.POST.get('item_note')
         type = request.POST.get('type')
         relate_goods_id = request.POST.get('relate_goods')
         user = HomeAdmin.objects.get(username=request.session['username'])
@@ -1105,6 +1106,7 @@ def edit_program_p_detail(request):
                                               context_instance=RequestContext(request))
             item_p.item_name = item_name
             item_p.sort_id = item_sort_id
+            item_p.note = item_note
             item_p.save()
             i_id = item_p.id
         else:
@@ -1112,6 +1114,7 @@ def edit_program_p_detail(request):
             new_item_p.item_name = item_name
             new_item_p.area = user.area
             new_item_p.sort_id = item_sort_id
+            new_item_p.note = item_note
             new_item_p.type = int(type)
             if item_p_have.count() > 0:
                 return render_to_response('admin_area/program_manage/edit_program_p_detail.html',
