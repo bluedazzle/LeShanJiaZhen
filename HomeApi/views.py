@@ -1294,7 +1294,7 @@ def get_orders(req):
             order['coupon_value'] = itm.order_coupon.value
         order['if_appraise'] = itm.if_appraise
         if itm.if_appraise:
-            order['comment'] = itm.comment
+            order['comment'] = itm.comment8
             order['rate'] = itm.rate
             order['rb1'] = itm.rb1
             order['rb2'] = itm.rb2
