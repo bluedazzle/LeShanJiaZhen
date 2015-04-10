@@ -2,6 +2,7 @@
 from views import *
 import xlwt
 import sys
+import HomeApi.views
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -81,7 +82,14 @@ def cancel_appointment_n(request):
                 appointment = Appointment.objects.get(id=id, status=1)
                 appointment.status = 5
                 appointment.process_by = user
+                appointment.order_coupon.if_use = False
+                appointment.order_coupon.save()
                 appointment.save()
+                if appointment.online_pay:
+                    res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
+                                                     'test',
+                                                     appointment.chargeinfo.price)
+                    print res
                 appointments = [appointment]
                 send_cancel_message(appointments)
             except:
@@ -100,10 +108,17 @@ def cancel_appointment_all_n(request):
             if appointments.count() == 0:
                 return HttpResponseRedirect('operate_get')
 
-            for item in appointments:
-                item.status = 5
-                item.area = user.area
-                item.save()
+            for appointment in appointments:
+                appointment.status = 5
+                appointment.process_by = user
+                appointment.order_coupon.if_use = False
+                appointment.order_coupon.save()
+                appointment.save()
+                if appointment.online_pay:
+                    res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
+                                                     'test',
+                                                     appointment.chargeinfo.price)
+                    print res
             # try:
             #     send_cancel_message(appointments)
             # except:
@@ -119,10 +134,17 @@ def cancel_appointment_g(request):
             id = request.GET.get('id')
             user = HomeAdmin.objects.get(username=request.session['username'])
             try:
-                appointment = Appointment.objects.get(id=id, status=2)
+                appointment = Appointment.objects.get(id=id, status=1)
                 appointment.status = 5
                 appointment.process_by = user
+                appointment.order_coupon.if_use = False
+                appointment.order_coupon.save()
                 appointment.save()
+                if appointment.online_pay:
+                    res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
+                                                     'test',
+                                                     appointment.chargeinfo.price)
+                    print res
                 send_cancel_message([appointment])
             except:
                 pass
@@ -138,10 +160,17 @@ def cancel_appointment_all_g(request):
             if appointments.count() == 0:
                 return HttpResponseRedirect('operate_get')
 
-            for item in appointments:
-                item.status = 5
-                item.process_by = user
-                item.save()
+            for appointment in appointments:
+                appointment.status = 5
+                appointment.process_by = user
+                appointment.order_coupon.if_use = False
+                appointment.order_coupon.save()
+                appointment.save()
+                if appointment.online_pay:
+                    res = HomeApi.views.refund_order(appointment.chargeinfo.pingpp_charge_id,
+                                                     'test',
+                                                     appointment.chargeinfo.price)
+                    print res
 
             try:
                 send_cancel_message(appointments)
@@ -286,7 +315,8 @@ def out_excel(appointments, file_name):
     ws.write(0, 9, "订单内容")
     ws.write(0, 10, "备注")
     ws.write(0, 11, "评价")
-    ws.write(0, 12, "评价内容")
+    ws.write(0, 12, "评价选项")
+    ws.write(0, 13, "评价内容")
     i = 1
     for item in appointments:
         ws.write(i, 0, item.order_id, style0)
@@ -347,6 +377,7 @@ def out_excel(appointments, file_name):
         else:
             ws.write(i, 11, '')
         ws.write(i, 12, content)
+        ws.write(i, 13, item.comment)
         i += 1
 
     wb.save("out_files/"+file_name+".xls")

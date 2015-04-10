@@ -20,6 +20,7 @@ def out_appointment(request):
         a_date_end = request.POST.get('date_end')
         area_name = request.POST.get('area')
         area = Block.objects.get(area_name=area_name)
+        file_name = ''
         if a_status == '0':
             all_appointments = Appointment.objects.order_by('-id').filter(area=area)
         else:
@@ -39,16 +40,23 @@ def out_appointment(request):
                         appointments.append(item)
 
         print len(appointments)
-        if a_status == 1:
-            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("未接受的订单", "utf-8")
-        elif a_status == 2:
-            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("已接受的订单", "utf-8")
-        elif a_status == 3:
-            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("完成的订单", "utf-8")
-        elif a_status == 4:
-            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end + unicode("取消的订单", "utf-8")
+        if a_date_start == '2000-01-01' and a_date_end == '2999-11-11':
+            file_name = area.area_name + unicode("全部时间的", 'utf-8')
         else:
-            file_name = area.area_name + a_date_start + u'到' + a_date_end + u'所有预约'
+            file_name = area.area_name + a_date_start + unicode("到", "utf-8") + a_date_end
+
+        if a_status == 1:
+            file_name += unicode("未接受的订单", "utf-8")
+        elif a_status == 2:
+            file_name += unicode("已接受的订单", "utf-8")
+        elif a_status == 4:
+            file_name += unicode("完成的订单", "utf-8")
+        elif a_status == 5:
+            file_name += unicode("取消的订单", "utf-8")
+        elif a_status == 6:
+            file_name += unicode("已评价订单", "utf-8")
+        else:
+            file_name += u'所有状态的预约'
 
         print file_name
         req = out_excel(appointments, file_name)
@@ -72,14 +80,14 @@ def out_excel(appointments, file_name):
     ws.write(0, 8, "操作员")
     ws.write(0, 9, "订单内容")
     ws.write(0, 10, "备注")
+    ws.write(0, 11, "评价")
+    ws.write(0, 12, "评价选项")
+    ws.write(0, 13, "评价内容")
     i = 1
     for item in appointments:
         ws.write(i, 0, item.order_id, style0)
-        if item.consumer:
-            ws.write(i, 2, item.consumer.phone, style0)
-        else:
-            ws.write(i, 2, item.associator.username, style0)
-        if item.orderhomeitems.all().count() > 0:
+        ws.write(i, 2, item.order_phone, style0)
+        if item.orderitem.all().count() > 0:
             ws.write(i, 1, u"维修安装")
         else:
             ws.write(i, 1, u"商品购买")
@@ -91,24 +99,51 @@ def out_excel(appointments, file_name):
             status_text = u"未接受"
         elif item.status == 2:
             status_text = u"已接受"
-        elif item.status == 3:
+        elif item.status == 4:
             status_text = u"已完成"
-        else:
+        elif item.status == 5:
             status_text = u"已取消"
+        elif item.status == 6:
+            status_text = u"已评价"
+        else:
+            status_text = u"未知"
+
         ws.write(i, 6, status_text, style0)
         ws.write(i, 7, item.area.area_name)
-        ws.write(i, 8, item.process_by.nick)
+        if item.process_by:
+            ws.write(i, 8, item.process_by.nick)
+        else:
+            ws.write(i, 8, '')
         content = ''
         print 'ok'
-        if item.orderhomeitems.all().count() > 0:
-            for orderhomeitem in item.orderhomeitems.all():
-                content = content + orderhomeitem.title + '\t\t'
+        if item.orderitem.all().count() > 0:
+            for orderitem in item.orderitem.all():
+                content = content + orderitem.item_name + '\t\t'
         elif item.ordergoods.all().count > 0:
             for goods in item.ordergoods.all():
                 content = content + goods.title + '\t\t'
 
         ws.write(i, 9, content)
         ws.write(i, 10, item.remark)
+        content = ''
+        if item.if_appraise:
+            ws.write(i, 11, item.rate)
+            if item.rb1:
+                content += u"上门及时；"
+            if item.rb2:
+                content += u"认真仔细；"
+            if item.rb3:
+                content += u"技术专业；"
+            if item.rb4:
+                content += u"收费公道；"
+            if item.rb5:
+                content += u"维修快速；"
+            if item.rb6:
+                content += u"态度良好；"
+        else:
+            ws.write(i, 11, '')
+        ws.write(i, 12, content)
+        ws.write(i, 13, item.comment)
         i += 1
 
     wb.save("out_files/"+file_name+".xls")

@@ -159,8 +159,9 @@
                {% endif %}
            </div>
            <div class="col-md-6 col-lg-6">
-               <p id="rates{{ item.id }}">评价：</p>
-               <p>评价选项：
+               <p>
+                   <span id="rates{{ item.id }}">评价：</span><br/>
+               评价选项：
                    {% if item.rb1 %}
                        上门及时&nbsp;&nbsp;
                    {% endif %}
@@ -179,14 +180,15 @@
                    {% if item.rb6 %}
                        态度良好&nbsp;&nbsp;
                    {% endif %}
-               </p>
+               <br/>
+               评价内容：{{ item.comment }}</p>
            </div>
            <script>
                 for(var i=1;i<={{ item.rate }};i++){
                    $('#rates{{ item.id }}').append("<span class='glyphicon glyphicon-star' style='color:#27ad60'></span>")
                }
            </script>
-           <div class="col-md-6 col-lg-6">
+           <div class="col-md-12 col-lg-12">
               {% if item.photo1 or item.photo2 or item.photo3 or item.photo4 %}
                    <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
                  查看照片

@@ -202,8 +202,9 @@
            </div>
            {% if item.status == 6 %}
            <div class="col-md-6 col-lg-6">
-               <p id="rates{{ item.id }}">评价：</p>
-               <p>评价选项：
+               <p>
+                   <span id="rates{{ item.id }}">评价：</span><br/>
+               评价选项：
                    {% if item.rb1 %}
                        上门及时&nbsp;&nbsp;
                    {% endif %}
@@ -222,7 +223,8 @@
                    {% if item.rb6 %}
                        态度良好&nbsp;&nbsp;
                    {% endif %}
-               </p>
+               <br/>
+               评价内容：{{ item.comment }}</p>
            </div>
            <script>
                 for(var i=1;i<={{ item.rate }};i++){
