@@ -22,6 +22,7 @@
                   <th>结束时间</th>
                   <th>最高金额</th>
                   <th>最低金额</th>
+                  <th>游戏次数</th>
                   <th>限定数量</th>
                   <th>实际数量</th>
                   <th>游戏状态</th>
@@ -35,6 +36,7 @@
                   </td>
                   <td>{{ game_newest.game_money_high }}(元)</td>
                   <td>{{ game_newest.game_money_low }}(元)</td>
+                  <td>{{ game_newest.game_times }}</td>
                   <td>{{ game_newest.game_coupon_num }}</td>
                   <td>{{ game_newest.game_current_num }}</td>
                   <td style="color: #1abc9c">进行中</td>
@@ -49,6 +51,7 @@
                   </td>
                   <td>{{ item.money_high }}(元)</td>
                   <td>{{ item.money_low }}(元)</td>
+                  <td>{{ item.game_times }}</td>
                   <td>{{ item.origin_coupon_num }}</td>
                   <td>{{ item.actually_coupon_num }}</td>
                   <td style="color: red">已结束</td>

@@ -1886,7 +1886,8 @@ def set_game(request):
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         control_id = request.POST.get('control_id')
-        if control_id and money_low and money_high and origin_coupon_num and start_date and end_date:
+        game_times = request.POST.get('game_times')
+        if control_id and money_low and money_high and origin_coupon_num and start_date and end_date and game_times:
             coupon_control = CouponControl.objects.get(id=control_id)
             coupon_control.game_money_low = money_low
             coupon_control.game_money_high = money_high
@@ -1901,6 +1902,7 @@ def set_game(request):
                 coupon_control.game_sign = HomeApi.views.createtoken(6)
 
             coupon_control.game_active = True
+            coupon_control.game_times = game_times
             coupon_control.save()
 
             return render_to_response('admin_area/game_manage/set_game.html',
