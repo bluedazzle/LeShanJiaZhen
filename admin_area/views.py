@@ -1996,11 +1996,12 @@ def push_message(request):
         return HttpResponseRedirect('login_in')
     if request.method == 'GET':
         return check_permission(request, 'manage_send_message', 'admin_area/push_message.html')
-
     if request.method == 'POST':
         message = request.POST.get('mes_push')
         message = message.encode('utf-8')
         req = customedPush(message)
+        new_mes = Message(content=message, type=1)
+        new_mes.save()
         if req:
             return HttpResponse(json.dumps('T'))
         else:

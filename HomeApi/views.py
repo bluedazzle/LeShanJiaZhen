@@ -275,7 +275,10 @@ def get_messages(req):
         username = jsonres['username']
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
-            message_list = Message.objects.filter(own=curuser).order_by('-create_time')
+            push_mes = Message.objects.filter(type=1)
+            message_list = Message.objects.filter(own=curuser)
+            message_list = message_list | push_mes
+            message_list = message_list.order_by('-create_time')
             total = message_list.count()
             total_page = math.ceil(float(total) / 20.0)
             paginator = Paginator(message_list, 20)
@@ -389,7 +392,7 @@ def get_coupon(req):
         username = jsonres['username']
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
-            coupon_list = Coupon.objects.filter(own=curuser).order_by('-create_time')
+            coupon_list = Coupon.objects.filter(own=curuser).order_by('-if_use', '-value', '-create_time')
             total = coupon_list.count()
             total_page = math.ceil(float(total) / 20.0)
             paginator = Paginator(coupon_list, 20)
@@ -866,10 +869,10 @@ def create_pay_order(req):
                                                belong=newappoint,
                                                origin_item=homeit)
                 new_order_item.save()
-            if use_coupon:
-                coupon = Coupon.objects.get(cou_id=coupon_id)
-                coupon.if_use = True
-                coupon.save()
+            # if use_coupon:
+            #     coupon = Coupon.objects.get(cou_id=coupon_id)
+            #     coupon.if_use = True
+            #     coupon.save()
             if not pay:
                 newappoint.amount = price_sure
                 newappoint.save()
@@ -1266,7 +1269,7 @@ def get_orders(req):
         body['msg'] = 'login befor other action'
         return HttpResponse(encodejson(13, body), content_type='application/json')
     curuser = Associator.objects.get(username=username)
-    order_list = Appointment.objects.filter(associator=curuser, order_type=order_type).order_by('-create_time')
+    order_list = Appointment.objects.filter(associator=curuser, order_type=order_type, valid=True).order_by('-create_time')
     total = order_list.count()
     total_page = math.ceil(float(total) / 20.0)
     paginator = Paginator(order_list, 20)

@@ -274,7 +274,8 @@ class Message(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     deadline = models.DateTimeField(max_length=30, null=True, blank=True)
     read = models.BooleanField(default=False)
-    own = models.ForeignKey(Associator, related_name='messages')
+    own = models.ForeignKey(Associator, null=True, blank=True, related_name='messages')
+    type = models.IntegerField(max_length=2, default=0)
 
     def __unicode__(self):
         return self.content
