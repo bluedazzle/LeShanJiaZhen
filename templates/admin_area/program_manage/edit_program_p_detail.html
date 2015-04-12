@@ -37,7 +37,7 @@
               {% endif %}
             <p style="color: red" id="warning"></p>
             <select id="select1" name="relate_goods"  class="form-control select select-default select-block mbl"
-                      style="border-bottom-right-radius: 0;margin-top: 30px;margin-bottom: 2px;">
+                      style="border-bottom-right-radius: 0;margin-top: 32px;margin-bottom: 2px;">
                       <option value="0">选择商品大类</option>
                   {% for goods_p in goods_ps %}
                       {% if item_p.recommand == goods_p %}
@@ -60,12 +60,12 @@
     </div>
     <script>
     $(document).ready(function(){
-        {% if type == '1' %}
+        {% if item_p.type == 1 %}
         $('#page_title').text('编辑维修项目信息');
-        {% elif type == '2' %}
+        {% elif item_p.type == 2 %}
         $('#page_title').text('编辑安装项目信息');
-        {% elif type == '3' %}
-        $('#page_title').text('编辑其他项目信息');
+        {% elif item_p.type == 3 %}
+        $('#page_title').text('编辑更多服务项目信息');
         {% endif %}
         $('#message_manage').addClass('active');
         $('#program_manage').addClass('active');

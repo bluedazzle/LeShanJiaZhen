@@ -15,7 +15,7 @@
              </tr>
              <tr>
                  <h6 style="padding-bottom: 1%">
-                 {{ program_p.item_name }}的详细项目列表(排序ID：{{ program_p.sort_id }})
+                 {{ program_p.item_name }}的详细项目列表(ID：{{ program_p.id }})(排序ID：{{ program_p.sort_id }})
                      {% if program_p.icon %}
                      <img src="{{ program_p.icon }}" style="height: 40px;width: 40px;"/>
                  {% endif %}
@@ -37,6 +37,7 @@
            </thead>
            <tbody>
               <tr style="background-color: #1abc9c; color: #ffffff">
+                  <th>项目ID</th>
                   <th>排序ID</th>
                   <th>项目名称</th>
                   <th style="max-width: 60px;padding-right:0">
@@ -45,6 +46,7 @@
               </tr>
               {% for item in programs %}
               <tr>
+                  <td>{{ item.id }}</td>
                   <td>{{ item.sort_id }}</td>
                   <td>{{ item.item_name }}</td>
                   <td style="max-width: 60px;padding-right:0">

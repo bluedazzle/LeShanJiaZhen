@@ -15,7 +15,10 @@
     <tbody>
     {% for item in programs %}
         {% if item.type == 1 %}
-      <a role="button" href="program_manage_two?item_p_id={{ item.id }}" class="btn btn-lg btn-primary" style="margin-top: 1.5%;margin-right: 2%">{{ item.item_name }}</a>
+      <a role="button" href="program_manage_two?item_p_id={{ item.id }}" class="btn btn-lg btn-primary" style="margin-top: 1.5%;margin-right: 2%">
+          {{ item.item_name }}
+          <span style="color: #2e3c50">(ID:{{ item.id }})</span>
+      </a>
         {% endif %}
     {% endfor %}
       <a role="button" href="edit_program_p_detail?type=1" class="btn btn-lg btn-success" style="margin-top: 1.5%;margin-right: 2%">+</a>
@@ -31,7 +34,10 @@
     <tbody>
     {% for item in programs %}
         {% if item.type == 2 %}
-      <a role="button" href="program_manage_two?item_p_id={{ item.id }}" class="btn btn-lg btn-primary" style="margin-top: 1.5%;margin-right: 2%">{{ item.item_name }}</a>
+      <a role="button" href="program_manage_two?item_p_id={{ item.id }}" class="btn btn-lg btn-primary" style="margin-top: 1.5%;margin-right: 2%">
+          {{ item.item_name }}
+          <span style="color: #2e3c50">(ID:{{ item.id }})</span>
+      </a>
         {% endif %}
     {% endfor %}
       <a role="button" href="edit_program_p_detail?type=2" class="btn btn-lg btn-success" style="margin-top: 1.5%;margin-right: 2%">+</a>
@@ -42,13 +48,16 @@
   <table style="margin-bottom: 5%">
     <thead>
      <h6 style="border-bottom: 3px #1abc9c solid;padding-bottom: 1%">
-         其他
+         更多服务
      </h6>
     </thead>
     <tbody>
     {% for item in programs %}
         {% if item.type == 3 %}
-      <a role="button" href="program_manage_two?item_p_id={{ item.id }}" class="btn btn-lg btn-primary" style="margin-top: 1.5%;margin-right: 2%">{{ item.item_name }}</a>
+      <a role="button" href="program_manage_two?item_p_id={{ item.id }}" class="btn btn-lg btn-primary" style="margin-top: 1.5%;margin-right: 2%">
+          {{ item.item_name }}
+          <span style="color: #2e3c50">(ID:{{ item.id }})</span>
+      </a>
         {% endif %}
     {% endfor %}
       <a role="button" href="edit_program_p_detail?type=3" class="btn btn-lg btn-success" style="margin-top: 1.5%;margin-right: 2%">+</a>

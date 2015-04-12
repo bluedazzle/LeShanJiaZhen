@@ -20,16 +20,19 @@ def get_item_mes(request):
         if not type1 and not type2 and not item_id:
             raise Http404
         if type1 == '1':
-            home_item = HomeItem.objects.filter(id=item_id)
-            if home_item.count() == 0:
+            home_item_p = HomeItem_P.objects.filter(id=item_id)
+            if home_item_p.count() == 0:
                 return HttpResponse(json.dumps('None'))
             data = dict()
-            data['three'] = home_item[0].item_name
-            data['two'] = home_item[0].parent_item.item_name
-            if home_item[0].parent_item.type == 1:
+            data['two'] = home_item_p[0].item_name
+            if home_item_p[0].type == 1 and type2 == '11':
                 data['one'] = "维修"
-            else:
+            elif home_item_p[0].type == 2 and type2 == '12':
                 data['one'] = "安装"
+            elif home_item_p[0].type == 3 and type2 == '13':
+                data['one'] = "更多服务"
+            else:
+                data = 'None'
             return HttpResponse(json.dumps(data))
         elif type1 == '2':
             goods = GoodsItem.objects.filter(id=item_id)

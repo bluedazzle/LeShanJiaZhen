@@ -192,7 +192,8 @@ function first_jump_change(jump_id){
     $('#select3').append("<option value='0' selected>二级选项(可选)</option>");
     if(jump_id == '1') {
         $('#select3').append("<option value='11'>维修</option>" +
-        "<option value='12'>安装</option>");
+        "<option value='12'>安装</option>" +
+        "<option value='13'>更多服务</option>");
     }
     else if(jump_id == '2'){
         $('#select3').append("<option value='21'>商品或商品主页</option>");
@@ -228,6 +229,7 @@ function third_jump_change(jump_id){
         type: 'GET',
         url: 'get_item_mes',
         data: {'type1': $('#select2').val(),
+               'type2': $('#select3').val(),
                'item_id': jump_id},
         success: function(data){
             if(data == 'None'){
@@ -235,7 +237,17 @@ function third_jump_change(jump_id){
                 $('#jump_item').css('color', 'red')
             }
             else{
-                $('#jump_item').text(data['one'] + '->' + data['two'] + '->' + data['three']);
+                var content = '';
+                if (data['one']){
+                    content = content + data['one'];
+                }
+                if (data['two']){
+                    content = content + '->' + data['two'];
+                }
+                if (data['three']){
+                    content = content + '->' + data['three'];
+                }
+                $('#jump_item').text(content);
                 $('#jump_item').css('color', '#1abc3c')
             }
         },
