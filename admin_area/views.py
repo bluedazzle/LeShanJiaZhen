@@ -1167,6 +1167,9 @@ def edit_program_p_detail(request):
                 raise Http404
             item_p.recommand = relate_goods_p
             item_p.save()
+        elif relate_goods_id == '0':
+            item_p.recommand = None
+            item_p.save()
 
         return HttpResponseRedirect('program_manage_two?item_p_id='+str(i_id))
 
