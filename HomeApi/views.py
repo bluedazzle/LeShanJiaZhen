@@ -392,7 +392,7 @@ def get_coupon(req):
         username = jsonres['username']
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
-            coupon_list = Coupon.objects.filter(own=curuser).order_by('-if_use', '-value', '-create_time')
+            coupon_list = Coupon.objects.filter(own=curuser).order_by('if_use', '-value', '-create_time')
             total = coupon_list.count()
             total_page = math.ceil(float(total) / 20.0)
             paginator = Paginator(coupon_list, 20)
@@ -874,7 +874,7 @@ def create_pay_order(req):
             #     coupon.if_use = True
             #     coupon.save()
             if not pay:
-                newappoint.amount = price_sure
+                newappoint.amount = amount
                 newappoint.save()
                 body['msg'] = 'create off-line order success'
                 return HttpResponse(encodejson(1, body), content_type='application/json')
