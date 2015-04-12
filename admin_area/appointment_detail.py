@@ -99,7 +99,7 @@ def cancel_appointment_n(request):
                                                      appointment.chargeinfo.price)
                     print res
                 appointments = [appointment]
-                # send_cancel_message(appointments)
+                send_cancel_message(appointments)
                 if appointment.associator:
                     mes = CANCEL_MES % str(appointment.order_id)
                     create_new_message(mes, appointment.associator)
@@ -164,7 +164,7 @@ def cancel_appointment_g(request):
                                                      'test',
                                                      appointment.chargeinfo.price)
                     print res
-                # send_cancel_message([appointment])
+                send_cancel_message([appointment])
                 if appointment.associator:
                     mes = CANCEL_MES % str(appointment.order_id)
                     create_new_message(mes, appointment.associator)
