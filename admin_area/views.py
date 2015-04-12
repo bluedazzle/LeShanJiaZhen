@@ -2000,7 +2000,9 @@ def push_message(request):
         message = request.POST.get('mes_push')
         message = message.encode('utf-8')
         req = customedPush(message)
-        new_mes = Message(content=message, type=1)
+        expire_day = datetime.timedelta(15)
+        deadline = owntime + expire_day
+        new_mes = Message(content=message, type=1, deadline=deadline)
         new_mes.save()
         if req:
             return HttpResponse(json.dumps('T'))
