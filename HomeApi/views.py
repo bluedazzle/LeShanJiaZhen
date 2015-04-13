@@ -1441,7 +1441,7 @@ def check_game(req):
     coupon_control = CouponControl.objects.all()[0]
     if coupon_control.game_active:
         curuser = Associator.objects.get(username=username)
-        if curuser.game_str == coupon_control.game_sign and curuser.game_str >= coupon_control.game_times:
+        if curuser.game_str == coupon_control.game_sign and curuser.game_times >= coupon_control.game_times:
             body['can_game'] = False
         else:
             body['can_game'] = True
