@@ -1580,7 +1580,9 @@ def delete_goods(request):
 
 
 # 检查用户是否有相应的操作权限，并返回相应的GET请求
-def check_permission(request, kind, template, content={}):
+def check_permission(request, kind, template, content=None):
+    if not content:
+        content = {}
     user = HomeAdmin.objects.get(type=1, username=request.session['username'])
     if kind == 'manage_game':
         user_permission = user.manage_game
