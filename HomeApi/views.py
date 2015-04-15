@@ -367,7 +367,7 @@ def read_message(req):
         mid = jsonres['mid']
         if if_legal(username, token):
             curuser = Associator.objects.get(username=username)
-            message_list = Message.objects.filter(own=curuser, id=mid)
+            message_list = Message.objects.filter(id=mid)
             if not message_list.exists():
                 body['msg'] = 'invalid mid'
                 return HttpResponse(encodejson(7, body), content_type='application/json')
@@ -791,6 +791,10 @@ def create_pay_order(req):
                     newappoint.delete()
                     return HttpResponse(encodejson(7, body), content_type='application/json')
                 goods = goodsitems[0]
+                if goods.parent_item.parent_item.area != block:
+                    body['msg'] = 'pid does not match city_num'
+                    newappoint.delete()
+                    return HttpResponse(encodejson(9, body), content_type='application/json')
                 price_sure += float(goods.real_price)
                 if userepair:
                     price_sure += float(goods.repair_price)
@@ -810,7 +814,7 @@ def create_pay_order(req):
                                            belong=newappoint)
                 newordergoods.save()
                 good_title = goods.title + '等'
-                good_body = good_body + goods.content + '#'
+                good_body = good_title
             if send_type == 1:
                 if price_sure < 20.0:
                     price_sure += 5
@@ -1042,6 +1046,7 @@ def create_appointment(req):
                                  online_pay=False,
                                  area=city,
                                  name=name,
+                                 valid=True,
                                  remark=note)
         if login:
             newappoint.associator = consumer
@@ -1441,7 +1446,7 @@ def check_game(req):
     coupon_control = CouponControl.objects.all()[0]
     if coupon_control.game_active:
         curuser = Associator.objects.get(username=username)
-        if curuser.game_str == coupon_control.game_sign and curuser.game_str >= coupon_control.game_times:
+        if curuser.game_str == coupon_control.game_sign and curuser.game_times >= coupon_control.game_times:
             body['can_game'] = False
         else:
             body['can_game'] = True
