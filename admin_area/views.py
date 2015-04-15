@@ -1384,15 +1384,15 @@ def edit_goods(request):
         goods_id = request.GET.get('goods_id')
         goods_o_id = request.GET.get('goods_o_id')
         if not goods_o_id:
-            return Http404
+            raise Http404
         goods_o = Goods_O.objects.filter(id=goods_o_id)
         if goods_o.count() == 0:
-            return Http404
+            raise Http404
 
         if goods_id:
             goods = GoodsItem.objects.filter(id=goods_id)
             if goods.count() == 0:
-                return Http404
+                raise Http404
             re_content = {'goods': goods[0],
                           'goods_o': goods_o[0]}
             if goods[0].origin_price != goods[0].real_price:
@@ -1431,18 +1431,18 @@ def edit_goods(request):
         if title and sort_id and brand and material and origin_price and made_by and made_in and content:
             pass
         else:
-            return Http404
+            raise Http404
         try:
             goods_o = Goods_O.objects.filter(id=goods_o_id)
             if goods_o.count() == 0:
-                return Http404
+                raise Http404
             goods_have = GoodsItem.objects.filter(parent_item=goods_o[0], sort_id=sort_id)
         except:
-            Http404
+            raise Http404
         if goods_id:
             goods = GoodsItem.objects.get(id=goods_id)
             if not goods:
-                return Http404
+                raise Http404
             if goods.sort_id != int(sort_id):
                 if goods_have.count() > 0:
                     if goods.origin_price == goods.real_price:
@@ -1659,9 +1659,12 @@ def give_coupon(request):
         seconds = int(time_now.strftime("%S"))
         coupon_new.deadline = datetime.datetime(year+1, month, day, hour, minute, seconds)
         coupon_new.save()
+        expire_day = datetime.timedelta(15)
+        deadline = owntime + expire_day
         message_new = Message()
         message_new.content = "您获得了快乐居家赠送的%s元维修基金" %value
         message_new.own = associators[0]
+        message_new.deadline = deadline
         message_new.save()
         return render_to_response('admin_area/coupon_manage/give_coupon.html',
                                   {'give_success': True,
