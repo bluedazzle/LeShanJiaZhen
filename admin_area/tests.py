@@ -22,7 +22,6 @@ from django.test import TestCase
 
 # Create your tests here.
 
-
 def create_coupons(request):
     if request.method == 'GET':
         for i in range(0, 1000):
