@@ -1925,7 +1925,7 @@ def set_game(request):
             coupon_control.game_coupon_num = origin_coupon_num
             end_time = time.strptime(end_date, "%Y-%m-%d")
             start_time = time.strptime(start_date, "%Y-%m-%d")
-            end_time = datetime.datetime(*end_time[:6])
+            end_time = datetime.datetime(*end_time[:6]) + datetime.timedelta(days=1) - datetime.timedelta(seconds=1)
             start_time = datetime.datetime(*start_time[:6])
             coupon_control.game_start_time = start_time
             coupon_control.game_end_time = end_time
