@@ -5,43 +5,43 @@
         $('#message_manange').addClass('active');
         $('#advertisement_manage').addClass('active')
     </script>
-<div class="row" style="margin-top: 2%">
- <a role="button" href="advertisement_edit" class="btn btn-primary btn-lg" style="margin-left: 2%">添加广告</a>
- <h4>首页上层广告</h4>
- {% for item in items %}
-   {% if item.type == 1 %}
-  <div class="col-md-3 col-md-3 text-right" style="margin-top: 2%">
-    <a href="{{ item.photo }}" class="thumbnail" target="_blank">
-      <img src="{{ item.photo }}" alt="...">
-    </a>
-    <p>{{ item.title }}</p>
-    <a role="button" href="advertisement_edit?advertisement_id={{ item.id }}" class="btn btn-primary">修改</a>
-    <button onclick="delete_ad({{ item.id }})" class="btn btn-danger">删除</button>
-  </div>
-    {% endif %}
- {% endfor %}
-</div>
-<div class="row" style="margin-top: 2%">
- <h4>首页下层广告</h4>
- {% for item in items %}
-   {% if item.type == 2 %}
-  <div class="col-md-3 col-md-3 text-right" style="margin-top: 2%">
-    <a href="{{ item.photo }}" class="thumbnail" target="_blank">
-      <img src="{{ item.photo }}" alt="...">
-    </a>
-    <p>{{ item.title }}</p>
-    <a role="button" href="advertisement_edit?advertisement_id={{ item.id }}" class="btn btn-primary">修改</a>
-    <button onclick="delete_ad({{ item.id }})" class="btn btn-danger">删除</button>
-  </div>
-    {% endif %}
- {% endfor %}
-</div>
-<script>
-  function delete_ad(id){
-      var r = confirm("确定要删除这个广告？");
-      if(r){
-          window.location.href = "delete_advertisement?advertisement_id="+id;
-      }
-  }
-</script>
+    <div class="row" style="margin-top: 2%">
+        <a role="button" href="advertisement_edit" class="btn btn-primary btn-lg" style="margin-left: 2%">添加广告</a>
+        <h4>首页上层广告</h4>
+        {% for item in items %}
+            {% if item.type == 1 %}
+                <div class="col-md-3 col-md-3 text-right" style="margin-top: 2%">
+                    <a href="{{ item.photo }}" class="thumbnail" target="_blank">
+                        <img src="{{ item.photo }}" alt="...">
+                    </a>
+                    <p>{{ item.title }}</p>
+                    <a role="button" href="advertisement_edit?advertisement_id={{ item.id }}" class="btn btn-primary">修改</a>
+                    <button onclick="delete_ad({{ item.id }})" class="btn btn-danger">删除</button>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="row" style="margin-top: 2%">
+        <h4>首页下层广告</h4>
+        {% for item in items %}
+            {% if item.type == 2 %}
+                <div class="col-md-3 col-md-3 text-right" style="margin-top: 2%">
+                    <a href="{{ item.photo }}" class="thumbnail" target="_blank">
+                        <img src="{{ item.photo }}" alt="...">
+                    </a>
+                    <p>{{ item.title }}</p>
+                    <a role="button" href="advertisement_edit?advertisement_id={{ item.id }}" class="btn btn-primary">修改</a>
+                    <button onclick="delete_ad({{ item.id }})" class="btn btn-danger">删除</button>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <script>
+        function delete_ad(id){
+            var r = confirm("确定要删除这个广告？");
+            if(r){
+                window.location.href = "delete_advertisement?advertisement_id="+id;
+            }
+        }
+    </script>
 {% endblock %}
