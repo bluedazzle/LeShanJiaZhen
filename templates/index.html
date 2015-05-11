@@ -7,395 +7,546 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>快乐居家</title>
-<link href="/css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
-<link href="/css/style.css" rel="stylesheet" type="text/css" media="all" />
-<!-- Custom Theme files -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
-<!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300,600' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'> -->
-<link rel="stylesheet" href="/css/flexslider.css" type="text/css" media="screen" />
-<script src="/js/jquery.min.js"></script>
-<script src="/js/jquery.easydropdown.js"></script>
-<link href="/css/popuo-box.css" rel="stylesheet" type="text/css" media="all"/>
-<script src="/js/jquery.magnific-popup.js" type="text/javascript"></script>
-<script>
-		$(document).ready(function() {
-		$('.popup-with-zoom-anim').magnificPopup({
-		type: 'inline',
-		fixedContentPos: false,
-		fixedBgPos: true,
-		overflowY: 'auto',
-		closeBtnInside: true,
-		preloader: false,
-		midClick: true,
-		removalDelay: 300,
-		mainClass: 'my-mfp-zoom-in'
-		});
-		});
-	</script>
-		<script type="text/javascript" src="/js/move-top.js"></script>
-		<script type="text/javascript" src="/js/easing.js"></script>
-		<script type="text/javascript">
-			jQuery(document).ready(function($) {
-			$(".scroll").click(function(event){		
-			event.preventDefault();
-			$('html,body').animate({scrollTop:$(this.hash).offset().top},1200);
-			});
-			});
-	</script>
-		<script type="text/javascript">
-						$(document).ready(function() {
-							/*
-							var defaults = {
-					  			containerID: 'toTop', // fading element id
-								containerHoverID: 'toTopHover', // fading element hover id
-								scrollSpeed: 1200,
-								easingType: 'linear' 
-					 		};
-							*/
-							$().UItoTop({ easingType: 'easeOutQuart' });
-						});
-		</script>
-		<!-- FlexSlider -->
-			<script defer src="/js/jquery.flexslider.js"></script>
-			<script type="text/javascript">
-				$(function(){
-				SyntaxHighlighter.all();
-				});
-				$(window).load(function(){
-				$('.flexslider').flexslider({
-				animation: "slide",
-				start: function(slider){
-				$('body').removeClass('loading');
-				}
-				});
-				});
-			</script>
-		<!-- FlexSlider -->
+    <title>快乐居家</title>
+    <link href="/css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all"/>
+    <!-- Custom Theme files -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="application/x-javascript"> addEventListener("load", function () {
+        setTimeout(hideURLbar, 0);
+    }, false);
+    function hideURLbar() {
+        window.scrollTo(0, 1);
+    } </script>
+    <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300,600' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'> -->
+    <link rel="stylesheet" href="/css/flexslider.css" type="text/css" media="screen"/>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.easydropdown.js"></script>
+    <link href="/css/popuo-box.css" rel="stylesheet" type="text/css" media="all"/>
+    <script src="/js/jquery.magnific-popup.js" type="text/javascript"></script>
+    <script>
+        $(document).ready(function () {
+            $('.popup-with-zoom-anim').magnificPopup({
+                type: 'inline',
+                fixedContentPos: false,
+                fixedBgPos: true,
+                overflowY: 'auto',
+                closeBtnInside: true,
+                preloader: false,
+                midClick: true,
+                removalDelay: 300,
+                mainClass: 'my-mfp-zoom-in'
+            });
+        });
+    </script>
+    <script type="text/javascript" src="/js/move-top.js"></script>
+    <script type="text/javascript" src="/js/easing.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            $(".scroll").click(function (event) {
+                event.preventDefault();
+                $('html,body').animate({scrollTop: $(this.hash).offset().top}, 1200);
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*
+             var defaults = {
+             containerID: 'toTop', // fading element id
+             containerHoverID: 'toTopHover', // fading element hover id
+             scrollSpeed: 1200,
+             easingType: 'linear'
+             };
+             */
+            $().UItoTop({easingType: 'easeOutQuart'});
+        });
+    </script>
+    <!-- FlexSlider -->
+    <script defer src="/js/jquery.flexslider.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            SyntaxHighlighter.all();
+        });
+        $(window).load(function () {
+            $('.flexslider').flexslider({
+                animation: "slide",
+                start: function (slider) {
+                    $('body').removeClass('loading');
+                }
+            });
+        });
+    </script>
+    <!-- FlexSlider -->
 </head>
 <body>
-<!-- header -->	
-	<div class="header">
-		<div class="container">
-			<div class="logo" style="width: 250px;">
-                <img src="/img/index/kllogo.png" width="50px" height="50px" style="float: left;" alt=""/>
-				<h1><a href="index.html">快乐居家</a></h1>   
-			</div>
-			<div class="clearfix"> </div>
-		</div>
-	</div>		
-	<div class="header-top">
-		<div class="container">
-			<div class="header-nav">
-				<span class="menu"> </span>
-					<ul>
-						<li><a href="#home" class="scroll">主页</a></li>
-						<li><a href="#contact" class="scroll">app使用</a></li>
-						<li><a href="#about" class="scroll">关于我们</a></li>
-						<li><a href="#careers" class="scroll">加入我们</a></li>
-							<div class="clearfix"> </div>
-					</ul>
-			</div>
-				<!-- script-for-nav -->
-					<script>
-						$( "span.menu" ).click(function() {
-						  $( ".header-nav ul" ).slideToggle(300, function() {
-							// Animation complete.
-						  });
-						});
-					</script>
-				<!-- script-for-nav -->
-					<!-- <div class="search-box">
-				        <form>
-				            <input type="text" name="s" class="textbox" value="" onfocus="this.value = '';" onblur="if
-				                  	(this.value == '') {this.value = 'search';}">
-				            <input type="submit" value>
-				        </form>
-		            </div> -->
-{#		            <div class="box">#}
-{#						<a class="play-icon" href="http://www.kuailejujia.com/area_admin/login_in">登录</a>#}
-{#		             </div>#}
-						<div class="clearfix"> </div>
-					<div id="small-dialog1" class="mfp-hide">
-						<div class="login">
-							<h3>Log In</h3>
-							<h4>Already a Member</h4>
-							<input type="text" value="Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email';}" />
-							<input type="password" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}"/>
-							<input type="submit" value="Login" />
-						</div>
-					</div>			
-		</div>
-	</div>	
-	        <div class="banner" id="home" >
-                <img src="/img/index/banner.png" alt="" style="width: 100%;"/>
-	        </div>
-<!-- header -->	
+<!-- header -->
+<div class="header">
+    <div class="container">
+        <div class="logo" style="width: 250px;">
+            <img src="/img/index/kllogo.png" width="50px" height="50px" style="float: left;" alt=""/>
+
+            <h1><a href="index.html">快乐居家</a></h1>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>
+<div class="header-top">
+    <div class="container">
+        <div class="header-nav">
+            <span class="menu"> </span>
+            <ul>
+                <li><a href="#home" class="scroll">主页</a></li>
+                <li><a href="#service" class="scroll">服务项目</a></li>
+                <li><a href="#contact" class="scroll">app使用</a></li>
+                <li><a href="#about" class="scroll">关于我们</a></li>
+                <li><a href="#careers" class="scroll">加入我们</a></li>
+                <div class="clearfix"></div>
+            </ul>
+        </div>
+        <!-- script-for-nav -->
+        <script>
+            $("span.menu").click(function () {
+                $(".header-nav ul").slideToggle(300, function () {
+                    // Animation complete.
+                });
+            });
+        </script>
+        <!-- script-for-nav -->
+        <!-- <div class="search-box">
+            <form>
+                <input type="text" name="s" class="textbox" value="" onfocus="this.value = '';" onblur="if
+                          (this.value == '') {this.value = 'search';}">
+                <input type="submit" value>
+            </form>
+        </div> -->
+        {#		            <div class="box">#}
+        {#						<a class="play-icon" href="http://www.kuailejujia.com/area_admin/login_in">登录</a>#}
+        {#		             </div>#}
+        <div class="clearfix"></div>
+        <div id="small-dialog1" class="mfp-hide">
+            <div class="login">
+                <h3>Log In</h3>
+                <h4>Already a Member</h4>
+                <input type="text" value="Email" onfocus="this.value = '';"
+                       onblur="if (this.value == '') {this.value = 'Email';}"/>
+                <input type="password" value="Password" onfocus="this.value = '';"
+                       onblur="if (this.value == '') {this.value = 'Password';}"/>
+                <input type="submit" value="Login"/>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="banner" id="home">
+    <img src="/img/index/banner.png" alt="" style="width: 100%;"/>
+</div>
+<!-- header -->
 <!-- locations -->
-	<div class="locations" >
-		<div class="container">
-				<div class="locations-1">
-					<img src="/img/index/kllogo.png" height="100px" width="100px" style="margin-top: 16px;" class="img-responsive" alt="" />
-				</div> 
-				<div class="locations-2">
-					<h2><img src="/img/index/kl.png" alt=""/></h2>
-					<p>最值得信赖的家居维修服务平台</p>
-				</div> 
-				<div class="locations-3">
-{#					<a href="#contact" class="scroll">向下看</a>#}
-				</div>
-				<div class="clearfix"> </div> 
-		</div>
-	</div>
+<div class="locations">
+    <div class="container">
+        <div class="locations-1">
+            <img src="/img/index/kllogo.png" height="100px" width="100px" style="margin-top: 16px;"
+                 class="img-responsive" alt=""/>
+        </div>
+        <div class="locations-2">
+            <h2><img src="/img/index/kl.png" alt=""/></h2>
+
+            <p>最值得信赖的家居维修服务平台</p>
+        </div>
+        <div class="locations-3">
+            {#					<a href="#contact" class="scroll">向下看</a>#}
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>
 <!-- locations -->
 <!-- interest -->
-	<div class="interest" id="contact">
-		<div class="container">
-			<div class="interest-info" style="margin-top: 200px;">
-				<h3 style="text-align: left; font-size:3em;">快乐居家是一款基于同城找维修（安装）工人的应用，主要提供家居维修和安装服务。可快捷方便的找到维修（安装）人员，是家居维修和网购家具安装的好帮手。</h3>
-						</div>
-			</div>
-		</div>
-	</div>
-<!-- interest -->	
-<!-- life -->	
-	<div class="life">
-		<div class="container">
-				<div class="life-1">
-					<img src="/img/index/flow.png" class="img-responsive" alt="" />
-				</div> 
-				<div class="life-2">
-					<h3>我们的承诺</h3>
-					<p></p>
-				</div> 
-					<div class="clearfix"> </div>
-				<h4>高品质：经快乐居家培训认证的专业维修人员服务</h4> 
-				<h4>项目全：覆盖全部家居维修、安装项目</h4> 
-				<h4>透明价：全部维修项目，明码实价，定价低于市场平均价格</h4> 
-				<h4>便捷用：60秒完成报修，可网络报修也可电话报修</h4>
-				<h4>快速达：60分钟到达</h4>
-				<h4>有保障：所有维修人员均经过身份验证和技能认证</h4> 
-				<h4>服务好：及时售后联系，遇到质量差，乱收费的维修人员，投诉后立即获得补偿，并将该维修人员踢出平台</h4>     
-				<h5>最值得信赖的家居维修服务平台</h5>
-				<br/>
-				<br/>	
-			<div class="life-1">
-					<img src="/img/index/flow.png" class="img-responsive" alt="" />
-				</div> 
-				<div class="life-2">
-					<h3>app使用教程</h3>
-					<p></p>
-				</div>
-			<div class="blogs-sed">
-				<div class="col-md-6">
-					<div class="blogs-lefticon">
-						<i class="pad"> </i>
-					</div> 
-					<div class="blogs-leftdata">
-						<h2>一、首页</h2>
-						<p>1、	点击电话预约，可直接通过电话向公司客服人员报修</p>
-						<p>2、  点击网上预约，填写相关资料和维修（安装）项目，方便快捷 </p>
-                        <p>3、  点击收费标准，可查看服务项目和收费标准</p>
-					</div>
-						<div class="clearfix"></div>
-				</div>
-				<div class="col-md-6">
-					<img src="/img/index/first.png" height="500px"   alt="" />
-				</div>
-					<div class="clearfix"></div>
-			</div>
-            <div class="blogs-sed">
-				<div class="col-md-6">
-					<div class="blogs-lefticon">
-						<i class="pad"> </i>
-					</div>
-					<div class="blogs-leftdata">
-						<h2>二、网上预约填写</h2>
-						<p>1、进入网上预约，填写个人信息（自动记忆，下次报修不再填写）</p>
+<div class="interest" id="contact">
+    <div class="container">
+        <div class="interest-info" style="margin-top: 200px;">
+            <h3 style="text-align: left; font-size:3em;">
+                快乐居家APP是主要向家庭提供同城家居维修安装的服务平台。只需动动手指在手机上轻轻一点便可快捷的得到上门维修安装服务，是家居生活好帮手。</h3>
+        </div>
+    </div>
+</div>
+</div>
+<!-- interest -->
+<!-- life -->
+<div class="life">
+    <div class="container">
+        <div class="life-1">
+            <img src="/img/index/flow.png" class="img-responsive" alt=""/>
+        </div>
+        <div class="life-2">
+            <h3>我们的承诺</h3>
 
-					</div>
-						<div class="clearfix"></div>
-				</div>
-				<div class="col-md-6">
-					<img src="/img/index/sec.png" height="500px"   alt="" />
-				</div>
-					<div class="clearfix"></div>
-			</div>
-            <div class="blogs-sed">
-				<div class="col-md-6">
-					<div class="blogs-lefticon">
-						<i class="pad"> </i>
-					</div>
-					<div class="blogs-leftdata">
-						<p>2、点击维修项目，进入项目收费页面，选择需要维修的项目</p>
-					</div>
-						<div class="clearfix"></div>
-				</div>
-				<div class="col-md-6">
-					<img src="/img/index/sec1.png" height="500px"   alt="" />
-				</div>
-					<div class="clearfix"></div>
-			</div>
-            <div class="blogs-sed">
-				<div class="col-md-6">
-					<div class="blogs-lefticon">
-						<i class="pad"> </i>
-					</div>
-					<div class="blogs-leftdata">
-						<p>3、选好需要维修的项目，点击进入子项目页面，可以查看详细的项目收费、项目说明等信息</p>
-					</div>
-						<div class="clearfix"></div>
-				</div>
-				<div class="col-md-6">
-					<img src="/img/index/thr.png" height="500px"   alt="" />
-				</div>
-					<div class="clearfix"></div>
-			</div>
-            <div class="blogs-sed">
-				<div class="col-md-6">
-					<div class="blogs-lefticon">
-						<i class="pad"> </i>
-					</div>
-					<div class="blogs-leftdata">
-						<p>4、点击对应的子项目，可直接跳转至网上预约界面</p>
-					</div>
-						<div class="clearfix"></div>
-				</div>
-				<div class="col-md-6">
-					<img src="/img/index/fou.png" height="500px"   alt="" />
-				</div>
-					<div class="clearfix"></div>
-			</div>
-            <div class="blogs-sed">
-				<div class="col-md-6">
-					<div class="blogs-lefticon">
-						<i class="pad"> </i>
-					</div>
-					<div class="blogs-leftdata">
-						<p>5、照片选择框可提交照片（选填），方便维修人员提前了解物品损坏情况</p>
-					</div>
-						<div class="clearfix"></div>
-				</div>
-				<div class="col-md-6">
-					<img src="/img/index/fiv.png" height="500px"   alt="" />
-				</div>
-					<div class="clearfix"></div>
-			</div>
-            <div class="blogs-sed">
-				<div class="col-md-6">
-					<div class="blogs-lefticon">
-						<i class="pad"> </i>
-					</div>
-					<div class="blogs-leftdata">
-						<p>6、所有资料填写完毕点击〈确认预约〉完成报修，预约成功后您会收到短信回复，公司客服人员将在10分钟内与你联系</p>
-					</div>
-						<div class="clearfix"></div>
-				</div>
-				<div class="col-md-6">
-					<img src="/img/index/six.jpg" height="500px"   alt="" />
-				</div>
-					<div class="clearfix"></div>
-			</div>
-	</div>
+            <p></p>
+        </div>
+        <div class="clearfix"></div>
+        <h4>高品质：经快乐居家培训认证的专业维修人员服务</h4>
+        <h4>项目全：覆盖全部家居维修、安装项目</h4>
+        <h4>透明价：全部维修项目，明码实价，定价低于市场平均价格</h4>
+        <h4>便捷用：60秒完成报修，可网络报修也可电话报修</h4>
+        <h4>快速达：60分钟到达</h4>
+        <h4>有保障：所有维修人员均经过身份验证和技能认证</h4>
+        <h4>服务好：及时售后联系，遇到质量差，乱收费的维修人员，投诉后立即获得补偿，并将该维修人员踢出平台</h4>
+        <h5>最值得信赖的家居维修服务平台</h5>
+        <br/>
+        <br/>
 
-	<!-- life -->	
-	<!-- integer -->	
-	<div class="integer" id="about">
-		<div class="container">
-				<div class="integer-1">
-					<img src="/img/index/group.png" class="img-responsive" alt="" />
-				</div> 
-				<div class="integer-2">
-					<h3>关于我们</h3>
-					<p></p>
-				</div> 
-					<div class="clearfix"></div>
-				<div class="clearfix"> </div>
-				<h5>四川快乐居家科技有限公司，是一家移动互联网创业公司。公司主创人员具有20年以上的建筑经验，我们的团队有专业工程师，有在校大学生，有IT界人士，共同的梦想让我们一起奋斗。<br/><br/>快乐居家APP隶属于四川快乐居家科技有限公司，是一款基于同城找维修（安装）工人的应用，主要提供家居维修和安装服务。可快捷方便的找到维修（安装）人员，是家居维修和网购家具安装的好帮手。<br/><br/>区别于传统的家居维修公司，我们致力于创造一个，从材料选购到维修服务一键完成的家居维修服务平台。</h5>
-				<br/>
-				<br/>	
-				<h3>大事记</h3>
-					<table class="table table-bordered table-striped">
-						<tr>
-							<td>2014年11月</td>
-							<td>基于移动互联网的家居维修平台开始酝酿</td>
-						</tr>
-						<tr>
-							<td>2014年12月</td>
-							<td>创业团队开始组建</td>
-						</tr>
-						<tr>
-							<td>2015年01月05日</td>
-							<td>四川快乐居家科技有限公司正式成立</td>
-						</tr>
-						<tr>
-							<td>2015年01月20日</td>
-							<td>快乐居家APP正式推出</td>
-						</tr>
-					</table>
-		</div>
-	</div>
-	<!-- integer  -->	
-	<!-- featured employee  -->	
-	<!-- featured employee  -->	
-	<!-- featured video  -->	
-	<div class="featured-video" id="careers">
-		<div class="container">
-				<div class="integer-1">
-					<img src="/img/index/group.png" class="img-responsive" alt="" />
-				</div> 
-				<div class="integer-2">
-					<h3>加入我们</h3>
-					<p></p>
-				</div> 
-					<div class="clearfix"></div>
-				<div class="clearfix"> </div>
-				<h3>四川快乐居家科技有限公司是一家移动互联网创业公司。积聚了来自各个行业的经验丰富的小伙伴，我们个个热情奔放，怀揣梦想。追求完美，享受自由。在这里，你不用担心学无所用，全新的创业模式会丰富您的职业生涯。</h3>
-				<br/>
-				<h3>快乐居家团队正在在创业成长，需要您们的加入，一起为快乐居家的明天奋斗！</h3>
-				<br/>
-				<br/>
-				<h2>招聘岗位</h2>
-				<ul class="list-inline" style="font-size:22px;">
-					<li>BD总监</li>
-					<li>Android开发</li>
-					<li>IOS开发</li>
-					<li>APP产品经理</li>
-					<li>线上新媒体运营经理</li>
-				</ul>
-				<br/>
-				<h2>简历投递</h2>
-				<address style="font-size:22px;">
-					联系邮箱：957871482@qq.com <br/>
-					联系电话：13908138021 <br/>
-					联系人：  李先生 <br/>
-				</address>
-		</div>
-	</div>
-<!-- featured video -->	
-<!-- blogs -->	
-<!-- footer -->	
-	<div class="footer" style="margin-left: -100px; margin-right: -30px;">
-		<div class="container">
-			<div class="footer-nav">
-				<ul>
-					<li><a href="#home" class="scroll">主页</a></li>
-					<li><a href="#contact" class="scroll">app</a></li>
-					<li><a href="#about" class="scroll">关于我们</a></li>
-					<li><a href="#careers" class="scroll">加入我们</a></li>
-					<div class="clearfix"> </div>
-				</ul>
-			</div>
-			<div class="bottom">
-				<p>四川快乐居家科技有限责任公司 版权所有 | 技术支持 <a href="http://www.rapospectre.com" target="_blank">RaPoSpectre</a></p>
-			</div>
-				<div class="clearfix"></div>
-		</div>
-			<a href="#" id="toTop" style="display: block;"> <span id="toTopHover" style="opacity: 1;"> </span></a>
-	</div>
+        <div class="life-1">
+            <img src="/img/index/flow.png" class="img-responsive" alt=""/>
+        </div>
+        <div class="life-2">
+            <h3>服务项目</h3>
+
+            <p></p>
+        </div>
+        <div id="service" class="clearfix"></div>
+        <h5>水电维修安装、管道疏通、开锁换锁、电脑维修、家电维修安装、防水补漏、墙面维修、门窗维修安装、沙发翻新、家具搬运、地板安装维修、家具安装维修、热水器、灶具、燃气维修等。</h4>
+            <br/>
+            <br/>
+
+            <div class="life-1">
+                <img src="/img/index/flow.png" class="img-responsive" alt=""/>
+            </div>
+            <div class="life-2">
+                <h3>app使用教程</h3>
+
+                <p></p>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                        <h2>一、下载安装</h2>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/a1.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/a2.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/a3.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/a4.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                        <h2>二、保修教程</h2>
+
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/b1.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/b2.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/b3.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/b4.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/b5.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                        <h2>三、商品采购及分享</h2>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/c1.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/c2.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/c3.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/c4.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/c5.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="blogs-sed">
+                <div class="col-md-6">
+                    <div class="blogs-lefticon">
+                        <i class="pad"> </i>
+                    </div>
+                    <div class="blogs-leftdata">
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <img src="/img/index/c6.png" height="500px" alt=""/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+    </div>
+
+    <!-- life -->
+    <!-- integer -->
+    <div class="integer" id="about">
+        <div class="container">
+            <div class="integer-1">
+                <img src="/img/index/group.png" class="img-responsive" alt=""/>
+            </div>
+            <div class="integer-2">
+                <h3>关于我们</h3>
+
+                <p></p>
+            </div>
+            <div class="clearfix"></div>
+            <div class="clearfix"></div>
+            <h5>四川快乐居家科技有限公司，是一家移动互联网创业公司。公司主创人员具有20年以上的建筑经验，我们的团队有专业工程师，有在校大学生，有IT界人士，共同的梦想让我们一起奋斗。<br/><br/>快乐居家APP隶属于四川快乐居家科技有限公司，是一款基于同城找维修（安装）工人的应用，主要提供家居维修和安装服务。可快捷方便的找到维修（安装）人员，是家居维修和网购家具安装的好帮手。<br/><br/>区别于传统的家居维修公司，我们致力于创造一个，从材料选购到维修服务一键完成的家居维修服务平台。
+            </h5>
+            <br/>
+            <br/>
+
+            <h3>大事记</h3>
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <td>2014.1.02</td>
+                    <td>创业团队开始组建成立</td>
+                </tr>
+                <tr>
+                    <td>2015.1.05</td>
+                    <td>四川快乐居家有限公司成立并登记注册</td>
+                </tr>
+                <tr>
+                    <td>2015.1.20</td>
+                    <td>快乐居家第一版APP推出</td>
+                </tr>
+                <tr>
+                    <td>2015.2.25</td>
+                    <td>上门维修内测</td>
+                </tr>
+                <tr>
+                    <td>2015.4.22</td>
+                    <td>快乐居家第二版APP上线推广</td>
+                </tr>
+            </table>
+            <span>我们正在继续努力....</span>
+        </div>
+    </div>
+    <!-- integer  -->
+    <!-- featured employee  -->
+    <!-- featured employee  -->
+    <!-- featured video  -->
+    <div class="featured-video" id="careers">
+        <div class="container">
+            <div class="integer-1">
+                <img src="/img/index/group.png" class="img-responsive" alt=""/>
+            </div>
+            <div class="integer-2">
+                <h3>加入我们</h3>
+
+                <p></p>
+            </div>
+            <div class="clearfix"></div>
+            <div class="clearfix"></div>
+            <h3>四川快乐居家科技有限公司是一家移动互联网创业公司。积聚了来自各个行业的经验丰富的小伙伴，我们个个热情奔放，怀揣梦想。追求完美，享受自由。在这里，你不用担心学无所用，全新的创业模式会丰富您的职业生涯。</h3>
+            <br/>
+
+            <h3>快乐居家团队正在在创业成长，需要您们的加入，一起为快乐居家的明天奋斗！</h3>
+            <br/>
+            <br/>
+
+            <h2>招聘岗位</h2>
+            <ul class="list-inline" style="font-size:22px;">
+                <li>BD总监</li>
+                <li>Android开发</li>
+                <li>IOS开发</li>
+                <li>APP产品经理</li>
+                <li>线上新媒体运营经理</li>
+            </ul>
+            <br/>
+
+            <h2>简历投递</h2>
+            <address style="font-size:22px;">
+                联系邮箱：957871482@qq.com <br/>
+                联系电话：13908138021 <br/>
+                联系人： 李先生 <br/>
+            </address>
+        </div>
+    </div>
+    <div class="container">
+            <h2>下载“快乐居家”APP</h2>
+            <span>下载注册即获5元维修金，可抵扣维修费。</span>
+            <img src="/img/index/qr.png" class="img-responsive" alt=""/>
+        </div>
+    <!-- featured video -->
+    <!-- blogs -->
+    <!-- footer -->
+    <div class="footer" style="margin-left: -100px; margin-right: -30px;">
+        <div class="container">
+            <div class="footer-nav">
+                <ul>
+                    <li><a href="#home" class="scroll">主页</a></li>
+                    <li><a href="#serive" class="scroll">服务项目</a></li>
+                    <li><a href="#contact" class="scroll">app</a></li>
+                    <li><a href="#about" class="scroll">关于我们</a></li>
+                    <li><a href="#careers" class="scroll">加入我们</a></li>
+                    <div class="clearfix"></div>
+                </ul>
+            </div>
+            <div class="bottom">
+                <p>四川快乐居家科技有限责任公司 版权所有 | 技术支持 <a href="http://www.rapospectre.com" target="_blank">RaPoSpectre</a></p>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <a href="#" id="toTop" style="display: block;"> <span id="toTopHover" style="opacity: 1;"> </span></a>
+    </div>
 
 </body>
 </html>

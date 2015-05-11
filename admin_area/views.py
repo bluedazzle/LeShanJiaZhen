@@ -268,7 +268,7 @@ def operate_get(request):
 
 def operate_finish(request):
     if not request.session.get('username'):
-            return HttpResponseRedirect('login_in')
+        return HttpResponseRedirect('login_in')
 
     if request.method == 'GET':
         username = request.session['username']
@@ -335,13 +335,13 @@ def operate_finish(request):
 def find_now_appointment(page_num, all_appointments):
     appointments = []
     if all_appointments.count() > 0:
-            for item in all_appointments:
-                now_date = str(datetime.datetime.now())[0:10]
-                it_date = str(item.create_time)[0:10]
-                if it_date == now_date:
-                    appointments.append(item)
-                else:
-                    continue
+        for item in all_appointments:
+            now_date = str(datetime.datetime.now())[0:10]
+            it_date = str(item.create_time)[0:10]
+            if it_date == now_date:
+                appointments.append(item)
+            else:
+                continue
     count = len(appointments)
     paginator = Paginator(appointments, 10)
     try:
@@ -382,7 +382,7 @@ def find_sometime_appointment(page_num, date_start, date_end, all_appointments):
 
 def operate_appraise(request):
     if not request.session.get('username'):
-            return HttpResponseRedirect('login_in')
+        return HttpResponseRedirect('login_in')
 
     if request.method == 'GET':
         username = request.session['username']
@@ -446,9 +446,10 @@ def operate_appraise(request):
                                            'flag0': 'T'}, context_instance=RequestContext(request))
 
 
+
 def operate_cancel(request):
     if not request.session.get('username'):
-            return HttpResponseRedirect('login_in')
+        return HttpResponseRedirect('login_in')
 
     if request.method == 'GET':
         username = request.session['username']
@@ -592,7 +593,7 @@ def notice(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if not request.session.get('username'):
-            return HttpResponseRedirect('login_in')
+        return HttpResponseRedirect('login_in')
 
     if request.method == 'GET':
         all_notice = Notice.objects.order_by('-id').all()
@@ -660,8 +661,8 @@ def notice(request):
 def find_all_notices(page_num, all_notices):
     notices = []
     if all_notices.count() > 0:
-            for item in all_notices:
-                notices.append(item)
+        for item in all_notices:
+            notices.append(item)
 
     count = len(notices)
     paginator = Paginator(notices, 5)
@@ -1362,11 +1363,11 @@ def edit_goods_o(request):
             new_goods_o.parent_item = goods_p
             new_goods_o.sort_id = sort_id
             if goods_o_have.count() > 0:
-                    return render_to_response('admin_area/goods_manage/edit_goods_o.html',
-                                              {'sort_id_have': 'T',
-                                               'item_p': goods_p,
-                                               'item_o': new_goods_o},
-                                              context_instance=RequestContext(request))
+                return render_to_response('admin_area/goods_manage/edit_goods_o.html',
+                                          {'sort_id_have': 'T',
+                                           'item_p': goods_p,
+                                           'item_o': new_goods_o},
+                                          context_instance=RequestContext(request))
             if goods_o_have.count() > 0:
                 return render_to_response('admin_area/goods_manage/edit_goods_o.html',
                                           {'sort_id_have': 'T',
@@ -2009,6 +2010,7 @@ def push_message(request):
         message = message.encode('utf-8')
         req = customedPush(message)
         expire_day = datetime.timedelta(15)
+        owntime = datetime.datetime.now()
         deadline = owntime + expire_day
         new_mes = Message(content=message, type=1, deadline=deadline)
         new_mes.save()

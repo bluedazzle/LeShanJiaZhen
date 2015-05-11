@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from HomeApi.models import *
 from HomeApi.method import *
-from django.http import HttpResponse,Http404,JsonResponse
+from django.http import HttpResponse, Http404, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 import simplejson
@@ -48,7 +48,6 @@ def send_reg_verify(req):
         raise Http404
 
 
-
 @csrf_exempt
 def send_consumer_verify(req):
     if req.method == 'POST':
@@ -78,8 +77,8 @@ def send_consumer_verify(req):
 
 @csrf_exempt
 def register(req):
-    body={}
-    if req.method =='POST':
+    body = {}
+    if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         username = jsonres['username']
         passwd = jsonres['password']
@@ -88,7 +87,7 @@ def register(req):
             body['msg'] = 'verify_code does not exist'
             return HttpResponse(encodejson(7, body), content_type='application/json')
         ishave = Associator.objects.filter(username=username)
-        if ishave.count()>0:
+        if ishave.count() > 0:
             body['msg'] = 'username has exist'
             return HttpResponse(encodejson(6, body), content_type='application/json')
         # birthday_datetime = string_to_datetime(birthday)
@@ -112,9 +111,10 @@ def register(req):
     else:
         raise Http404
 
+
 @csrf_exempt
 def change_password(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         username = jsonres['username']
@@ -135,9 +135,10 @@ def change_password(req):
             body['msg'] = 'login first before other action'
             return HttpResponse(encodejson(13, body), content_type='application/json')
 
+
 @csrf_exempt
 def login(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         username = jsonres['username']
@@ -163,9 +164,10 @@ def login(req):
     else:
         raise Http404
 
+
 @csrf_exempt
 def logout(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         username = jsonres['username']
@@ -181,6 +183,7 @@ def logout(req):
             return HttpResponse(encodejson(13, body), content_type='application/json')
     else:
         raise Http404
+
 
 @csrf_exempt
 def forget_password(req):
@@ -208,9 +211,10 @@ def forget_password(req):
     else:
         raise Http404
 
+
 @csrf_exempt
 def reset_password(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         verify = jsonres['verify_code']
@@ -242,9 +246,10 @@ def reset_password(req):
     else:
         raise Http404
 
+
 @csrf_exempt
 def get_android_version(req):
-    body={}
+    body = {}
     android = AppControl.objects.all()[0]
     if android.android_version == '':
         body['msg'] = 'no available version info'
@@ -254,9 +259,10 @@ def get_android_version(req):
         body['update_time'] = str(timezone.localtime(android.android_update_time))
         return HttpResponse(encodejson(1, body), content_type='application/json')
 
+
 @csrf_exempt
 def get_ios_version(req):
-    body={}
+    body = {}
     ios = AppControl.objects.all()[0]
     if ios.ios_version == '':
         body['msg'] = 'no available version info'
@@ -266,9 +272,10 @@ def get_ios_version(req):
         body['update_time'] = str(timezone.localtime(ios.ios_update_time))
         return HttpResponse(encodejson(1, body), content_type='application/json')
 
+
 @csrf_exempt
 def get_messages(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         token = jsonres['private_token']
@@ -286,7 +293,7 @@ def get_messages(req):
             try:
                 page_num = int(jsonres['page'])
                 # if page_num > total_page:
-                #     body['msg'] = 'upbond page number'
+                # body['msg'] = 'upbond page number'
                 #     return HttpResponse(encodejson(1, body), content_type='application/json')
                 message_list = paginator.page(page_num)
             except PageNotAnInteger:
@@ -315,9 +322,10 @@ def get_messages(req):
     else:
         raise Http404
 
+
 @csrf_exempt
 def add_message(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         token = jsonres['private_token']
@@ -340,7 +348,7 @@ def add_message(req):
 
 @csrf_exempt
 def get_unread_message_count(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         token = jsonres['private_token']
@@ -359,7 +367,7 @@ def get_unread_message_count(req):
 
 @csrf_exempt
 def read_message(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         token = jsonres['private_token']
@@ -385,7 +393,7 @@ def read_message(req):
 
 @csrf_exempt
 def get_coupon(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         token = jsonres['private_token']
@@ -428,9 +436,10 @@ def get_coupon(req):
     else:
         raise Http404
 
+
 @csrf_exempt
 def add_feedback(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         phone = jsonres['phone']
@@ -442,16 +451,17 @@ def add_feedback(req):
     else:
         raise Http404
 
+
 @csrf_exempt
 def city_search(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
         city_num = jsonres['city_num']
         city_list = Block.objects.filter(city_num=city_num)
         if city_list.count() > 0:
             city = city_list[0]
-            scity={}
+            scity = {}
             scity['city_num'] = city.city_num
             scity['city_name'] = city.area_name
             scity['city_tel'] = city.area_tel
@@ -464,7 +474,7 @@ def city_search(req):
         else:
             match_code = search_neighber(city_num)
             city = Block.objects.all()[match_code]
-            scity={}
+            scity = {}
             scity['city_num'] = city.city_num
             scity['city_name'] = city.area_name
             scity['city_tel'] = city.area_tel
@@ -477,9 +487,10 @@ def city_search(req):
     else:
         raise Http404
 
+
 @csrf_exempt
 def change_info(req):
-    body={}
+    body = {}
     birthdayd = None
     if req.method == 'POST':
         jsonres = simplejson.loads(req.body)
@@ -507,7 +518,7 @@ def change_info(req):
 
 @csrf_exempt
 def get_invite_coupon(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         token = resjson['private_token']
@@ -561,7 +572,7 @@ def get_invite_coupon(req):
 
 @csrf_exempt
 def get_goods_p_item(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         city_num = resjson['city_number']
@@ -571,7 +582,7 @@ def get_goods_p_item(req):
             goods_p_list = Goods_P.objects.filter(area=block)
             goodslist = []
             for itm in goods_p_list:
-                goodsp={}
+                goodsp = {}
                 goodsp['item_name'] = itm.item_name
                 goodsp['pid'] = itm.id
                 goodsp['have_advertisment'] = itm.have_advertisment
@@ -586,9 +597,10 @@ def get_goods_p_item(req):
     else:
         raise Http404
 
+
 @csrf_exempt
 def get_goods(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         goods_id = resjson['pid']
@@ -598,7 +610,7 @@ def get_goods(req):
             goods_o_list = Goods_O.objects.filter(parent_item=goodpitem).order_by('sort_id')
             goodslist = []
             for itm in goods_o_list:
-                oitem= {}
+                oitem = {}
                 itemlist = GoodsItem.objects.filter(parent_item=itm).order_by('sort_id')
                 s_itemlist = []
                 for item in itemlist:
@@ -632,10 +644,9 @@ def get_goods(req):
         raise Http404
 
 
-
 @csrf_exempt
 def get_goods_p_item(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         city_num = resjson['city_number']
@@ -645,7 +656,7 @@ def get_goods_p_item(req):
             goods_p_list = Goods_P.objects.filter(area=block).order_by('sort_id')
             goodslist = []
             for itm in goods_p_list:
-                goodsp={}
+                goodsp = {}
                 goodsp['item_name'] = itm.item_name
                 goodsp['pid'] = itm.id
                 goodsp['have_advertisment'] = itm.have_advertisment
@@ -661,10 +672,9 @@ def get_goods_p_item(req):
         return Http404
 
 
-
 @csrf_exempt
 def get_goods_detail(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         sid = resjson['sid']
@@ -695,7 +705,7 @@ def get_goods_detail(req):
 
 @csrf_exempt
 def get_goods_o_item(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         goods_id = resjson['pid']
@@ -705,7 +715,7 @@ def get_goods_o_item(req):
             goods_o_list = Goods_O.objects.filter(parent_item=goodpitem).order_by('sort_id')
             goodslist = []
             for itm in goods_o_list:
-                oitem= {}
+                oitem = {}
                 itemlist = GoodsItem.objects.filter(parent_item=itm).order_by('sort_id')
                 s_itemlist = []
                 for item in itemlist:
@@ -740,7 +750,7 @@ def get_goods_o_item(req):
 
 @csrf_exempt
 def create_pay_order(req):
-    body={}
+    body = {}
     good_title = ''
     good_body = ''
     if req.method == 'POST':
@@ -813,7 +823,8 @@ def create_pay_order(req):
                                            origin_item=goods,
                                            belong=newappoint)
                 newordergoods.save()
-                good_title = goods.title + '等'
+                utitle = goods.title[0:8] + '等'
+                good_title = utitle
                 good_body = good_title
             if send_type == 1:
                 if price_sure < 20.0:
@@ -874,11 +885,12 @@ def create_pay_order(req):
                                                origin_item=homeit)
                 new_order_item.save()
             # if use_coupon:
-            #     coupon = Coupon.objects.get(cou_id=coupon_id)
+            # coupon = Coupon.objects.get(cou_id=coupon_id)
             #     coupon.if_use = True
             #     coupon.save()
             if not pay:
-                newappoint.amount = amount
+                newappoint.amount = (amount / 100)
+                newappoint.valid = True
                 newappoint.save()
                 body['msg'] = 'create off-line order success'
                 return HttpResponse(encodejson(1, body), content_type='application/json')
@@ -919,10 +931,9 @@ def create_pay_order(req):
         raise Http404
 
 
-
 @csrf_exempt
 def status_search(req):
-    body={}
+    body = {}
     if not req.method == 'POST':
         raise Http404
     resjson = simplejson.loads(req.body)
@@ -949,11 +960,9 @@ def status_search(req):
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
-
-
 @csrf_exempt
 def verify_consumer(req):
-    body={}
+    body = {}
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
         phone = resjson['phone']
@@ -977,11 +986,9 @@ def verify_consumer(req):
         raise Http404
 
 
-
-
 @csrf_exempt
 def create_appointment(req):
-    body={}
+    body = {}
     consumer = None
     if req.method == 'POST':
         resjson = simplejson.loads(req.body)
@@ -1069,24 +1076,22 @@ def create_appointment(req):
                 return HttpResponse(encodejson(7, body), content_type='application/json')
             homeit = home_list[0]
             new_order_item = OrderHomeItem(item_name=homeit.item_name,
-                                       create_time=datetime.datetime.now(),
-                                       belong=newappoint,
-                                       origin_item=homeit)
+                                           create_time=datetime.datetime.now(),
+                                           belong=newappoint,
+                                           origin_item=homeit)
             new_order_item.save()
         body['msg'] = 'appointment create success'
         body['new_id'] = newid
         return HttpResponse(encodejson(1, body), content_type='application/json')
         # except Exception, e:
-        #     print e
+        # print e
         #     body['msg'] = 'json value missing or consumer token not correct'
         #     return HttpResponse(encodejson(2, body), content_type='application/json')
 
 
-
-
 @csrf_exempt
 def get_home_item_p(req):
-    body={}
+    body = {}
     if not req.method == 'POST':
         raise Http404
     resjson = simplejson.loads(req.body)
@@ -1116,10 +1121,9 @@ def get_home_item_p(req):
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
-
 @csrf_exempt
 def get_home_item(req):
-    body={}
+    body = {}
     if not req.method == 'POST':
         raise Http404
     resjson = simplejson.loads(req.body)
@@ -1130,7 +1134,7 @@ def get_home_item(req):
         return HttpResponse(encodejson(7, body), content_type='application/json')
     pitem = pitems[0]
     homeitem_list = HomeItem.objects.filter(parent_item=pitem).order_by('sort_id')
-    home_list=[]
+    home_list = []
     for itm in homeitem_list:
         homeitem = {}
         homeitem['item_name'] = itm.item_name
@@ -1143,11 +1147,10 @@ def get_home_item(req):
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
-
 @csrf_exempt
 def get_recommmand_list(req):
-    body={}
-    if not req.method=='POST':
+    body = {}
+    if not req.method == 'POST':
         raise Http404
     resjson = simplejson.loads(req.body)
     pid = resjson['recommand_id']
@@ -1189,10 +1192,9 @@ def get_recommmand_list(req):
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
-
 @csrf_exempt
 def get_advertisment(req):
-    body={}
+    body = {}
     if not req.method == 'POST':
         raise Http404
     resjson = simplejson.loads(req.body)
@@ -1210,10 +1212,9 @@ def get_advertisment(req):
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
-
 @csrf_exempt
 def appraise(req):
-    body={}
+    body = {}
     if not req.method == 'POST':
         raise Http404
     resjson = simplejson.loads(req.body)
@@ -1260,7 +1261,6 @@ def appraise(req):
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
-
 @csrf_exempt
 def get_orders(req):
     body = {}
@@ -1274,7 +1274,8 @@ def get_orders(req):
         body['msg'] = 'login befor other action'
         return HttpResponse(encodejson(13, body), content_type='application/json')
     curuser = Associator.objects.get(username=username)
-    order_list = Appointment.objects.filter(associator=curuser, order_type=order_type, valid=True).order_by('-create_time')
+    order_list = Appointment.objects.filter(associator=curuser, order_type=order_type, valid=True).order_by(
+        '-create_time')
     total = order_list.count()
     total_page = math.ceil(float(total) / 20.0)
     paginator = Paginator(order_list, 20)
@@ -1282,7 +1283,7 @@ def get_orders(req):
     try:
         page_num = int(resjson['page'])
         # if page_num > total_page:
-        #     body['msg'] = 'upbond page number'
+        # body['msg'] = 'upbond page number'
         #     return HttpResponse(encodejson(1, body), content_type='application/json')
         order_list = paginator.page(page_num)
     except PageNotAnInteger:
@@ -1430,8 +1431,6 @@ def cancel_order(req):
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
-
-
 @csrf_exempt
 def check_game(req):
     body = {}
@@ -1474,7 +1473,8 @@ def play_game(req):
     if not coupon_control.game_active:
         body['msg'] = 'no game can play'
         return HttpResponse(encodejson(7, body), content_type='application/json')
-    if not (not isactive(coupon_control.game_start_time.replace(tzinfo=None), 0) and isactive(coupon_control.game_end_time.replace(tzinfo=None), 0)):
+    if not (not isactive(coupon_control.game_start_time.replace(tzinfo=None), 0) and isactive(
+            coupon_control.game_end_time.replace(tzinfo=None), 0)):
         body['msg'] = 'game time not begin or already end'
         return HttpResponse(encodejson(7, body), content_type='application/json')
     if coupon_control.game_current_num == coupon_control.game_coupon_num:
@@ -1502,7 +1502,6 @@ def play_game(req):
     mes = GAME_MES % str(value)
     create_new_message(mes, curuser)
     return HttpResponse(encodejson(1, body), content_type='application/json')
-
 
 
 @csrf_exempt
@@ -1552,7 +1551,7 @@ def appointment_pic(request):
     if not pic:
         body['msg'] = 'no picture'
         return HttpResponse(encodejson(1, body), content_type='application/json')
-    pic_name = str(curuser)+str(int(time.time()))+str(random.randint(10000, 99999)) + '.png'
+    pic_name = str(curuser) + str(int(time.time())) + str(random.randint(10000, 99999)) + '.png'
     path = pathToStorePicture + '/upload/' + pic_name
     img = Image.open(pic)
     img.save(path, "png")
@@ -1567,7 +1566,6 @@ def appointment_pic(request):
     appoint.save()
     body['msg'] = 'upload picture success'
     return HttpResponse(encodejson(1, body), content_type='application/json')
-
 
 
 @csrf_exempt
@@ -1589,12 +1587,10 @@ def get_all_city(req):
     return HttpResponse(encodejson(1, body), content_type='application/json')
 
 
-
 def get_my_ip():
     myname = socket.getfqdn(socket.gethostname())
     myaddr = socket.gethostbyname(myname)
     return myaddr
-
 
 
 def create_order_id(pay=True):
@@ -1612,8 +1608,6 @@ def create_order_id(pay=True):
     return ordernum
 
 
-
-
 def create_new_coupon(value, ctype, own, expire=365, gamesign=''):
     if gamesign != '':
         have_count = Coupon.objects.filter(type=ctype, game_sign=gamesign).count()
@@ -1622,27 +1616,29 @@ def create_new_coupon(value, ctype, own, expire=365, gamesign=''):
     odate = datetime.date.today()
     odate = str(odate).replace('-', '')
     if gamesign != '':
-        newcou_id = '%s%s%i%05i' % (odate, gamesign[0:2], ctype, have_count+1)
+        newcou_id = '%s%s%i%05i' % (odate, gamesign[0:2], ctype, have_count + 1)
     else:
-        newcou_id = '%s%i%05i' % (odate, ctype, have_count+1)
+        newcou_id = '%s%i%05i' % (odate, ctype, have_count + 1)
     owntime = datetime.datetime.now()
     expire_day = datetime.timedelta(expire)
     deadline = owntime + expire_day
-    newcoupon = Coupon(cou_id=newcou_id, value=value, type=ctype, own=own, game_sign=gamesign, owned_time=owntime, deadline=deadline)
-    newcoupon.save()
+    newcoupon = Coupon(cou_id=newcou_id, value=value, type=ctype, own=own, game_sign=gamesign, owned_time=owntime,
+                       deadline=deadline)
+    try:
+        newcoupon.save()
+    except:
+        return create_new_coupon(value, ctype, own, expire, gamesign)
     return newcoupon
-
 
 
 def if_legal(username, private_token):
     print username
     print private_token
     ass = Associator.objects.filter(username=username, private_token=private_token)
-    if ass.count()>0:
+    if ass.count() > 0:
         return True
     else:
         return False
-
 
 
 def isactive(lastactivetime, det=600):
@@ -1662,19 +1658,24 @@ def encodejson(status, body):
     tmpjson['body'] = body
     return simplejson.dumps(tmpjson)
 
+
 def createtoken(count=32):
-    return string.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBA1234567890zyxwvutsrqponmlkjihgfedcba+=', count)).replace(" ", "")
+    return string.join(
+        random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBA1234567890zyxwvutsrqponmlkjihgfedcba+=', count)).replace(" ", "")
 
 
 def string_to_datetime(timestring, timeformat='%Y-%m-%d'):
     dateres = datetime.datetime.strptime(timestring, timeformat)
     return dateres
 
+
 def datetime_to_timestamp(datetimet):
     return time.mktime(datetimet.timetuple())
 
+
 def datetime_to_string(datetimet):
     return str(timezone.localtime(datetimet))
+
 
 def create_invite_code(count=6):
     return string.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBA1234567890', count)).replace(" ", "")
@@ -1686,24 +1687,27 @@ def search_neighber(city_num):
         num_list = []
         for itm in city_list:
             num_list.append(itm.city_num[0:i])
+
         def match(city):
             if city == city_num[0:i]:
                 return True
             else:
                 return False
+
         res = map(match, num_list)
         if True in res:
             return res.index(True)
     return 0
 
+
 def verify_reg(phone, verify_code):
-        verify_list = Verify.objects.filter(phone=phone, verify=str(verify_code))
-        if verify_list.count() > 0:
-            verify = verify_list[0]
-            verify.delete()
-            return True
-        else:
-            return False
+    verify_list = Verify.objects.filter(phone=phone, verify=str(verify_code))
+    if verify_list.count() > 0:
+        verify = verify_list[0]
+        verify.delete()
+        return True
+    else:
+        return False
 
 
 def if_in_due(deadline):

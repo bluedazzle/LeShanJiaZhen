@@ -13,7 +13,7 @@ class HomeAdminManager(BaseUserManager):
         user = self.model(
             email = HomeAdminManager.normalize_email(email),
             username = phone,
-        )
+            )
 
         user.set_password(passwd)
         user.save(using=self._db)
@@ -22,9 +22,9 @@ class HomeAdminManager(BaseUserManager):
     def create_superuser(self, email, phone, passwd):
 
         user = self.create_user(email,
-            username = phone,
-            password = passwd,
-        )
+                                username = phone,
+                                password = passwd,
+                                )
         user.is_staff = True
         user.is_active = True
         user.is_admin = False
@@ -39,7 +39,7 @@ class AssociatorManager(BaseUserManager):
         user = self.model(
             email = AssociatorManager.normalize_email(email),
             username = phone,
-        )
+            )
 
         user.set_password(passwd)
         user.save(using=self._db)
@@ -48,9 +48,9 @@ class AssociatorManager(BaseUserManager):
     def create_superuser(self, email, phone, passwd):
 
         user = self.create_user(email,
-            username = phone,
-            password = passwd,
-        )
+                                username = phone,
+                                password = passwd,
+                                )
         user.is_staff = True
         user.is_active = True
         user.is_admin = False
