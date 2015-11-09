@@ -117,7 +117,7 @@ def f_phone_verify(request):
 
 
 def forget_password(request):
-    if request.method == 'GET':
+    if request.method == 'GET': 
         return render_to_response('forget_password.html', context_instance=RequestContext(request))
     if request.method == 'POST':
         context = {}
@@ -268,7 +268,7 @@ def operate_get(request):
 
 def operate_finish(request):
     if not request.session.get('username'):
-        return HttpResponseRedirect('login_in')
+            return HttpResponseRedirect('login_in')
 
     if request.method == 'GET':
         username = request.session['username']
@@ -335,13 +335,13 @@ def operate_finish(request):
 def find_now_appointment(page_num, all_appointments):
     appointments = []
     if all_appointments.count() > 0:
-        for item in all_appointments:
-            now_date = str(datetime.datetime.now())[0:10]
-            it_date = str(item.create_time)[0:10]
-            if it_date == now_date:
-                appointments.append(item)
-            else:
-                continue
+            for item in all_appointments:
+                now_date = str(datetime.datetime.now())[0:10]
+                it_date = str(item.create_time)[0:10]
+                if it_date == now_date:
+                    appointments.append(item)
+                else:
+                    continue
     count = len(appointments)
     paginator = Paginator(appointments, 10)
     try:
@@ -382,7 +382,7 @@ def find_sometime_appointment(page_num, date_start, date_end, all_appointments):
 
 def operate_appraise(request):
     if not request.session.get('username'):
-        return HttpResponseRedirect('login_in')
+            return HttpResponseRedirect('login_in')
 
     if request.method == 'GET':
         username = request.session['username']
@@ -446,10 +446,9 @@ def operate_appraise(request):
                                            'flag0': 'T'}, context_instance=RequestContext(request))
 
 
-
 def operate_cancel(request):
     if not request.session.get('username'):
-        return HttpResponseRedirect('login_in')
+            return HttpResponseRedirect('login_in')
 
     if request.method == 'GET':
         username = request.session['username']
@@ -593,7 +592,7 @@ def notice(request):
     if not request.session.get('username'):
         return HttpResponseRedirect('login_in')
     if not request.session.get('username'):
-        return HttpResponseRedirect('login_in')
+            return HttpResponseRedirect('login_in')
 
     if request.method == 'GET':
         all_notice = Notice.objects.order_by('-id').all()
@@ -661,8 +660,8 @@ def notice(request):
 def find_all_notices(page_num, all_notices):
     notices = []
     if all_notices.count() > 0:
-        for item in all_notices:
-            notices.append(item)
+            for item in all_notices:
+                notices.append(item)
 
     count = len(notices)
     paginator = Paginator(notices, 5)
@@ -1363,11 +1362,11 @@ def edit_goods_o(request):
             new_goods_o.parent_item = goods_p
             new_goods_o.sort_id = sort_id
             if goods_o_have.count() > 0:
-                return render_to_response('admin_area/goods_manage/edit_goods_o.html',
-                                          {'sort_id_have': 'T',
-                                           'item_p': goods_p,
-                                           'item_o': new_goods_o},
-                                          context_instance=RequestContext(request))
+                    return render_to_response('admin_area/goods_manage/edit_goods_o.html',
+                                              {'sort_id_have': 'T',
+                                               'item_p': goods_p,
+                                               'item_o': new_goods_o},
+                                              context_instance=RequestContext(request))
             if goods_o_have.count() > 0:
                 return render_to_response('admin_area/goods_manage/edit_goods_o.html',
                                           {'sort_id_have': 'T',
@@ -1581,9 +1580,7 @@ def delete_goods(request):
 
 
 # 检查用户是否有相应的操作权限，并返回相应的GET请求
-def check_permission(request, kind, template, content=None):
-    if not content:
-        content = {}
+def check_permission(request, kind, template, content={}):
     user = HomeAdmin.objects.get(type=1, username=request.session['username'])
     if kind == 'manage_game':
         user_permission = user.manage_game
@@ -1662,12 +1659,13 @@ def give_coupon(request):
         seconds = int(time_now.strftime("%S"))
         coupon_new.deadline = datetime.datetime(year+1, month, day, hour, minute, seconds)
         coupon_new.save()
-        expire_day = datetime.timedelta(15)
+	expire_day = datetime.timedelta(15)
+	owntime = datetime.datetime.now()
         deadline = owntime + expire_day
         message_new = Message()
         message_new.content = "您获得了快乐居家赠送的%s元维修基金" %value
         message_new.own = associators[0]
-        message_new.deadline = deadline
+	message_new.deadline = deadline
         message_new.save()
         return render_to_response('admin_area/coupon_manage/give_coupon.html',
                                   {'give_success': True,
@@ -1882,6 +1880,7 @@ def set_game(request):
             coupon_control = CouponControl.objects.get(id=control_id)
             coupon_control.game_active = False
             coupon_control.game_end_time = datetime.datetime.utcnow()
+	    coupon_control.game_current_num = 0
             coupon_control.save()
             new_game_record = GameRecord()
             new_game_record.game_id = coupon_control.game_sign
@@ -2010,7 +2009,7 @@ def push_message(request):
         message = message.encode('utf-8')
         req = customedPush(message)
         expire_day = datetime.timedelta(15)
-        owntime = datetime.datetime.now()
+	owntime = datetime.datetime.now()
         deadline = owntime + expire_day
         new_mes = Message(content=message, type=1, deadline=deadline)
         new_mes.save()

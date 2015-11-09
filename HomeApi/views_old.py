@@ -268,14 +268,14 @@ def get_categories(request):
 @csrf_exempt
 def test_block(request):
     # try:
-    req = json.loads(request.body)
-    area_id = int(req['area_id'])
-    area_tel = req['area_tel']
-    area_name = req['area_name']
-    area_address = req['area_address']
-    area_info = req['area_info']
-    status = add_block(area_id=area_id, area_tel=area_tel, area_name=area_name, area_address=area_address, area_info=area_info)
-    return HttpResponse(json.dumps({'status': status, 'body': None}))
+        req = json.loads(request.body)
+        area_id = int(req['area_id'])
+        area_tel = req['area_tel']
+        area_name = req['area_name']
+        area_address = req['area_address']
+        area_info = req['area_info']
+        status = add_block(area_id=area_id, area_tel=area_tel, area_name=area_name, area_address=area_address, area_info=area_info)
+        return HttpResponse(json.dumps({'status': status, 'body': None}))
     # except Exception:
     #     status = 2
     # return HttpResponse(json.dumps({'status': status, 'body': None}))

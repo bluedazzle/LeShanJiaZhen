@@ -13,7 +13,7 @@ class HomeAdminManager(BaseUserManager):
         user = self.model(
             email = HomeAdminManager.normalize_email(email),
             username = phone,
-            )
+        )
 
         user.set_password(passwd)
         user.save(using=self._db)
@@ -22,9 +22,9 @@ class HomeAdminManager(BaseUserManager):
     def create_superuser(self, email, phone, passwd):
 
         user = self.create_user(email,
-                                username = phone,
-                                password = passwd,
-                                )
+            username = phone,
+            password = passwd,
+        )
         user.is_staff = True
         user.is_active = True
         user.is_admin = False
@@ -39,7 +39,7 @@ class AssociatorManager(BaseUserManager):
         user = self.model(
             email = AssociatorManager.normalize_email(email),
             username = phone,
-            )
+        )
 
         user.set_password(passwd)
         user.save(using=self._db)
@@ -48,9 +48,9 @@ class AssociatorManager(BaseUserManager):
     def create_superuser(self, email, phone, passwd):
 
         user = self.create_user(email,
-                                username = phone,
-                                password = passwd,
-                                )
+            username = phone,
+            password = passwd,
+        )
         user.is_staff = True
         user.is_active = True
         user.is_admin = False
@@ -320,7 +320,7 @@ class GoodsItem(models.Model):
     parent_item = models.ForeignKey(Goods_O, related_name='goodsitems')
 
     def __unicode__(self):
-        return self.title
+        return unicode(self.id)
 
 
 class HomeItem_P(models.Model):
@@ -379,7 +379,7 @@ class Appointment(models.Model):
     order_phone = models.CharField(max_length=15, default='000')
     order_id = models.CharField(max_length=100, unique=True)
     remark = models.CharField(max_length=100, blank=True, null=True)
-    status = models.IntegerField()
+    status = models.IntegerField(max_length=2)
     photo1 = models.CharField(max_length=100, blank=True, null=True)
     photo2 = models.CharField(max_length=100, blank=True, null=True)
     photo3 = models.CharField(max_length=100, blank=True, null=True)
@@ -393,9 +393,9 @@ class Appointment(models.Model):
     service_person = models.CharField(max_length=20, default="无")
     service_time = models.CharField(max_length=50, default="无")
     # order_type = 1:goods, order_type = 2:homeitem
-    order_type = models.IntegerField()
+    order_type = models.IntegerField(max_length=4)
     online_pay = models.BooleanField(default=True)
-    send_type = models.IntegerField(default=1)
+    send_type = models.IntegerField(max_length=2, default=1)
     amount = models.FloatField(max_length=10, null=True, blank=True)
     valid = models.BooleanField(default=False)
     use_coupon = models.BooleanField(default=False)

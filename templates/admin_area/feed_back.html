@@ -1,87 +1,87 @@
 {% extends 'admin_area/base.html' %}
 {% block define %}
     <script>
-        $('#page_title').text('消息反馈');
-        $('#message_manage').addClass('active');
-        $('#feed_back').addClass('active');
+      $('#page_title').text('消息反馈');
+      $('#message_manage').addClass('active');
+      $('#feed_back').addClass('active');
     </script>
-    <div class="col-md-12 col-lg-12" style="margin-top: 3%">
-        {% if not feedbacks %}
-            <h5 style="margin-left: 39%;padding-top: 2%;color: red;">没有反馈信息</h5>
-        {% else %}
-            <table class="table">
-                <thead>
-                <h4>共有{{ count }}条反馈信息</h4>
-                </thead>
-                <tbody>
-                <tr style="background-color: #1abc9c;color: #ffffff">
-                    <th style="max-width: 400px;">反馈内容</th>
-                    <th>电话</th>
-                    <th>时间</th>
-                </tr>
-                {% for feedback in feedbacks %}
-                    <tr>
-                        <td style="max-width: 400px">{{ feedback.content }}</td>
-                        <td>{{ feedback.phone }}</td>
-                        <td>{{ feedback.create_time|date:"Y-m-d" }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-    </div>
-    {% if feedbacks.has_previous or feedbacks.has_next %}
-        {% if feedbacks.paginator.num_pages < 15 %}
-            <div class="text-center">
-                <div class="pagination pagination-success">
-                    <ul>
-                        {% if feedbacks.has_previous %}
-                            <li><a href="feed_back?page={{ feedbacks.previous_page_number }}" class="btn btn-info previous">上一页</a></li>
-                        {% endif %}
-                        {% for page in feedbacks.paginator.page_range %}
-                            {% if page == feedbacks.number %}
-                                <li class="active"><a role="button" href="feed_back?page={{ page }}">{{ page }}</a></li>
-                            {% else %}
-                                <li><a href="feed_back?page={{ page }}">{{ page }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                        {% if feedbacks.has_next %}
-                            <li><a href="feed_back?page={{ feedbacks.next_page_number }}" class="btn btn-info next">下一页</a></li>
-
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        {% else %}
-            <div class="text-center">
-                {% if feedbacks.has_previous %}
-                    <button class="btn btn-success" onclick="turn_page('{{ feedbacks.previous_page_number }}')">上一页</button>
-                {% else %}
-                    <button class="btn btn-success" disabled="disabled">上一页</button>
-                {% endif %}
-                <select id="select3" class="form-control select select-success select-block mbl" onchange="turn_page(this.value)">
-                    {% for page in feedbacks.paginator.page_range %}
-                        {% if page == feedbacks.number %}
-                            <option value="{{ page }}" selected>第{{ page }}页</option>
-                        {% else %}
-                            <option value="{{ page }}">第{{ page }}页</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-                <script>
-                    $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
-                </script>
-                {% if feedbacks.has_next %}
-                    <button class="btn btn-success" onclick="turn_page('{{ feedbacks.next_page_number }}')">下一页</button>
-                {% else %}
-                    <button class="btn btn-success" disabled="disabled">下一页</button>
-                {% endif %}
-            </div>
-            <script>
-                function turn_page(page_num){
-                    window.location.href = "feed_back?page=" + page_num;
-                }
-            </script>
-        {% endif %}
+<div class="col-md-12 col-lg-12" style="margin-top: 3%">
+    {% if not feedbacks %}
+        <h5 style="margin-left: 39%;padding-top: 2%;color: red;">没有反馈信息</h5>
+    {% else %}
+        <table class="table">
+          <thead>
+            <h4>共有{{ count }}条反馈信息</h4>
+          </thead>
+          <tbody>
+            <tr style="background-color: #1abc9c;color: #ffffff">
+                <th style="max-width: 400px;">反馈内容</th>
+                <th>电话</th>
+                <th>时间</th>
+            </tr>
+            {% for feedback in feedbacks %}
+            <tr>
+                <td style="max-width: 400px">{{ feedback.content }}</td>
+                <td>{{ feedback.phone }}</td>
+                <td>{{ feedback.create_time|date:"Y-m-d" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
     {% endif %}
+</div>
+    {% if feedbacks.has_previous or feedbacks.has_next %}
+    {% if feedbacks.paginator.num_pages < 15 %}
+  <div class="text-center">
+      <div class="pagination pagination-success">
+          <ul>
+              {% if feedbacks.has_previous %}
+            <li><a href="feed_back?page={{ feedbacks.previous_page_number }}" class="btn btn-info previous">上一页</a></li>
+             {% endif %}
+             {% for page in feedbacks.paginator.page_range %}
+               {% if page == feedbacks.number %}
+            <li class="active"><a role="button" href="feed_back?page={{ page }}">{{ page }}</a></li>
+               {% else %}
+            <li><a href="feed_back?page={{ page }}">{{ page }}</a></li>
+               {% endif %}
+            {% endfor %}
+            {% if feedbacks.has_next %}
+             <li><a href="feed_back?page={{ feedbacks.next_page_number }}" class="btn btn-info next">下一页</a></li>
+
+            {% endif %}
+          </ul>
+      </div>
+  </div>
+  {% else %}
+  <div class="text-center">
+     {% if feedbacks.has_previous %}
+         <button class="btn btn-success" onclick="turn_page('{{ feedbacks.previous_page_number }}')">上一页</button>
+     {% else %}
+         <button class="btn btn-success" disabled="disabled">上一页</button>
+     {% endif %}
+     <select id="select3" class="form-control select select-success select-block mbl" onchange="turn_page(this.value)">
+         {% for page in feedbacks.paginator.page_range %}
+             {% if page == feedbacks.number %}
+             <option value="{{ page }}" selected>第{{ page }}页</option>
+             {% else %}
+             <option value="{{ page }}">第{{ page }}页</option>
+             {% endif %}
+         {% endfor %}
+     </select>
+     <script>
+         $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
+     </script>
+     {% if feedbacks.has_next %}
+         <button class="btn btn-success" onclick="turn_page('{{ feedbacks.next_page_number }}')">下一页</button>
+     {% else %}
+         <button class="btn btn-success" disabled="disabled">下一页</button>
+     {% endif %}
+  </div>
+  <script>
+   function turn_page(page_num){
+       window.location.href = "feed_back?page=" + page_num;
+   }
+  </script>
+  {% endif %}
+{% endif %}
 {% endblock %}

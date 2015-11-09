@@ -24,7 +24,7 @@ def send_cancel_message(appointments):
     apikey = 'e1ebef39f28c86fdb57808eb45ab713a'
     for appointment in appointments:
         content = "#order_num#=" + appointment.order_id
-        res = tpl_send_sms(apikey, '719533', content, appointment.order_phone)
+        res = tpl_send_sms(apikey, '669219', content, appointment.order_phone)
         jsres = simplejson.loads(res)
         msg = jsres['code']
         print jsres

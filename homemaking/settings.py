@@ -20,11 +20,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '89_#q=qbk+udde-*1t-e*y^mx9kokruzv5(g##stsdlmh*d^_@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', 'www.kuailejujia.com']
 
 
 # Application definition
@@ -63,11 +63,11 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 DB_ENGINE = 'django.db.backends.postgresql_psycopg2'
-DB_NAME = 'homemaking'
+DB_NAME = 'LSHM'
 DB_USER = 'postgres'                      # Not used with sqlite3.
-DB_PASSWORD = 'GDBDYL886'                  # Not used with sqlite3.
+DB_PASSWORD = '123456'                  # Not used with sqlite3.
 DB_HOST = 'localhost'                      # Set to empty string for localhost. Not used with sqlite3.
-DB_PORT = '5433'
+DB_PORT = '5432'
 
 DATABASES = {
     'default': {

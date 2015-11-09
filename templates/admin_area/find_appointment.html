@@ -6,17 +6,17 @@
         $('#page_title').text('查询订单')
     </script>
     <div class="col-md-12 col-lg-12">
-        <div class="col-md-4 col-lg-4" style="margin-left: 25%">
-            <form method="post" action="find_appointment" id="phone_mes">
-                {% csrf_token %}
-                <input id="phone" name="phone" type="text" style="margin-top: 4%" placeholder="输入手机号"
-                       class="form-control input-sm" onkeyup="this.value=this.value.replace(/\D/g,'')"
-                       onafterpaste="this.value=this.value.replace(/\D/g,'')" value="{{ phone }}">
-            </form>
-        </div>
-        <div class="col-md-5 col-lg-5">
-            <button id="p_number" class="btn btn-primary" style="margin-top: 2.5%">手机号查询</button>
-        </div>
+       <div class="col-md-4 col-lg-4" style="margin-left: 25%">
+           <form method="post" action="find_appointment" id="phone_mes">
+               {% csrf_token %}
+             <input id="phone" name="phone" type="text" style="margin-top: 4%" placeholder="输入手机号"
+                    class="form-control input-sm" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                    onafterpaste="this.value=this.value.replace(/\D/g,'')" value="{{ phone }}">
+          </form>
+       </div>
+       <div class="col-md-5 col-lg-5">
+           <button id="p_number" class="btn btn-primary" style="margin-top: 2.5%">手机号查询</button>
+       </div>
         <script>
             $('#p_number').click(function(){
                 if($('#phone').val().length == 11){
@@ -27,266 +27,266 @@
                 }
             })
         </script>
-        <div class="col-md-4 col-lg-4" style="margin-left: 25%">
-            <form method="post" action="find_appointment" id="appointment_mes">
-                {% csrf_token %}
-                <input id="appointment" name="appointment" type="text" style="margin-top: 4%" placeholder="输入预约号"
-                       class="form-control input-sm" onkeyup="this.value=this.value.replace(/\D/g,'')"
-                       onafterpaste="this.value=this.value.replace(/\D/g,'')" value="{{ appointment }}">
-            </form>
-        </div>
-        <div class="col-md-5 col-lg-5">
-            <button id="a_number" class="btn btn-primary" style="margin-top: 2.5%">订单号查询</button>
-        </div>
-        <script>
-            $('#a_number').click(function(){
-                if($('#appointment').val()){
-                    $('#appointment_mes').submit()
-                }
-                else{
-                    alert("请输入正确的预约号")
-                }
-            })
-        </script>
+       <div class="col-md-4 col-lg-4" style="margin-left: 25%">
+           <form method="post" action="find_appointment" id="appointment_mes">
+               {% csrf_token %}
+             <input id="appointment" name="appointment" type="text" style="margin-top: 4%" placeholder="输入预约号"
+                    class="form-control input-sm" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                    onafterpaste="this.value=this.value.replace(/\D/g,'')" value="{{ appointment }}">
+          </form>
+       </div>
+       <div class="col-md-5 col-lg-5">
+           <button id="a_number" class="btn btn-primary" style="margin-top: 2.5%">订单号查询</button>
+       </div>
+       <script>
+           $('#a_number').click(function(){
+               if($('#appointment').val()){
+                   $('#appointment_mes').submit()
+               }
+               else{
+                   alert("请输入正确的预约号")
+               }
+           })
+       </script>
     </div>
     {% if fault %}
         <div class="col-md-12 col-lg-12">
-            <h6 style="margin-top: 1%;margin-left: 38%">没有相关的订单</h6>
+        <h6 style="margin-top: 1%;margin-left: 38%">没有相关的订单</h6>
         </div>
     {% else %}
         <div class="col-md-12 col-lg-12">
-            <h6 style="margin-top: 1%;margin-left: 38%">共找到{{ count }}个符合条件的订单</h6>
+        <h6 style="margin-top: 1%;margin-left: 38%">共找到{{ count }}个符合条件的订单</h6>
         </div>
     {% endif %}
-    <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
-        {% for item in items %}
-            {% if not item.online_pay or item.chargeinfo.paid %}
-                <div class="panel" id="head{{ item.id }}">
-                    <div class="panel-heading" id="heading{{ item.id }}">
-                        订单号：{{ item.order_id }}
+   <div class="col-md-11 col-lg-11" style="float: right;margin: 2%">
+    {% for item in items %}
+    {% if not item.online_pay or item.chargeinfo.paid %}
+    <div class="panel" id="head{{ item.id }}">
+       <div class="panel-heading" id="heading{{ item.id }}">
+           订单号：{{ item.order_id }}
            <span style="margin-left: 5%">联系方式：
                    {{ item.order_phone }}
            </span>
-                        <span style="margin-left: 5%">地址：{{ item.address }}</span>
-                    </div>
-                    <div class="panel-body">
-                        {% if item.status == 1 %}
-                            <div class="col-md-12 col-lg-12">状态：未接受</div>
-                        {% elif item.status == 2 %}
-                            <div class="col-md-12 col-lg-12">状态：已接受</div>
-                        {% elif item.status == 4 %}
-                            <div class="col-md-12 col-lg-12">状态：已完成</div>
-                        {% elif item.status == 5 %}
-                            <div class="col-md-12 col-lg-12">状态：已取消</div>
-                        {% elif item.status == 6 %}
-                            <div class="col-md-12 col-lg-12">状态：已评价</div>
-                        {% endif %}
-                        <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
-                        <div class="col-md-12 col-lg-12">下单时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
-                        {% if item.process_by %}
-                            <div class="col-md-12 col-lg-12">操作员：{{ item.process_by.nick }}</div>
-                        {% endif %}
-                        {% if not item.ordergoods.all.count == 0 %}
-                            <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c">购买商品：</strong>
-                                {% for goods in item.ordergoods.all %}
-                                    {{ goods }}&nbsp;&nbsp;
-                                {% endfor %}
-                                {% if item.photo1 %}
-                                    <strong style="color: #27ad60">(有照片)</strong>
-                                {% endif %}
-                                {% if item.use_coupon %}
-                                    <strong style="color: #27ad60">(维修基金:{{ item.order_coupon.value }}元)</strong>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-12 col-lg-12">
-                                <strong style="color: #1abc9c">
-                                    金额：{{ item.amount }}元
-                                    {% if item.chargeinfo.paid %}
-                                        （在线支付)
-                                    {% else %}
-                                        （货到付款）
-                                    {% endif %}
-                                </strong>
+           <span style="margin-left: 5%">地址：{{ item.address }}</span>
+       </div>
+       <div class="panel-body">
+       {% if item.status == 1 %}
+            <div class="col-md-12 col-lg-12">状态：未接受</div>
+        {% elif item.status == 2 %}
+            <div class="col-md-12 col-lg-12">状态：已接受</div>
+        {% elif item.status == 4 %}
+            <div class="col-md-12 col-lg-12">状态：已完成</div>
+        {% elif item.status == 5 %}
+            <div class="col-md-12 col-lg-12">状态：已取消</div>
+        {% elif item.status == 6 %}
+            <div class="col-md-12 col-lg-12">状态：已评价</div>
+        {% endif %}
+           <div class="col-md-12 col-lg-12">姓名：{{ item.name }}</div>
+           <div class="col-md-12 col-lg-12">下单时间：{{ item.create_time|date:"Y-m-d H:i:s" }}</div>
+           {% if item.process_by %}
+           <div class="col-md-12 col-lg-12">操作员：{{ item.process_by.nick }}</div>
+           {% endif %}
+           {% if not item.ordergoods.all.count == 0 %}
+           <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c">购买商品：</strong>
+                  {% for goods in item.ordergoods.all %}
+                      {{ goods }}&nbsp;&nbsp;
+                  {% endfor %}
+                  {% if item.photo1 %}
+                   <strong style="color: #27ad60">(有照片)</strong>
+                  {% endif %}
+                  {% if item.use_coupon %}
+                      <strong style="color: #27ad60">(维修基金:{{ item.order_coupon.value }}元)</strong>
+                   {% endif %}
+           </div>
+           <div class="col-md-12 col-lg-12">
+               <strong style="color: #1abc9c">
+                   金额：{{ item.amount }}元
+                   {% if item.chargeinfo.paid %}
+                       （在线支付)
+                   {% else %}
+                       （货到付款）
+                   {% endif %}
+           </strong>
 
-                            </div>
-                        {% endif %}
-                        {% if not item.orderitem.all.count == 0 %}
-                            <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c;">维修安装：</strong>
-                                {% for homeitem in item.orderitem.all %}
-                                    {{ homeitem }}&nbsp;&nbsp;
-                                {% endfor %}
-                                {% if item.photo1 %}
-                                    <strong style="color: #27ad60">(有照片)</strong>
-                                {% endif %}
-                                {% if item.use_coupon %}
-                                    <strong style="color: #27ad60">(维修基金:{{ item.order_coupon.value }}元)</strong>
-                                {% endif %}
-                            </div>
-                        {% endif %}
-                        <div class="col-md-12 col-lg-12">
-                            {% if item.remark %}
-                                备注：{{ item.remark }}
-                            {% else %}
-                                备注：无
-                            {% endif %}
-                        </div>
+           </div>
+           {% endif %}
+           {% if not item.orderitem.all.count == 0 %}
+               <div class="col-md-12 col-lg-12"><strong style="color: #1abc9c;">维修安装：</strong>
+                  {% for homeitem in item.orderitem.all %}
+                      {{ homeitem }}&nbsp;&nbsp;
+                  {% endfor %}
+                  {% if item.photo1 %}
+                   <strong style="color: #27ad60">(有照片)</strong>
+                  {% endif %}
+                  {% if item.use_coupon %}
+                      <strong style="color: #27ad60">(维修基金:{{ item.order_coupon.value }}元)</strong>
+                   {% endif %}
+               </div>
+           {% endif %}
+           <div class="col-md-12 col-lg-12">
+               {% if item.remark %}
+               备注：{{ item.remark }}
+               {% else %}
+               备注：无
+               {% endif %}
+           </div>
 
-                        <div class="col-md-12 col-lg-12">
-                            服务人员：{{ item.service_person }}
-                        </div>
-                        <div class="col-md-12 col-lg-12">
-                            上门时间：{{ item.service_time }}
-                        </div>
-                        {% if item.status == 6 %}
-                            <div class="col-md-6 col-lg-6">
-                                <p>
-                                    <span id="rates{{ item.id }}">评价：</span><br/>
-                                    评价选项：
-                                    {% if item.rb1 %}
-                                        上门及时&nbsp;&nbsp;
-                                    {% endif %}
-                                    {% if item.rb2 %}
-                                        认真仔细&nbsp;&nbsp;
-                                    {% endif %}
-                                    {% if item.rb3 %}
-                                        技术专业&nbsp;&nbsp;
-                                    {% endif %}
-                                    {% if item.rb4 %}
-                                        收费公道&nbsp;&nbsp;
-                                    {% endif %}
-                                    {% if item.rb5 %}
-                                        维修快速&nbsp;&nbsp;
-                                    {% endif %}
-                                    {% if item.rb6 %}
-                                        态度良好&nbsp;&nbsp;
-                                    {% endif %}
-                                    <br/>
-                                    评价内容：{{ item.comment }}</p>
-                            </div>
-                            <script>
-                                for(var i=1;i<={{ item.rate }};i++){
-                                    $('#rates{{ item.id }}').append("<span class='glyphicon glyphicon-star' style='color:#27ad60'></span>")
-                                }
-                            </script>
-                        {% endif %}
-                        <div class="col-md-12 col-lg-12">
-                            {% if item.photo1 or item.photo2 or item.photo3 or item.photo4 %}
-                                <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
-                                    查看照片
-                                </button>
-                                <div class="modal fade bs-example-modal-lg" style="padding-top: 5%;padding-left: 10%" id="modal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content text-center" style="padding: 2%">
-                                            {% if item.photo1 %}
-                                                <img src="/upload/{{ item.photo1 }}" style="max-width: 850px">
-                                                <br/>
-                                            {% endif %}
-                                            {% if item.photo2 %}
-                                                <img style="margin-top: 2%;max-width: 850px" src="/upload/{{ item.photo2 }}">
-                                                <br/>
-                                            {% endif %}
-                                            {% if item.photo3 %}
-                                                <img style="margin-top: 2%;max-width: 850px" src="/upload/{{ item.photo3 }}">
-                                                <br/>
-                                            {% endif %}
-                                            {% if item.photo4 %}
-                                                <img style="margin-top: 2%;max-width: 850px" src="/upload/{{ item.photo4 }}">
-                                                <br/>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <script>
-                                    $('#find_detail{{ item.id }}').click(function(){
-                                        $('#modal{{ item.id }}').modal('toggle')
-                                    });
-                                </script>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <script>
-                    $(document).ready(function(){
-                        {% if item.status == 1 %}
-                            $('#head{{ item.id }}').addClass('panel-primary');
-                        {% elif item.status == 2 %}
-                            $('#head{{ item.id }}').addClass('panel-success');
-                        {% elif item.status == 4 %}
-                            $('#head{{ item.id }}').addClass('panel-success');
-                            $('#heading{{ item.id }}').css({'background-color': '#1abc9c', 'color': '#ffffff'});
-                        {% elif item.status == 5 %}
-                            $('#head{{ item.id }}').addClass('panel-default');
-                        {% elif item.status == 6 %}
-                            $('#head{{ item.id }}').addClass('panel-success');
-                            $('#heading{{ item.id }}').css({'background-color': '#1abc9c', 'color': '#ffffff'});
-                        {% endif %}
-                    })
-                </script>
+           <div class="col-md-12 col-lg-12">
+               服务人员：{{ item.service_person }}
+           </div>
+           <div class="col-md-12 col-lg-12">
+               上门时间：{{ item.service_time }}
+           </div>
+           {% if item.status == 6 %}
+           <div class="col-md-6 col-lg-6">
+               <p>
+                   <span id="rates{{ item.id }}">评价：</span><br/>
+               评价选项：
+                   {% if item.rb1 %}
+                       上门及时&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb2 %}
+                       认真仔细&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb3 %}
+                       技术专业&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb4 %}
+                       收费公道&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb5 %}
+                       维修快速&nbsp;&nbsp;
+                   {% endif %}
+                   {% if item.rb6 %}
+                       态度良好&nbsp;&nbsp;
+                   {% endif %}
+               <br/>
+               评价内容：{{ item.comment }}</p>
+           </div>
+           <script>
+                for(var i=1;i<={{ item.rate }};i++){
+                   $('#rates{{ item.id }}').append("<span class='glyphicon glyphicon-star' style='color:#27ad60'></span>")
+               }
+           </script>
+           {% endif %}
+           <div class="col-md-12 col-lg-12">
+               {% if item.photo1 or item.photo2 or item.photo3 or item.photo4 %}
+                   <button class="btn btn-large btn-success" id="find_detail{{ item.id }}" style="float: right;margin-right: 3%">
+                 查看照片
+               </button>
+               <div class="modal fade bs-example-modal-lg" style="padding-top: 5%;padding-left: 10%" id="modal{{ item.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                   <div class="modal-dialog modal-lg">
+                       <div class="modal-content text-center" style="padding: 2%">
+                           {% if item.photo1 %}
+                           <img src="/upload/{{ item.photo1 }}" style="max-width: 850px">
+                           <br/>
+                           {% endif %}
+                           {% if item.photo2 %}
+                           <img style="margin-top: 2%;max-width: 850px" src="/upload/{{ item.photo2 }}">
+                           <br/>
+                           {% endif %}
+                           {% if item.photo3 %}
+                           <img style="margin-top: 2%;max-width: 850px" src="/upload/{{ item.photo3 }}">
+                           <br/>
+                           {% endif %}
+                           {% if item.photo4 %}
+                           <img style="margin-top: 2%;max-width: 850px" src="/upload/{{ item.photo4 }}">
+                           <br/>
+                           {% endif %}
+                       </div>
+                   </div>
+               </div>
+               <script>
+               $('#find_detail{{ item.id }}').click(function(){
+                   $('#modal{{ item.id }}').modal('toggle')
+               });
+           </script>
+               {% endif %}
+           </div>
+       </div>
+   </div>
+   <script>
+       $(document).ready(function(){
+           {% if item.status == 1 %}
+               $('#head{{ item.id }}').addClass('panel-primary');
+           {% elif item.status == 2 %}
+               $('#head{{ item.id }}').addClass('panel-success');
+           {% elif item.status == 4 %}
+               $('#head{{ item.id }}').addClass('panel-success');
+               $('#heading{{ item.id }}').css({'background-color': '#1abc9c', 'color': '#ffffff'});
+           {% elif item.status == 5 %}
+               $('#head{{ item.id }}').addClass('panel-default');
+           {% elif item.status == 6 %}
+               $('#head{{ item.id }}').addClass('panel-success');
+               $('#heading{{ item.id }}').css({'background-color': '#1abc9c', 'color': '#ffffff'});
+           {% endif %}
+       })
+   </script>
+     {% endif %}
+    {% endfor %}
+   </div>
+{% if items.has_previous or items.has_next %}
+ <div class="col-lg-12 col-md-12">
+  {% if items.paginator.num_pages < 15 %}
+  <div class="text-center">
+      <div class="pagination pagination-success">
+          <ul>
+              {% if items.has_previous %}
+            <li><a href="#" class="btn btn-info previous" onclick="turn_page('{{ items.previous_page_number }}')">上一页</a></li>
+             {% endif %}
+             {% for page in items.paginator.page_range %}
+               {% if page == items.number %}
+            <li class="active"><a role="button" href="#" onclick="turn_page('{{ page }}')">{{ page }}</a></li>
+               {% else %}
+            <li><a href="#" onclick="turn_page('{{ page }}')">{{ page }}</a></li>
+               {% endif %}
+            {% endfor %}
+            {% if items.has_next %}
+             <li><a href="#" class="btn btn-info next" onclick="turn_page('{{ items.next_page_number }}')">下一页</a></li>
+
             {% endif %}
-        {% endfor %}
-    </div>
-    {% if items.has_previous or items.has_next %}
-        <div class="col-lg-12 col-md-12">
-            {% if items.paginator.num_pages < 15 %}
-                <div class="text-center">
-                    <div class="pagination pagination-success">
-                        <ul>
-                            {% if items.has_previous %}
-                                <li><a href="#" class="btn btn-info previous" onclick="turn_page('{{ items.previous_page_number }}')">上一页</a></li>
-                            {% endif %}
-                            {% for page in items.paginator.page_range %}
-                                {% if page == items.number %}
-                                    <li class="active"><a role="button" href="#" onclick="turn_page('{{ page }}')">{{ page }}</a></li>
-                                {% else %}
-                                    <li><a href="#" onclick="turn_page('{{ page }}')">{{ page }}</a></li>
-                                {% endif %}
-                            {% endfor %}
-                            {% if items.has_next %}
-                                <li><a href="#" class="btn btn-info next" onclick="turn_page('{{ items.next_page_number }}')">下一页</a></li>
-
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div>
-            {% else %}
-                <div class="text-center">
-                    {% if items.has_previous %}
-                        <button class="btn btn-success" onclick="turn_page('{{ items.previous_page_number }}')">上一页</button>
-                    {% else %}
-                        <button class="btn btn-success" disabled="disabled">上一页</button>
-                    {% endif %}
-                    <select id="select3" class="form-control select select-success select-block mbl" onchange="turn_page(this.value)">
-                        {% for page in items.paginator.page_range %}
-                            {% if page == items.number %}
-                                <option value="{{ page }}" selected>第{{ page }}页</option>
-                            {% else %}
-                                <option value="{{ page }}">第{{ page }}页</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                    <script>
-                        $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
-                    </script>
-                    {% if items.has_next %}
-                        <button class="btn btn-success" onclick="turn_page('{{ items.next_page_number }}')">下一页</button>
-                    {% else %}
-                        <button class="btn btn-success" disabled="disabled">下一页</button>
-                    {% endif %}
-                </div>
-            {% endif %}
-            <form action="find_appointment" method="post" id="page_form" style="display: none">
-                {% csrf_token %}
-                <input name="phone" value="{{ phone }}"/>
-                <input name="appointment" value="{{ appointment }}"/>
-                <input name="page_num" id="page_num" value=""/>
-            </form>
-            <script>
-                function turn_page(page_num){
-                    $('#page_num').val(page_num);
-                    $('#page_form').submit();
-                }
-            </script>
-        </div>
-    {% endif %}
+          </ul>
+      </div>
+  </div>
+  {% else %}
+  <div class="text-center">
+     {% if items.has_previous %}
+         <button class="btn btn-success" onclick="turn_page('{{ items.previous_page_number }}')">上一页</button>
+     {% else %}
+         <button class="btn btn-success" disabled="disabled">上一页</button>
+     {% endif %}
+     <select id="select3" class="form-control select select-success select-block mbl" onchange="turn_page(this.value)">
+         {% for page in items.paginator.page_range %}
+             {% if page == items.number %}
+             <option value="{{ page }}" selected>第{{ page }}页</option>
+             {% else %}
+             <option value="{{ page }}">第{{ page }}页</option>
+             {% endif %}
+         {% endfor %}
+     </select>
+     <script>
+         $("#select3").select2({dropdownCssClass: 'dropdown-inverse'});
+     </script>
+     {% if items.has_next %}
+         <button class="btn btn-success" onclick="turn_page('{{ items.next_page_number }}')">下一页</button>
+     {% else %}
+         <button class="btn btn-success" disabled="disabled">下一页</button>
+     {% endif %}
+  </div>
+  {% endif %}
+  <form action="find_appointment" method="post" id="page_form" style="display: none">
+     {% csrf_token %}
+    <input name="phone" value="{{ phone }}"/>
+    <input name="appointment" value="{{ appointment }}"/>
+    <input name="page_num" id="page_num" value=""/>
+  </form>
+  <script>
+   function turn_page(page_num){
+       $('#page_num').val(page_num);
+       $('#page_form').submit();
+   }
+  </script>
+</div>
+{% endif %}
 {% endblock %}
 
